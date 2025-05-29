@@ -1,0 +1,697 @@
+<section
+  class="min-h-screen relative overflow-hidden transition-all duration-700 ease-in-out"
+  [ngClass]="{
+    'bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 text-gray-800':  !(isDarkMode$ | async),
+    'bg-gradient-to-br from-slate-900 via-slate-800 to-blue-900 text-gray-100':  (isDarkMode$ | async)
+  }"
+>
+  <canvas id="particles-canvas" class="absolute inset-0 pointer-events-none z-0"></canvas>
+
+  <div class="absolute inset-0 overflow-hidden pointer-events-none">
+    <div
+      class="parallax-element absolute w-96 h-96 rounded-full -top-48 -left-48 blur-xl animate-pulse backdrop-blur-sm"
+      [ngClass]="{
+        'bg-gradient-to-r from-blue-400/20 to-purple-400/20 dark:from-blue-500/15 dark:to-purple-500/15': true
+      }"
+      style="animation-duration: 4s;"
+    ></div>
+    <div
+      class="parallax-element absolute w-80 h-80 rounded-full -bottom-40 -right-40 blur-xl animate-pulse backdrop-blur-sm"
+      [ngClass]="{
+        'bg-gradient-to-r from-purple-400/20 to-pink-400/20 dark:from-purple-500/15 dark:to-pink-500/15': true
+      }"
+      style="animation-duration: 5s; animation-delay: 1s;"
+    ></div>
+    <div
+      class="parallax-element absolute w-64 h-64 rounded-full top-1/2 left-1/4 blur-xl animate-pulse backdrop-blur-sm"
+      [ngClass]="{
+        'bg-gradient-to-r from-green-400/20 to-blue-400/20 dark:from-green-500/15 dark:to-blue-500/15': true
+      }"
+      style="animation-duration: 6s; animation-delay: 2s;"
+    ></div>
+
+    <div
+      class="parallax-element absolute top-20 right-20 w-16 h-16 border-2 rotate-45 animate-spin"
+      [ngClass]="{
+        'border-blue-300/30 dark:border-blue-400/20': true
+      }"
+      style="animation-duration: 20s;"
+    ></div>
+    <div
+      class="parallax-element absolute bottom-32 left-16 w-12 h-12 rounded-full animate-bounce"
+      [ngClass]="{
+        'bg-gradient-to-br from-purple-300/40 to-blue-300/40 dark:from-purple-400/20 dark:to-blue-400/20': true
+      }"
+      style="animation-duration: 3s; animation-delay: 0.5s;"
+    ></div>
+    <div
+      class="parallax-element absolute top-1/3 right-1/3 w-8 h-8 transform rotate-12 animate-pulse"
+      [ngClass]="{
+        'bg-gradient-to-tr from-green-300/50 to-teal-300/50 dark:from-green-400/25 dark:to-teal-400/25': true
+      }"
+      style="animation-duration: 4s; animation-delay: 1.5s;"
+    ></div>
+  </div>
+
+  <!--<button
+    (click)="toggleThemeFromLogin()"
+    class="fixed top-6 right-6 z-50 p-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-110 group focus:outline-none focus:ring-2 focus:ring-blue-500"
+    [ngClass]="{
+      'bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl border border-gray-200/50 dark:border-gray-700/50': true
+    }"
+    aria-label="Alternar modo oscuro/claro"
+  >
+    <svg
+      *ngIf="isDarkMode$ | async"
+      class="w-6 h-6 text-yellow-500 transition-transform duration-300 group-hover:rotate-180"
+      fill="currentColor"
+      viewBox="0 0 20 20"
+    >
+      <path
+        fill-rule="evenodd"
+        d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"
+        clip-rule="evenodd"
+      />
+    </svg>
+
+    <svg
+      *ngIf="!(isDarkMode$ | async)"
+      class="w-6 h-6 text-slate-700 transition-transform duration-300 group-hover:rotate-12"
+      fill="currentColor"
+      viewBox="0 0 20 20"
+    >
+      <path
+        d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"
+      />
+    </svg>
+  </button>-->
+
+  <div class="relative z-10 flex items-center justify-center min-h-screen px-4 py-8">
+    <div class="w-full max-w-md">
+      <div class="text-center mb-8 animate-on-load">
+        <div
+          class="group inline-flex items-center justify-center p-6 rounded-3xl shadow-2xl mb-8 border hover:scale-105 transition-all duration-500 hover:shadow-3xl"
+          [ngClass]="{
+            'bg-white/90 dark:bg-slate-800/90 backdrop-blur-xl border-gray-200/50 dark:border-gray-700/50 hover:bg-white/95 dark:hover:bg-slate-800/95': true
+          }"
+        >
+          <div class="relative">
+            <img
+              class="w-12 h-12 mr-4 rounded-xl shadow-lg transition-transform duration-300 group-hover:rotate-12"
+              src="assets/web/media/logo-sanjose.jpg"
+              alt="San José Logo"
+            />
+            <div
+              class="absolute inset-0 rounded-xl bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"
+            ></div>
+          </div>
+          <div class="text-left">
+            <h2
+              class="text-2xl font-bold bg-clip-text text-transparent"
+              [ngClass]="{
+                'bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 dark:from-blue-400 dark:via-purple-400 dark:to-blue-300': true
+              }"
+            >
+              San José
+            </h2>
+            <p class="text-sm font-medium" [ngClass]="{ 'text-gray-600 dark:text-gray-400': true }">
+              Parque Industrial
+            </p>
+          </div>
+        </div>
+
+        <div class="space-y-3">
+          <h1
+            class="text-4xl font-bold bg-clip-text text-transparent animate-pulse"
+            [ngClass]="{
+              'bg-gradient-to-r from-slate-800 via-slate-700 to-slate-800 dark:from-white dark:via-gray-100 dark:to-white': true
+            }"
+          >
+            {{
+              loginStep === 'success'
+                ? '¡Bienvenido!'
+                : loginStep === 'twoFactor'
+                  ? 'Verificación'
+                  : 'Bienvenido de Vuelta'
+            }}
+          </h1>
+          <p class="text-lg" [ngClass]="{ 'text-gray-600 dark:text-gray-400': true }">
+            {{
+              loginStep === 'success'
+                ? 'Acceso concedido'
+                : loginStep === 'twoFactor'
+                  ? 'Ingresa tu código de verificación'
+                  : 'Inicia sesión para acceder a tu cuenta'
+            }}
+          </p>
+        </div>
+      </div>
+
+      <div *ngIf="twoFactorEnabled" class="mb-8">
+        <div class="flex items-center justify-between text-sm font-medium mb-4">
+          <div class="flex items-center text-green-600 dark:text-green-400">
+            <div class="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center mr-2">
+              <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                <path
+                  fill-rule="evenodd"
+                  d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+            </div>
+            <span>Credenciales Verificadas</span>
+          </div>
+          <div class="flex items-center text-blue-600 dark:text-blue-400 font-semibold">
+            <div class="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center mr-2 animate-pulse">
+              <span class="text-white text-xs font-bold">2</span>
+            </div>
+            <span>Verificación 2FA</span>
+          </div>
+        </div>
+        <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 overflow-hidden">
+          <div
+            class="bg-gradient-to-r from-green-500 via-blue-500 to-purple-600 h-3 rounded-full transition-all duration-1000 ease-out shadow-lg"
+            style="width: 100%; animation: shimmer 2s infinite;"
+          ></div>
+        </div>
+      </div>
+
+      <div
+        *ngIf="errorMessage"
+        class="error-message mb-6 p-4 rounded-2xl animate-fade-in"
+        [ngClass]="{
+          'bg-gradient-to-r from-red-50 to-pink-50 dark:from-red-900/20 dark:to-pink-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400': true
+        }"
+      >
+        <div class="flex items-center">
+          <div class="flex-shrink-0 mr-3">
+            <div
+              class="w-8 h-8 rounded-full flex items-center justify-center"
+              [ngClass]="{ 'bg-red-100 dark:bg-red-900/30': true }"
+            >
+              <svg class="w-5 h-5" [ngClass]="{ 'text-red-600 dark:text-red-400': true }" fill="currentColor" viewBox="0 0 20 20">
+                <path
+                  fill-rule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+            </div>
+          </div>
+          <div class="flex-1">
+            <p class="font-medium">{{ errorMessage }}</p>
+          </div>
+        </div>
+      </div>
+
+      <div
+        *ngIf="twoFactorEnabled && !errorMessage"
+        class="mb-6 p-4 rounded-2xl animate-fade-in"
+        [ngClass]="{
+          'bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-400': true
+        }"
+      >
+        <div class="flex items-center">
+          <div class="flex-shrink-0 mr-3">
+            <div
+              class="w-8 h-8 rounded-full flex items-center justify-center animate-pulse"
+              [ngClass]="{ 'bg-blue-100 dark:bg-blue-900/30': true }"
+            >
+              <svg class="w-5 h-5" [ngClass]="{ 'text-blue-600 dark:text-blue-400': true }" fill="currentColor" viewBox="0 0 20 20">
+                <path
+                  d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"
+                />
+                <path
+                  d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"
+                />
+              </svg>
+            </div>
+          </div>
+          <div class="flex-1">
+            <p class="font-medium">Código de verificación enviado</p>
+            <p class="text-sm opacity-75 mt-1">Revisa tu correo electrónico</p>
+          </div>
+        </div>
+      </div>
+
+      <div
+        *ngIf="loginStep === 'success'"
+        class="mb-6 p-4 rounded-2xl animate-fade-in"
+        [ngClass]="{
+          'bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-400': true
+        }"
+      >
+        <div class="flex items-center">
+          <div class="flex-shrink-0 mr-3">
+            <div
+              class="w-8 h-8 rounded-full flex items-center justify-center animate-spin"
+              [ngClass]="{ 'bg-green-100 dark:bg-green-900/30': true }"
+            >
+              <svg class="w-5 h-5" [ngClass]="{ 'text-green-600 dark:text-green-400': true }" fill="currentColor" viewBox="0 0 20 20">
+                <path
+                  fill-rule="evenodd"
+                  d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+            </div>
+          </div>
+          <div class="flex-1">
+            <p class="font-bold">¡Acceso Concedido!</p>
+            <p class="text-sm opacity-75 mt-1">Redirigiendo al dashboard...</p>
+          </div>
+        </div>
+      </div>
+
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-6">
+        <div
+          class="relative group animate-on-load"
+          *ngIf="!twoFactorEnabled || loginStep !== 'twoFactor'"
+        >
+          <div
+            class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none z-10 transition-all duration-300"
+          >
+            <div
+              class="w-5 h-5 p-1 rounded-full transition-all duration-300"
+              [ngClass]="{
+                'bg-gray-100 dark:bg-gray-700 group-focus-within:bg-blue-100 dark:group-focus-within:bg-blue-900/30': true
+              }"
+            >
+              <svg
+                class="w-full h-full transition-colors duration-300"
+                [ngClass]="{ 'text-gray-500 group-focus-within:text-blue-600 dark:group-focus-within:text-blue-400': true }"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                />
+              </svg>
+            </div>
+          </div>
+
+          <input
+            type="text"
+            id="nombre_usuario"
+            formControlName="nombre_usuario"
+            placeholder=" "
+            class="peer w-full pl-12 pr-4 py-4 border-2 rounded-2xl focus:ring-4 focus:border-blue-500 dark:focus:border-blue-400 transition-all duration-300 placeholder-transparent hover:bg-gray-50 dark:hover:bg-slate-700/70 backdrop-blur-sm"
+            [ngClass]="{
+              'bg-gray-50/80 dark:bg-slate-700/50 border-gray-200 dark:border-gray-600 text-gray-900 dark:text-white': true,
+              'focus:ring-blue-500/20': true,
+              'border-red-400 bg-red-50': f['nombre_usuario'].invalid && f['nombre_usuario'].touched,
+              'border-green-400 bg-green-50': f['nombre_usuario'].valid && f['nombre_usuario'].touched
+            }"
+            autocomplete="username"
+          />
+
+          <label
+            for="nombre_usuario"
+            class="absolute left-12 top-4 text-gray-500 dark:text-gray-400 transition-all duration-300 pointer-events-none peer-placeholder-shown:top-4 peer-placeholder-shown:text-base peer-focus:-top-2 peer-focus:left-3 peer-focus:text-xs peer-focus:text-blue-600 dark:peer-focus:text-blue-400 peer-focus:bg-white dark:peer-focus:bg-slate-800 peer-focus:px-2 peer-focus:rounded peer-focus:font-medium peer-[:not(:placeholder-shown)]:-top-2 peer-[:not(:placeholder-shown)]:left-3 peer-[:not(:placeholder-shown)]:text-xs peer-[:not(:placeholder-shown)]:bg-white dark:peer-[:not(:placeholder-shown)]:bg-slate-800 peer-[:not(:placeholder-shown)]:px-2 peer-[:not(:placeholder-shown)]:rounded peer-[:not(:placeholder-shown)]:font-medium"
+          >
+            Nombre de Usuario
+          </label>
+
+          <div class="absolute inset-y-0 right-0 pr-4 flex items-center">
+            <div
+              *ngIf="f['nombre_usuario'].valid && f['nombre_usuario'].touched"
+              class="w-5 h-5 text-green-500 animate-scale-in"
+            >
+              <svg fill="currentColor" viewBox="0 0 20 20">
+                <path
+                  fill-rule="evenodd"
+                  d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+            </div>
+          </div>
+
+          <div
+            *ngIf="f['nombre_usuario'].invalid && f['nombre_usuario'].touched"
+            class="mt-2 text-red-600 dark:text-red-400 text-sm animate-fade-in flex items-center"
+          >
+            <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+              <path
+                fill-rule="evenodd"
+                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                clip-rule="evenodd"
+              />
+            </svg>
+            <span *ngIf="f['nombre_usuario'].errors?.['required']">El nombre de usuario es requerido</span>
+            <span *ngIf="f['nombre_usuario'].errors?.['minlength']">Mínimo 3 caracteres</span>
+            <span *ngIf="f['nombre_usuario'].errors?.['pattern']">Solo letras, números y . _ -</span>
+          </div>
+        </div>
+
+        <div
+          class="relative group animate-on-load"
+          *ngIf="!twoFactorEnabled || loginStep !== 'twoFactor'"
+        >
+          <div
+            class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none z-10 transition-all duration-300"
+          >
+            <div
+              class="w-5 h-5 p-1 rounded-full transition-all duration-300"
+              [ngClass]="{
+                'bg-gray-100 dark:bg-gray-700 group-focus-within:bg-blue-100 dark:group-focus-within:bg-blue-900/30': true
+              }"
+            >
+              <svg
+                class="w-full h-full transition-colors duration-300"
+                [ngClass]="{ 'text-gray-500 group-focus-within:text-blue-600 dark:group-focus-within:text-blue-400': true }"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                />
+              </svg>
+            </div>
+          </div>
+
+          <input
+            [type]="showPassword ? 'text' : 'password'"
+            id="contrasena"
+            formControlName="contrasena"
+            placeholder=" "
+            class="peer w-full pl-12 pr-12 py-4 border-2 rounded-2xl focus:ring-4 focus:border-blue-500 dark:focus:border-blue-400 transition-all duration-300 placeholder-transparent hover:bg-gray-50 dark:hover:bg-slate-700/70 backdrop-blur-sm"
+            [ngClass]="{
+              'bg-gray-50/80 dark:bg-slate-700/50 border-gray-200 dark:border-gray-600 text-gray-900 dark:text-white': true,
+              'focus:ring-blue-500/20': true,
+              'border-red-400 bg-red-50': f['contrasena'].invalid && f['contrasena'].touched,
+              'border-green-400 bg-green-50': f['contrasena'].valid && f['contrasena'].touched
+            }"
+            autocomplete="current-password"
+          />
+
+          <label
+            for="contrasena"
+            class="absolute left-12 top-4 text-gray-500 dark:text-gray-400 transition-all duration-300 pointer-events-none peer-placeholder-shown:top-4 peer-placeholder-shown:text-base peer-focus:-top-2 peer-focus:left-3 peer-focus:text-xs peer-focus:text-blue-600 dark:peer-focus:text-blue-400 peer-focus:bg-white dark:peer-focus:bg-slate-800 peer-focus:px-2 peer-focus:rounded peer-focus:font-medium peer-[:not(:placeholder-shown)]:-top-2 peer-[:not(:placeholder-shown)]:left-3 peer-[:not(:placeholder-shown)]:text-xs peer-[:not(:placeholder-shown)]:bg-white dark:peer-[:not(:placeholder-shown)]:bg-slate-800 peer-[:not(:placeholder-shown)]:px-2 peer-[:not(:placeholder-shown)]:rounded peer-[:not(:placeholder-shown)]:font-medium"
+          >
+            Contraseña
+          </label>
+
+          <button
+            type="button"
+            (click)="togglePasswordVisibility()"
+            class="absolute inset-y-0 right-0 pr-4 flex items-center z-10 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-300 focus:outline-none"
+            aria-label="Toggle password visibility"
+          >
+            <svg
+              *ngIf="!showPassword"
+              class="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+              />
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+              />
+            </svg>
+            <svg
+              *ngIf="showPassword"
+              class="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21"
+              />
+            </svg>
+          </button>
+
+          <div
+            *ngIf="f['contrasena'].invalid && f['contrasena'].touched"
+            class="mt-2 text-red-600 dark:text-red-400 text-sm animate-fade-in flex items-center"
+          >
+            <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+              <path
+                fill-rule="evenodd"
+                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                clip-rule="evenodd"
+              />
+            </svg>
+            <span *ngIf="f['contrasena'].errors?.['required']">La contraseña es requerida</span>
+            <span *ngIf="f['contrasena'].errors?.['minlength']">Mínimo 6 caracteres</span>
+          </div>
+        </div>
+
+        <div *ngIf="twoFactorEnabled" class="relative group animate-fade-in-up">
+          <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none z-10">
+            <div
+              class="w-6 h-6 p-1 rounded-full animate-pulse"
+              [ngClass]="{ 'bg-blue-100 dark:bg-blue-900/30': true }"
+            >
+              <svg
+                class="w-full h-full"
+                [ngClass]="{ 'text-blue-600 dark:text-blue-400': true }"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+            </div>
+          </div>
+
+          <input
+            type="text"
+            id="twoFactorCode"
+            formControlName="twoFactorCode"
+            placeholder=" "
+            maxlength="6"
+            class="peer w-full pl-12 pr-4 py-5 border-2 rounded-2xl focus:ring-4 focus:border-blue-500 dark:focus:border-blue-400 transition-all duration-300 placeholder-transparent text-center text-xl font-mono tracking-[0.5em] font-semibold backdrop-blur-sm"
+            [ngClass]="{
+              'bg-gradient-to-r from-blue-50/80 to-indigo-50/80 dark:from-blue-900/20 dark:to-indigo-900/20 border-blue-200 dark:border-blue-600 text-gray-900 dark:text-white': true,
+              'focus:ring-blue-500/30': true,
+              'border-red-400': f['twoFactorCode'].invalid && f['twoFactorCode'].touched,
+              'border-green-400': f['twoFactorCode'].valid && f['twoFactorCode'].touched
+            }"
+            autocomplete="one-time-code"
+          />
+
+          <label
+            for="twoFactorCode"
+            class="absolute left-12 top-5 text-blue-600 dark:text-blue-400 transition-all duration-300 pointer-events-none peer-placeholder-shown:top-5 peer-placeholder-shown:text-base peer-focus:-top-2 peer-focus:left-3 peer-focus:text-xs peer-focus:bg-white dark:peer-focus:bg-slate-800 peer-focus:px-2 peer-focus:rounded peer-focus:font-bold peer-[:not(:placeholder-shown)]:-top-2 peer-[:not(:placeholder-shown)]:left-3 peer-[:not(:placeholder-shown)]:text-xs peer-[:not(:placeholder-shown)]:bg-white dark:peer-[:not(:placeholder-shown)]:bg-slate-800 peer-[:not(:placeholder-shown)]:px-2 peer-[:not(:placeholder-shown)]:rounded peer-[:not(:placeholder-shown)]:font-bold"
+          >
+            Código de Verificación (6 dígitos)
+          </label>
+
+          <div class="absolute bottom-1 left-1/2 transform -translate-x-1/2">
+            <div class="flex space-x-1">
+              <div
+                *ngFor="let i of [0, 1, 2, 3, 4, 5]"
+                class="w-2 h-1 rounded-full transition-all duration-300"
+                [class.bg-blue-500]="(f['twoFactorCode']?.value?.length || 0) > i"
+                [class.bg-gray-300]="(f['twoFactorCode']?.value?.length || 0) <= i"
+              ></div>
+            </div>
+          </div>
+
+          <div
+            *ngIf="f['twoFactorCode'].invalid && f['twoFactorCode'].touched"
+            class="mt-2 text-red-600 dark:text-red-400 text-sm animate-fade-in flex items-center"
+          >
+            <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+              <path
+                fill-rule="evenodd"
+                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                clip-rule="evenodd"
+              />
+            </svg>
+            <span *ngIf="f['twoFactorCode'].errors?.['required']"
+              >Ingresa el código de verificación</span
+            >
+            <span *ngIf="f['twoFactorCode'].errors?.['pattern']"
+              >Debe contener exactamente 6 dígitos</span
+            >
+          </div>
+        </div>
+
+        <div *ngIf="!twoFactorEnabled" class="flex items-center justify-between animate-on-load">
+          <label class="flex items-center cursor-pointer group">
+            <div class="relative">
+              <input type="checkbox" class="sr-only" formControlName="rememberMe" />
+              <div
+                class="w-5 h-5 rounded border-2 flex items-center justify-center transition-all duration-300"
+                [ngClass]="{
+                  'bg-gray-200 dark:bg-gray-600 border-gray-300 dark:border-gray-500 group-hover:border-blue-400': true
+                }"
+              >
+                <svg
+                  class="w-3 h-3 text-blue-600 opacity-0 transition-opacity duration-300"
+                  [ngClass]="{ 'group-focus-within:opacity-100 group-hover:opacity-100': true }"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+              </div>
+            </div>
+            <span
+              class="ml-3 text-sm transition-colors duration-300"
+              [ngClass]="{
+                'text-gray-600 dark:text-gray-400 group-hover:text-gray-800 dark:group-hover:text-gray-200': true
+              }"
+            >
+              Recordar sesión
+            </span>
+          </label>
+          <a
+            href="#"
+            class="text-blue-600 dark:text-blue-400 hover:underline transition-colors duration-200 text-sm animate-on-load"
+            >¿Olvidaste tu contraseña?</a
+          >
+        </div>
+
+        <div class="space-y-4 animate-on-load">
+          <button
+            type="submit"
+            [disabled]="isLoading || loginForm.invalid"
+            class="submit-button group relative w-full overflow-hidden text-white font-bold py-4 px-8 rounded-2xl transition-all duration-500 transform hover:scale-[1.02] hover:shadow-2xl disabled:scale-100 disabled:cursor-not-allowed focus:outline-none focus:ring-4 focus:ring-blue-500/50 active:scale-95"
+            [ngClass]="{
+              'bg-gradient-to-r from-blue-600 via-purple-600 to-blue-700 hover:from-blue-700 hover:via-purple-700 hover:to-blue-800': !isLoading,
+              'disabled:from-gray-400 disabled:via-gray-500 disabled:to-gray-600': isLoading,
+              'hover:shadow-blue-500/25': !isLoading
+            }"
+          >
+            <div
+              class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"
+            ></div>
+
+            <div
+              *ngIf="isLoading"
+              class="absolute inset-0 flex items-center justify-center bg-inherit rounded-2xl"
+            >
+              <div class="flex items-center space-x-2">
+                <div class="relative">
+                  <div class="w-6 h-6 border-2 border-white/30 rounded-full animate-spin"></div>
+                  <div
+                    class="absolute top-0 left-0 w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"
+                  ></div>
+                </div>
+                <span class="loading-text font-semibold">
+                  {{ twoFactorEnabled ? 'Verificando' : 'Autenticando' }}
+                </span>
+              </div>
+            </div>
+
+            <span
+              [class.opacity-0]="isLoading"
+              class="relative z-10 flex items-center justify-center space-x-2"
+            >
+              <svg
+                *ngIf="loginStep === 'success'"
+                class="w-6 h-6 animate-spin"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+              <svg
+                *ngIf="!twoFactorEnabled && loginStep !== 'success'"
+                class="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"
+                />
+              </svg>
+              <svg
+                *ngIf="twoFactorEnabled && loginStep !== 'success'"
+                class="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              <span class="text-lg">
+                {{
+                  loginStep === 'success'
+                    ? '¡Éxito!'
+                    : twoFactorEnabled
+                      ? 'Verificar Código'
+                      : 'Iniciar Sesión'
+                }}
+              </span>
+            </span>
+          </button>
+
+          <button
+            *ngIf="twoFactorEnabled && loginStep !== 'success'"
+            type="button"
+            (click)="resetLogin()"
+            [disabled]="isLoading"
+            class="group w-full py-3 px-6 rounded-2xl transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-gray-500/20 disabled:opacity-50 disabled:cursor-not-allowed animate-fade-in-up transform hover:scale-[1.01] active:scale-95"
+            [ngClass]="{
+              'bg-gray-100 hover:bg-gray-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-gray-700 dark:text-gray-300': true
+            }"
+          >
+            <div class="flex items-center justify-center space-x-2">
+              <svg
+                class="w-5 h-5 group-hover:-translate-x-1 transition-transform duration-300"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M7 16l-4-4m0 0l4-4m-4 4h18"
+                />
+              </svg>
+              <span>Volver al Inicio</span>
+            </div>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>

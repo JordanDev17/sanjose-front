@@ -1,0 +1,116 @@
+<div class="dashboard-users-container">
+  <header class="page-header">
+    <h2 class="page-title">Gestión de Usuarios</h2>
+    <p class="page-subtitle">Panel exclusivo para administradores</p>
+  </header>
+
+  <div *ngIf="errorMessage" class="alert alert-danger">
+    <i class="fas fa-exclamation-circle"></i> {{ errorMessage }}
+  </div>
+
+  <!-- Formulario para crear/editar -->
+  <section class="form-section card">
+    <h3 class="section-heading">{{ isEditing ? 'Editar Usuario' : 'Crear Nuevo Usuario' }}</h3>
+    <form [formGroup]="userForm" (ngSubmit)="onSubmit()" class="user-form">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="nombre_usuario">Nombre de Usuario:</label>
+          <input type="text" id="nombre_usuario" formControlName="nombre_usuario" class="form-control" placeholder="Ej: admin_user" />
+          <div *ngIf="userForm.get('nombre_usuario')?.invalid && userForm.get('nombre_usuario')?.touched" class="invalid-feedback">
+            Nombre de usuario es requerido.
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email:</label>
+          <input type="email" id="email" formControlName="email" class="form-control" placeholder="Ej: usuario@example.com" />
+          <div *ngIf="userForm.get('email')?.invalid && userForm.get('email')?.touched" class="invalid-feedback">
+            <span *ngIf="userForm.get('email')?.errors?.['required']">Email es requerido.</span>
+            <span *ngIf="userForm.get('email')?.errors?.['email']">Formato inválido.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="contrasena">Contraseña: <span *ngIf="isEditing" class="text-muted">(opcional al editar)</span></label>
+        <input type="password" id="contrasena" formControlName="contrasena" class="form-control" placeholder="********" />
+        <div *ngIf="userForm.get('contrasena')?.invalid && userForm.get('contrasena')?.touched" class="invalid-feedback">
+          <span *ngIf="userForm.get('contrasena')?.errors?.['required']">Contraseña requerida.</span>
+          <span *ngIf="userForm.get('contrasena')?.errors?.['minlength']">Mínimo 6 caracteres.</span>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="rol">Rol:</label>
+          <select id="rol" formControlName="rol" class="form-control">
+            <option value="admin">Administrador</option>
+            <option value="editor">Editor</option>
+            <option value="visualizador">Visualizador</option>
+          </select>
+        </div>
+
+        <div class="form-group form-check">
+          <input type="checkbox" id="activo" formControlName="activo" class="form-check-input" />
+          <label for="activo" class="form-check-label">Activo</label>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">{{ isEditing ? 'Actualizar' : 'Crear' }}</button>
+        <button type="button" class="btn btn-secondary" (click)="resetForm()">Cancelar</button>
+      </div>
+    </form>
+  </section>
+
+  <!-- Lista de usuarios -->
+  <section class="users-table card" *ngIf="users.length > 0">
+    <h3 class="section-heading">Lista de Usuarios</h3>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Email</th>
+          <th>Rol</th>
+          <th>Activo</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let user of users">
+          <td>{{ user.nombre_usuario }}</td>
+          <td>{{ user.email }}</td>
+          <td>{{ user.rol }}</td>
+          <td>
+            <span [class.badge-success]="user.activo" [class.badge-danger]="!user.activo" class="badge">
+              {{ user.activo ? 'Sí' : 'No' }}
+            </span>
+          </td>
+          <td>
+            <button class="btn btn-sm btn-warning" (click)="openEditForm(user)">Editar</button>
+            <button class="btn btn-sm btn-danger" (click)="deleteUser(user.id)">Eliminar</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Paginación -->
+    <nav class="pagination-controls" *ngIf="totalUsers > itemsPerPage">
+      <ul class="pagination">
+        <li class="page-item" [class.disabled]="currentPage === 1">
+          <a class="page-link" (click)="goToPage(currentPage - 1)">Anterior</a>
+        </li>
+        <li
+          class="page-item"
+          *ngFor="let page of [].constructor(Math.ceil(totalUsers / itemsPerPage)); let i = index"
+          [class.active]="i + 1 === currentPage"
+        >
+          <a class="page-link" (click)="goToPage(i + 1)">{{ i + 1 }}</a>
+        </li>
+        <li class="page-item" [class.disabled]="currentPage === Math.ceil(totalUsers / itemsPerPage)">
+          <a class="page-link" (click)="goToPage(currentPage + 1)">Siguiente</a>
+        </li>
+      </ul>
+    </nav>
+  </section>
+</div>

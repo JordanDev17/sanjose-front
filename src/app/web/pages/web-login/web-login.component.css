@@ -1,0 +1,211 @@
+/* General Purpose Animations */
+/* -------------------------------------------------------------------------------------------------------------------- */
+
+/* Base for elements that should animate into view on load */
+.animate-on-load {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+}
+
+/* Keyframes for a smooth fade-in-up effect */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.5s ease-out forwards;
+}
+
+/* Keyframes for a subtle fade-in effect */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+/* Keyframes for a shake effect (for errors) */
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  10%,
+  30%,
+  50%,
+  70%,
+  90% {
+    transform: translateX(-8px);
+  }
+  20%,
+  40%,
+  60%,
+  80% {
+    transform: translateX(8px);
+  }
+}
+
+.animate-shake {
+  animation: shake 0.6s ease-in-out;
+}
+
+/* Keyframes for a subtle scale-in effect (for validation checkmarks) */
+@keyframes scaleIn {
+  from {
+    transform: scale(0);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.3s ease-out forwards;
+}
+
+/* Keyframes for a gentle bounce effect (for success state) */
+@keyframes bounce {
+  0%,
+  20%,
+  50%,
+  80%,
+  100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-15px);
+  }
+  60% {
+    transform: translateY(-7px);
+  }
+}
+
+.animate-bounce {
+  animation: bounce 1s ease-in-out;
+}
+
+/* Keyframes for a pulse effect (for loading states, interactive elements) */
+@keyframes pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(0.98);
+    opacity: 0.8;
+  }
+}
+
+/* We're using a more dynamic pulse for the button and other elements now */
+.animate-pulse {
+  animation: pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Keyframes for a shimmer effect (for progress bar) */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.shimmer-animation {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.3) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite linear;
+}
+
+/* Confetti Effect (for success) */
+/* -------------------------------------------------------------------------------------------------------------------- */
+
+@keyframes confetti-fall {
+  0% {
+    transform: translateY(-100vh) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh) rotate(720deg);
+    opacity: 0;
+  }
+}
+
+.confetti-piece {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background-color: var(--confetti-color); /* Dynamically set via JS */
+  animation: confetti-fall var(--duration) ease-out forwards;
+  animation-delay: var(--delay);
+  border-radius: 50%;
+  transform-origin: center;
+}
+
+/* Theme Transition Overlay */
+/* -------------------------------------------------------------------------------------------------------------------- */
+
+@keyframes fadeOutOverlay {
+  0% {
+    opacity: 0.3;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+.theme-transition-overlay {
+  animation: fadeOutOverlay 0.6s forwards;
+}
+
+/* Specific Element Overrides / Enhancements */
+/* -------------------------------------------------------------------------------------------------------------------- */
+
+/* Style for the input labels with placeholder-shown trick */
+.peer:placeholder-shown ~ label {
+  transform: translateY(0);
+}
+
+.peer:focus ~ label,
+.peer:not(:placeholder-shown) ~ label {
+  transform: translateY(-30px); /* Adjust based on your padding */
+  padding: 0 8px; /* Background padding for the label */
+  /* These colors will be handled by ngClass based on dark mode in HTML */
+  /* background-color: white; */
+  /* dark:background-color: #1e293b; */
+}
+
+/* Fine-tune loading spinner (optional, Tailwind's is good) */
+/* If you want to customize the default Tailwind spinner */
+.animate-spin div:first-child {
+  /* This is the background circle of the spinner */
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.animate-spin div:last-child {
+  /* This is the rotating arc of the spinner */
+  border-color: white;
+  border-top-color: transparent; /* Makes it look like an arc */
+}

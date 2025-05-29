@@ -1,0 +1,32 @@
+<div class="login-container">
+    <div class="log-a">
+        <div class="log-a1">
+            <div class="circulo">
+                <span class="material-symbols-outlined">
+                    person
+                </span>
+            </div>
+            <h2>Iniciar Sesión Administrador</h2>
+        </div>
+            <div class="log-a2">
+
+                <form (ngSubmit)="iniciarSesion()">
+                    <div class="form-a1">
+                        <label >Nobre</label>
+                        <!-- <input class="input1" type="text" [(ngModel)]="nombre"name="nombre"required/> -->
+                    </div>
+                    <div class="form-a2">
+                        <label >Identificacion</label>
+                        <input class="input1" type="text" [(ngModel)]="identificacion" name="identificacion" required/>
+                    </div>
+                    <div class="form-a3">
+                        <button class="boton1" routerLink="/" >Salir</button>
+                        <button class="boton2" type="submit">Entrar</button>
+                    </div>
+                </form>
+
+            </div>
+    </div>
+    
+</div>
+  

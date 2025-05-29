@@ -1,0 +1,51 @@
+<div class="bo1">
+    <h3>Datos del Administrador</h3>
+</div>
+
+<div class="bo2">
+    <div class="l1">
+        <div class="a1">
+            <div class="a1-1">
+                <div class="circulo"></div>
+            </div>
+
+            <div class="a1-2" *ngIf="admin; else errorTemplate">
+                <div class="a1-2-1">
+                    <h5 class="tit1">Nombre</h5>
+                    <div class="a1-2-2">{{ admin.nombre }}</div>
+                </div>
+
+                <div class="a1-2-1">
+                    <h5 class="tit1">Identificación</h5>
+                    <div class="a1-2-2">{{ admin.identificacion }}</div>
+                </div>
+            </div>
+
+            <div class="a1-3" *ngIf="admin">
+                <h5 class="tit1">Correo</h5>
+                <div class="a1-2-2">{{ admin.correo }}</div>
+            </div>
+
+            <div class="a1-4">
+                <div class="a1-2-1">
+                    <h5 class="tit1">Bodega</h5>
+                    <div class="a1-2-2">{{ admin?.bodega_id }}</div>
+                </div>
+
+                <div class="a1-2-1">
+                    <h5 class="tit1">Activo</h5>
+                    <div class="a1-2-2">---</div>
+                </div>
+            </div>
+
+            <div class="a1-5">
+                <h5 class="tit2">Descripción</h5>
+                <div class="a1-2-3">---</div>
+            </div>
+
+            <ng-template #errorTemplate>
+                <p class="text-danger">{{ error }}</p>
+            </ng-template>
+        </div>
+    </div>
+</div>

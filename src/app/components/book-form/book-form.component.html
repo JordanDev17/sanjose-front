@@ -1,0 +1,18 @@
+<h2>Agregar Libro</h2>
+<form (ngSubmit)="onSubmit()">
+  <input type="text" [(ngModel)]="book.title" name="title" placeholder="Título" required />
+  <input type="text" [(ngModel)]="book.author" name="author" placeholder="Autor" required />
+  <input type="number" [(ngModel)]="book.year" name="year" placeholder="Año" required />
+  <button type="submit">Guardar</button>
+</form>
+
+<h2>Lista de Libros</h2>
+<ul *ngIf="books.length > 0; else sinLibros">
+  <li *ngFor="let libro of books">
+    <strong>{{ libro.title }}</strong> - {{ libro.author}} ({{ libro.year }})
+  </li>
+</ul>
+
+<ng-template #sinLibros>
+  <p>No ha libros</p>
+</ng-template>
