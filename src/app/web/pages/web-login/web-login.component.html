@@ -88,7 +88,7 @@
 
   <div class="relative z-10 flex items-center justify-center min-h-screen px-4 py-8">
     <div class="w-full max-w-md">
-      <div class="text-center mb-8 animate-on-load">
+      <div class="text-center mb-12 animate-on-load">
         <div
           class="group inline-flex items-center justify-center p-6 rounded-3xl shadow-2xl mb-8 border hover:scale-105 transition-all duration-500 hover:shadow-3xl"
           [ngClass]="{
@@ -98,7 +98,7 @@
           <div class="relative">
             <img
               class="w-12 h-12 mr-4 rounded-xl shadow-lg transition-transform duration-300 group-hover:rotate-12"
-              src="assets/web/media/logo-sanjose.jpg"
+              src="assets/web/media/img/logo-screen.png"
               alt="San José Logo"
             />
             <div
@@ -112,15 +112,15 @@
                 'bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 dark:from-blue-400 dark:via-purple-400 dark:to-blue-300': true
               }"
             >
-              San José
+              Administrador
             </h2>
             <p class="text-sm font-medium" [ngClass]="{ 'text-gray-600 dark:text-gray-400': true }">
-              Parque Industrial
+              Parque Industrial San José
             </p>
           </div>
         </div>
 
-        <div class="space-y-3">
+        <div class="space-y-3 border-b-1 mb-8 ">
           <h1
             class="text-4xl font-bold bg-clip-text text-transparent animate-pulse"
             [ngClass]="{
@@ -206,7 +206,7 @@
 
       <div
         *ngIf="twoFactorEnabled && !errorMessage"
-        class="mb-6 p-4 rounded-2xl animate-fade-in"
+        class="mb-12 p-4 rounded-2xl animate-fade-in"
         [ngClass]="{
           'bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-400': true
         }"
@@ -265,7 +265,7 @@
 
       <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-6">
         <div
-          class="relative group animate-on-load"
+          class="relative mb-12 group animate-on-load"
           *ngIf="!twoFactorEnabled || loginStep !== 'twoFactor'"
         >
           <div
@@ -311,8 +311,9 @@
 
           <label
             for="nombre_usuario"
-            class="absolute left-12 top-4 text-gray-500 dark:text-gray-400 transition-all duration-300 pointer-events-none peer-placeholder-shown:top-4 peer-placeholder-shown:text-base peer-focus:-top-2 peer-focus:left-3 peer-focus:text-xs peer-focus:text-blue-600 dark:peer-focus:text-blue-400 peer-focus:bg-white dark:peer-focus:bg-slate-800 peer-focus:px-2 peer-focus:rounded peer-focus:font-medium peer-[:not(:placeholder-shown)]:-top-2 peer-[:not(:placeholder-shown)]:left-3 peer-[:not(:placeholder-shown)]:text-xs peer-[:not(:placeholder-shown)]:bg-white dark:peer-[:not(:placeholder-shown)]:bg-slate-800 peer-[:not(:placeholder-shown)]:px-2 peer-[:not(:placeholder-shown)]:rounded peer-[:not(:placeholder-shown)]:font-medium"
+            class="absolute left-12 top-4 text-gray-500 dark:text-gray-400 transition-all duration-400 pointer-events-none peer-placeholder-shown:top-4 peer-placeholder-shown:text-base peer-focus:-top-2 peer-focus:left-3 peer-focus:text-xs peer-focus:text-blue-600 dark:peer-focus:text-blue-400 peer-focus:bg-white dark:peer-focus:bg-slate-800 peer-focus:px-2 peer-focus:rounded peer-focus:font-medium peer-[:not(:placeholder-shown)]:-top-2 peer-[:not(:placeholder-shown)]:left-3 peer-[:not(:placeholder-shown)]:text-xs peer-[:not(:placeholder-shown)]:bg-white dark:peer-[:not(:placeholder-shown)]:bg-slate-800 peer-[:not(:placeholder-shown)]:px-2 peer-[:not(:placeholder-shown)]:rounded peer-[:not(:placeholder-shown)]:font-medium"
           >
+
             Nombre de Usuario
           </label>
 
@@ -458,124 +459,92 @@
           </div>
         </div>
 
-        <div *ngIf="twoFactorEnabled" class="relative group animate-fade-in-up">
-          <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none z-10">
+        <div
+            *ngIf="twoFactorEnabled"
+            class="relative group animate-fade-in-up mb-6"
+          >
             <div
-              class="w-6 h-6 p-1 rounded-full animate-pulse"
-              [ngClass]="{ 'bg-blue-100 dark:bg-blue-900/30': true }"
+              class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none z-10"
             >
-              <svg
-                class="w-full h-full"
-                [ngClass]="{ 'text-blue-600 dark:text-blue-400': true }"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-            </div>
-          </div>
-
-          <input
-            type="text"
-            id="twoFactorCode"
-            formControlName="twoFactorCode"
-            placeholder=" "
-            maxlength="6"
-            class="peer w-full pl-12 pr-4 py-5 border-2 rounded-2xl focus:ring-4 focus:border-blue-500 dark:focus:border-blue-400 transition-all duration-300 placeholder-transparent text-center text-xl font-mono tracking-[0.5em] font-semibold backdrop-blur-sm"
-            [ngClass]="{
-              'bg-gradient-to-r from-blue-50/80 to-indigo-50/80 dark:from-blue-900/20 dark:to-indigo-900/20 border-blue-200 dark:border-blue-600 text-gray-900 dark:text-white': true,
-              'focus:ring-blue-500/30': true,
-              'border-red-400': f['twoFactorCode'].invalid && f['twoFactorCode'].touched,
-              'border-green-400': f['twoFactorCode'].valid && f['twoFactorCode'].touched
-            }"
-            autocomplete="one-time-code"
-          />
-
-          <label
-            for="twoFactorCode"
-            class="absolute left-12 top-5 text-blue-600 dark:text-blue-400 transition-all duration-300 pointer-events-none peer-placeholder-shown:top-5 peer-placeholder-shown:text-base peer-focus:-top-2 peer-focus:left-3 peer-focus:text-xs peer-focus:bg-white dark:peer-focus:bg-slate-800 peer-focus:px-2 peer-focus:rounded peer-focus:font-bold peer-[:not(:placeholder-shown)]:-top-2 peer-[:not(:placeholder-shown)]:left-3 peer-[:not(:placeholder-shown)]:text-xs peer-[:not(:placeholder-shown)]:bg-white dark:peer-[:not(:placeholder-shown)]:bg-slate-800 peer-[:not(:placeholder-shown)]:px-2 peer-[:not(:placeholder-shown)]:rounded peer-[:not(:placeholder-shown)]:font-bold"
-          >
-            Código de Verificación (6 dígitos)
-          </label>
-
-          <div class="absolute bottom-1 left-1/2 transform -translate-x-1/2">
-            <div class="flex space-x-1">
               <div
-                *ngFor="let i of [0, 1, 2, 3, 4, 5]"
-                class="w-2 h-1 rounded-full transition-all duration-300"
-                [class.bg-blue-500]="(f['twoFactorCode']?.value?.length || 0) > i"
-                [class.bg-gray-300]="(f['twoFactorCode']?.value?.length || 0) <= i"
-              ></div>
-            </div>
-          </div>
-
-          <div
-            *ngIf="f['twoFactorCode'].invalid && f['twoFactorCode'].touched"
-            class="mt-2 text-red-600 dark:text-red-400 text-sm animate-fade-in flex items-center"
-          >
-            <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-              <path
-                fill-rule="evenodd"
-                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
-                clip-rule="evenodd"
-              />
-            </svg>
-            <span *ngIf="f['twoFactorCode'].errors?.['required']"
-              >Ingresa el código de verificación</span
-            >
-            <span *ngIf="f['twoFactorCode'].errors?.['pattern']"
-              >Debe contener exactamente 6 dígitos</span
-            >
-          </div>
-        </div>
-
-        <div *ngIf="!twoFactorEnabled" class="flex items-center justify-between animate-on-load">
-          <label class="flex items-center cursor-pointer group">
-            <div class="relative">
-              <input type="checkbox" class="sr-only" formControlName="rememberMe" />
-              <div
-                class="w-5 h-5 rounded border-2 flex items-center justify-center transition-all duration-300"
-                [ngClass]="{
-                  'bg-gray-200 dark:bg-gray-600 border-gray-300 dark:border-gray-500 group-hover:border-blue-400': true
-                }"
+                class="w-6 h-6 p-1 rounded-full animate-pulse bg-blue-100 dark:bg-blue-900/30"
               >
                 <svg
-                  class="w-3 h-3 text-blue-600 opacity-0 transition-opacity duration-300"
-                  [ngClass]="{ 'group-focus-within:opacity-100 group-hover:opacity-100': true }"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
+                  class="w-full h-full text-blue-600 dark:text-blue-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
                 >
                   <path
-                    fill-rule="evenodd"
-                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                    clip-rule="evenodd"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
                   />
                 </svg>
               </div>
             </div>
-            <span
-              class="ml-3 text-sm transition-colors duration-300"
+          
+            <input
+              type="text"
+              id="twoFactorCode"
+              formControlName="twoFactorCode"
+              placeholder=" "
+              maxlength="6"
+              class="peer w-full pl-12 pr-4 pt-5 pb-8 border-2 rounded-2xl focus:ring-4 focus:transition-all duration-300 placeholder-transparent text-center text-xl font-mono tracking-[0.5em] font-semibold backdrop-blur-sm
+                     bg-gradient-to-r from-blue-50/80 to-indigo-50/80 dark:from-blue-900/20 dark:to-indigo-900/20 border-blue-200 dark:border-blue-600 text-gray-900 dark:text-white
+                     focus:border-blue-500 dark:focus:border-blue-400 focus:ring-blue-500/30
+                     "
               [ngClass]="{
-                'text-gray-600 dark:text-gray-400 group-hover:text-gray-800 dark:group-hover:text-gray-200': true
+                'border-red-400':
+                  f['twoFactorCode'].invalid && f['twoFactorCode'].touched,
+                'border-green-400': f['twoFactorCode'].valid && f['twoFactorCode'].touched
               }"
+              autocomplete="one-time-code"
+            />
+          
+            <label
+              for="twoFactorCode"
+              class="absolute left-12 top-5 text-blue-600 dark:text-blue-400 transition-all duration-300 pointer-events-none
+                     peer-placeholder-shown:top-5 peer-placeholder-shown:text-base
+                     peer-focus:-top-2 peer-focus:left-3 peer-focus:text-xs peer-focus:bg-white dark:peer-focus:bg-slate-800 peer-focus:px-2 peer-focus:rounded peer-focus:font-bold
+                     peer-[:not(:placeholder-shown)]:-top-2 peer-[:not(:placeholder-shown)]:left-3 peer-[:not(:placeholder-shown)]:text-xs peer-[:not(:placeholder-shown)]:bg-white dark:peer-[:not(:placeholder-shown)]:bg-slate-800 peer-[:not(:placeholder-shown)]:px-2 peer-[:not(:placeholder-shown)]:rounded peer-[:not(:placeholder-shown)]:font-bold"
             >
-              Recordar sesión
-            </span>
-          </label>
-          <a
-            href="#"
-            class="text-blue-600 dark:text-blue-400 hover:underline transition-colors duration-200 text-sm animate-on-load"
-            >¿Olvidaste tu contraseña?</a
-          >
-        </div>
-
-        <div class="space-y-4 animate-on-load">
+              Código de Verificación (6 dígitos)
+            </label>
+          
+            <div class="absolute mt-8 left-1/2 -translate-x-1/2">
+              <div class="flex space-x-1">
+                <div
+                  *ngFor="let i of [0, 1, 2, 3, 4, 5]"
+                  class="w-2 h-1 rounded-full transition-all duration-300"
+                  [class.bg-blue-500]="(f['twoFactorCode']?.value?.length || 0) > i"
+                  [class.bg-gray-300]="(f['twoFactorCode']?.value?.length || 0) <= i"
+                ></div>
+              </div>
+            </div>
+          
+            <div
+              *ngIf="f['twoFactorCode'].invalid && f['twoFactorCode'].touched"
+              class="mt-2 text-red-600 dark:text-red-400 text-sm animate-fade-in flex items-center"
+            >
+              <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                <path
+                  fill-rule="evenodd"
+                  d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+              <span *ngIf="f['twoFactorCode'].errors?.['required']"
+                >Ingresa el código de verificación</span
+              >
+              <span *ngIf="f['twoFactorCode'].errors?.['pattern']"
+                >Debe contener exactamente 6 dígitos</span
+              >
+            </div>
+          </div>
+        
+        <div class="space-y-4 mt-6 animate-on-load">
           <button
             type="submit"
             [disabled]="isLoading || loginForm.invalid"
@@ -668,7 +637,7 @@
             type="button"
             (click)="resetLogin()"
             [disabled]="isLoading"
-            class="group w-full py-3 px-6 rounded-2xl transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-gray-500/20 disabled:opacity-50 disabled:cursor-not-allowed animate-fade-in-up transform hover:scale-[1.01] active:scale-95"
+            class="group w-full py-3 mt-4 px-6 rounded-2xl transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-gray-500/20 disabled:opacity-50 disabled:cursor-not-allowed animate-fade-in-up transform hover:scale-[1.01] active:scale-95"
             [ngClass]="{
               'bg-gray-100 hover:bg-gray-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-gray-700 dark:text-gray-300': true
             }"

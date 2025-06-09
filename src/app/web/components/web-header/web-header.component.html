@@ -20,59 +20,135 @@
 </section>
 
 Web Header Component -->
+<!-- Web Header Component -->
 <nav class="fixed w-full z-50 top-0 h-20 bg-gray-800/70 dark:bg-gray-900/70 backdrop-blur-xl border-b border-gray-700/50 dark:border-gray-800/50 transition-colors duration-500 shadow-2xl animate-slide-in-from-top">
   <div class="flex flex-wrap justify-between items-center mx-auto max-w-screen-xl px-4 lg:px-6 h-full">
+    <!-- Logo -->
     <a routerLink="/" class="flex items-center group transform-gpu">
-      <span class="self-center text-2xl font-extrabold whitespace-nowrap text-white dark:text-white transition-colors duration-300 transform group-hover:scale-105 group-hover:text-blue-400 dark:group-hover:text-blue-300">Mi App</span>
+      <img src="assets/web/media/img/logo-screen.png" alt="logo-parque" width="50" class="relative transition-transform duration-300 group-hover:scale-110 border-2 border-blue-500 dark:border-blue-400 rounded-full shadow-lg hover:shadow-xl">
+      <span class="self-center text-2xl font-extrabold whitespace-nowrap text-white dark:text-white transition-colors duration-300 transform group-hover:scale-105 group-hover:text-blue-400 dark:group-hover:text-blue-300"></span>
     </a>
 
-    <div class="flex items-center lg:order-2 h-full">
+    <!-- Desktop Navigation -->
+    <div class="hidden lg:flex lg:items-center lg:space-x-8" id="desktop-menu">
+      <ul class="flex flex-row space-x-8 font-medium">
+        <li>
+          <a routerLink="/" routerLinkActive="text-blue-500 dark:text-blue-400" [routerLinkActiveOptions]="{exact: true}"
+            class="nav-link-item block py-2 px-3 text-white hover:text-blue-400 dark:hover:text-blue-300 transition-all duration-300">
+            Inicio
+          </a>
+        </li>
+        <li>
+          <a routerLink="/news" routerLinkActive="text-blue-500 dark:text-blue-400"
+            class="nav-link-item block py-2 px-3 text-gray-300 hover:text-blue-400 dark:hover:text-blue-300 transition-all duration-300">
+            Noticias
+          </a>
+        </li>
+        <li>
+          <a routerLink="/warehouses" routerLinkActive="text-blue-500 dark:text-blue-400"
+            class="nav-link-item block py-2 px-3 text-gray-300 hover:text-blue-400 dark:hover:text-blue-300 transition-all duration-300">
+            Bodegas
+          </a>
+        </li>
+        <li>
+          <a routerLink="/about" routerLinkActive="text-blue-500 dark:text-blue-400"
+            class="nav-link-item block py-2 px-3 text-gray-300 hover:text-blue-400 dark:hover:text-blue-300 transition-all duration-300">
+            Acerca de
+          </a>
+        </li>
+        <li>
+          <a routerLink="/contact" routerLinkActive="text-blue-500 dark:text-blue-400"
+            class="nav-link-item block py-2 px-3 text-gray-300 hover:text-blue-400 dark:hover:text-blue-300 transition-all duration-300">
+            Contacto
+          </a>
+        </li>
+
+        <!-- Admin Links for Authenticated Users -->
+        <ng-container *ngIf="isAuthenticated$ | async">
+          <li>
+            <a routerLink="/dashboard-news" routerLinkActive="text-blue-500 dark:text-blue-400"
+              class="nav-link-item block py-2 px-3 text-gray-300 hover:text-blue-400 dark:hover:text-blue-300 transition-all duration-300">
+              Admin Noticias
+            </a>
+          </li>
+          <li>
+            <a routerLink="/dashboard-warehouses" routerLinkActive="text-blue-500 dark:text-blue-400"
+              class="nav-link-item block py-2 px-3 text-gray-300 hover:text-blue-400 dark:hover:text-blue-300 transition-all duration-300">
+              Admin Bodegas
+            </a>
+          </li>
+          <li *ngIf="hasRole(['admin']) | async">
+            <a routerLink="/dashboard-users" routerLinkActive="text-blue-500 dark:text-blue-400"
+              class="nav-link-item block py-2 px-3 text-gray-300 hover:text-blue-400 dark:hover:text-blue-300 transition-all duration-300">
+              Admin Usuarios
+            </a>
+          </li>
+        </ng-container>
+      </ul>
+    </div>
+
+    <!-- Right Side Actions -->
+    <div class="flex items-center space-x-3 lg:space-x-4">
+      <!-- Theme Toggle Button -->
       <button
         (click)="toggleTheme()"
-        class="theme-toggle-button p-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform group relative overflow-hidden focus:outline-none focus:ring-2 focus:ring-blue-500 mr-4
+        class="theme-toggle-button p-2.5 lg:p-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform group relative overflow-hidden focus:outline-none focus:ring-2 focus:ring-blue-500
                bg-gray-700/60 dark:bg-slate-800/60 border border-gray-600/50 dark:border-gray-700/50"
         [ngClass]="{ 'animate-button-glow': isDarkMode$ | async }"
         aria-label="Alternar modo oscuro/claro"
       >
         <span class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 animate-shimmer"></span>
         
-        <ion-icon *ngIf="isDarkMode$ | async" name="moon-outline" class="w-7 h-7 text-yellow-400 dark:text-yellow-300 transition-transform duration-300 group-hover:rotate-180 animate-fade-in"></ion-icon>
+        <ion-icon *ngIf="isDarkMode$ | async" name="moon-outline" class="w-6 h-6 lg:w-7 lg:h-7 text-yellow-400 dark:text-yellow-300 transition-transform duration-300 group-hover:rotate-180 animate-fade-in"></ion-icon>
         
-        <ion-icon *ngIf="!(isDarkMode$ | async)" name="sunny-outline" class="w-7 h-7 text-gray-300 dark:text-gray-400 transition-transform duration-300 group-hover:rotate-12 animate-fade-in"></ion-icon>
+        <ion-icon *ngIf="!(isDarkMode$ | async)" name="sunny-outline" class="w-6 h-6 lg:w-7 lg:h-7 text-gray-300 dark:text-gray-400 transition-transform duration-300 group-hover:rotate-12 animate-fade-in"></ion-icon>
       </button>
 
+      <!-- User Menu (Authenticated) -->
       <ng-container *ngIf="isAuthenticated$ | async; else loginRegisterButtons">
-        <div class="relative ml-4">
-          <button id="user-menu-button" data-dropdown-toggle="user-dropdown" data-dropdown-placement="bottom"
-            class="user-avatar-button flex text-sm rounded-full md:mr-0 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600 transition-all duration-300 transform hover:scale-105 hover:shadow-lg overflow-hidden"
+        <div class="relative">
+          <button 
+            (click)="toggleUserMenu()"
+            class="user-avatar-button flex text-sm rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600 transition-all duration-300 transform hover:scale-105 hover:shadow-lg overflow-hidden p-1"
             [style.background-color]="getAvatarColor((currentUser$ | async)?.id)"
-            type="button">
+            type="button"
+            [attr.aria-expanded]="isUserMenuOpen"
+            aria-haspopup="true">
             <span class="sr-only">Open user menu</span>
-            <ion-icon name="person-circle-outline" class="w-10 h-10 text-white dark:text-gray-200"></ion-icon>
+            <ion-icon name="person-circle-outline" class="w-8 h-8 lg:w-10 lg:h-10 text-white dark:text-gray-200"></ion-icon>
           </button>
-          <div id="user-dropdown"
-            class="z-50 hidden my-4 text-base list-none bg-white divide-y divide-gray-100 rounded shadow-lg dark:bg-gray-700 dark:divide-gray-600 transition-colors duration-300">
-            <div class="px-4 py-3">
-              <span class="block text-sm text-gray-900 dark:text-white transition-colors duration-300">
+          
+          <!-- User Dropdown Menu -->
+          <div 
+            class="user-dropdown absolute right-0 mt-2 w-48 bg-white/95 dark:bg-gray-800/95 backdrop-blur-lg rounded-lg shadow-xl border border-gray-200/50 dark:border-gray-600/50 transition-all duration-300 z-50"
+            [class.hidden]="!isUserMenuOpen"
+            [class.opacity-0]="!isUserMenuOpen"
+            [class.translate-y-2]="!isUserMenuOpen">
+            
+            <!-- User Info -->
+            <div class="px-4 py-3 border-b border-gray-200/50 dark:border-gray-600/50">
+              <span class="block text-sm font-medium text-gray-900 dark:text-white transition-colors duration-300">
                 {{ (currentUser$ | async)?.nombre_usuario }}
               </span>
-              <span class="block text-sm font-medium text-gray-500 truncate dark:text-gray-400 transition-colors duration-300">
+              <span class="block text-sm text-gray-500 dark:text-gray-400 truncate transition-colors duration-300">
                 {{ (currentUser$ | async)?.email }}
               </span>
-              <span class="block text-sm font-medium text-gray-500 truncate dark:text-gray-400 capitalize transition-colors duration-300">
+              <span class="block text-xs text-gray-400 dark:text-gray-500 capitalize transition-colors duration-300">
                 Rol: {{ currentUserRole }}
               </span>
             </div>
-            <ul class="py-1" aria-labelledby="user-menu-button">
+            
+            <!-- Menu Items -->
+            <ul class="py-1">
               <li>
-                <a routerLink="/dashboard-home"
-                  class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-500 hover:text-white dark:hover:bg-blue-600 dark:text-gray-200 dark:hover:text-white transition-all duration-200">
+                <a routerLink="/dashboard-home" (click)="closeUserMenu()"
+                  class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-500 hover:text-white dark:text-gray-200 dark:hover:bg-blue-600 dark:hover:text-white transition-all duration-200">
                   Dashboard
                 </a>
               </li>
               <li>
                 <a (click)="logout()"
-                  class="block px-4 py-2 text-sm text-gray-700 hover:bg-red-500 hover:text-white dark:hover:bg-red-600 dark:text-gray-200 dark:hover:text-white cursor-pointer transition-all duration-200">
+                  class="block px-4 py-2 text-sm text-gray-700 hover:bg-red-500 hover:text-white dark:text-gray-200 dark:hover:bg-red-600 dark:hover:text-white cursor-pointer transition-all duration-200">
                   Cerrar Sesión
                 </a>
               </li>
@@ -81,18 +157,23 @@ Web Header Component -->
         </div>
       </ng-container>
 
+      <!-- Login Button (Not Authenticated) -->
       <ng-template #loginRegisterButtons>
         <a routerLink="/login-web"
-          class="animated-button text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 font-bold rounded-full text-base px-6 py-3 ml-2 dark:bg-blue-700 dark:hover:bg-blue-800 focus:outline-none dark:focus:ring-blue-800
+          class="animated-button hidden sm:flex text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 font-bold rounded-full text-sm lg:text-base px-4 py-2 lg:px-6 lg:py-3 dark:bg-blue-700 dark:hover:bg-blue-800 focus:outline-none dark:focus:ring-blue-800
                  transition-all duration-300 transform shadow-lg hover:shadow-xl relative overflow-hidden group">
           <span class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 animate-shimmer"></span>
           <span class="relative z-10">Iniciar Sesión</span>
         </a>
       </ng-template>
 
-      <button data-collapse-toggle="mobile-menu-2" type="button"
-        class="inline-flex items-center p-2 ml-1 text-sm text-gray-500 rounded-lg lg:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600 transition-colors duration-300"
-        aria-controls="mobile-menu-2" aria-expanded="false" (click)="toggleMobileMenu()">
+      <!-- Mobile Hamburger Menu Button -->
+      <button 
+        (click)="toggleMobileMenu()" 
+        type="button"
+        class="hamburger-button inline-flex items-center p-2 text-sm text-gray-300 rounded-lg lg:hidden hover:bg-gray-700/50 focus:outline-none focus:ring-2 focus:ring-gray-600 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600 transition-all duration-300"
+        [attr.aria-expanded]="isMobileMenuOpen"
+        aria-controls="mobile-menu">
         <span class="sr-only">Open main menu</span>
         <svg *ngIf="!isMobileMenuOpen" class="w-6 h-6 animate-fade-in" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
           <path fill-rule="evenodd"
@@ -106,61 +187,86 @@ Web Header Component -->
         </svg>
       </button>
     </div>
+  </div>
 
-    <div class="hidden justify-between items-center w-full lg:flex lg:w-auto lg:order-1" id="mobile-menu-2">
-      <ul class="flex flex-col mt-4 font-medium lg:flex-row lg:space-x-8 lg:mt-0">
-        <li>
-          <a routerLink="/" routerLinkActive="text-blue-500 dark:text-blue-400" [routerLinkActiveOptions]="{exact: true}"
-            class="nav-link-item block py-2 pr-4 pl-3 text-white rounded bg-primary-700 lg:bg-transparent lg:text-primary-700 lg:p-0 dark:text-white transition-all duration-300 hover:text-blue-400 dark:hover:text-blue-300">
-            Inicio
-          </a>
-        </li>
-        <li>
-          <a routerLink="/news" routerLinkActive="text-blue-500 dark:text-blue-400"
-            class="nav-link-item block py-2 pr-4 pl-3 text-gray-700 border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-blue-700 lg:p-0 dark:text-gray-400 lg:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white lg:dark:hover:bg-transparent dark:border-gray-700 transition-all duration-300 hover:text-blue-400 dark:hover:text-blue-300">
-            Noticias
-          </a>
-        </li>
-        <li>
-          <a routerLink="/warehouses" routerLinkActive="text-blue-500 dark:text-blue-400"
-            class="nav-link-item block py-2 pr-4 pl-3 text-gray-700 border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-blue-700 lg:p-0 dark:text-gray-400 lg:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white lg:dark:hover:bg-transparent dark:border-gray-700 transition-all duration-300 hover:text-blue-400 dark:hover:text-blue-300">
-            Bodegas
-          </a>
-        </li>
-        <li>
-          <a routerLink="/about" routerLinkActive="text-blue-500 dark:text-blue-400"
-            class="nav-link-item block py-2 pr-4 pl-3 text-gray-700 border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-blue-700 lg:p-0 dark:text-gray-400 lg:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white lg:dark:hover:bg-transparent dark:border-gray-700 transition-all duration-300 hover:text-blue-400 dark:hover:text-blue-300">
-            Acerca de
-          </a>
-        </li>
-        <li>
-          <a routerLink="/contact" routerLinkActive="text-blue-500 dark:text-blue-400"
-            class="nav-link-item block py-2 pr-4 pl-3 text-gray-700 border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-blue-700 lg:p-0 dark:text-gray-400 lg:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white lg:dark:hover:bg-transparent dark:border-gray-700 transition-all duration-300 hover:text-blue-400 dark:hover:text-blue-300">
-            Contacto
-          </a>
-        </li>
+  <!-- Mobile Menu -->
+  <div 
+    class="mobile-menu lg:hidden bg-gray-800/95 dark:bg-gray-900/95 backdrop-blur-xl border-t border-gray-700/50 dark:border-gray-800/50"
+    [class.hidden]="!isMobileMenuOpen"
+    id="mobile-menu">
+    <div class="px-4 py-3 space-y-1">
+      <!-- Mobile Navigation Links -->
+      <a routerLink="/" (click)="closeMobileMenu()" routerLinkActive="text-blue-400 bg-blue-900/30 dark:text-blue-300" [routerLinkActiveOptions]="{exact: true}"
+        class="mobile-nav-link block px-3 py-2 text-white hover:text-blue-400 hover:bg-gray-700/50 dark:hover:text-blue-300 rounded-md transition-all duration-200">
+        Inicio
+      </a>
+      
+      <a routerLink="/news" (click)="closeMobileMenu()" routerLinkActive="text-blue-400 bg-blue-900/30 dark:text-blue-300"
+        class="mobile-nav-link block px-3 py-2 text-gray-300 hover:text-blue-400 hover:bg-gray-700/50 dark:hover:text-blue-300 rounded-md transition-all duration-200">
+        Noticias
+      </a>
+      
+      <a routerLink="/warehouses" (click)="closeMobileMenu()" routerLinkActive="text-blue-400 bg-blue-900/30 dark:text-blue-300"
+        class="mobile-nav-link block px-3 py-2 text-gray-300 hover:text-blue-400 hover:bg-gray-700/50 dark:hover:text-blue-300 rounded-md transition-all duration-200">
+        Bodegas
+      </a>
+      
+      <a routerLink="/about" (click)="closeMobileMenu()" routerLinkActive="text-blue-400 bg-blue-900/30 dark:text-blue-300"
+        class="mobile-nav-link block px-3 py-2 text-gray-300 hover:text-blue-400 hover:bg-gray-700/50 dark:hover:text-blue-300 rounded-md transition-all duration-200">
+        Acerca de
+      </a>
+      
+      <a routerLink="/contact" (click)="closeMobileMenu()" routerLinkActive="text-blue-400 bg-blue-900/30 dark:text-blue-300"
+        class="mobile-nav-link block px-3 py-2 text-gray-300 hover:text-blue-400 hover:bg-gray-700/50 dark:hover:text-blue-300 rounded-md transition-all duration-200">
+        Contacto
+      </a>
 
-        <ng-container *ngIf="isAuthenticated$ | async">
-          <li>
-            <a routerLink="/dashboard-news" routerLinkActive="text-blue-500 dark:text-blue-400"
-              class="nav-link-item block py-2 pr-4 pl-3 text-gray-700 border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-blue-700 lg:p-0 dark:text-gray-400 lg:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white lg:dark:hover:bg-transparent dark:border-gray-700 transition-all duration-300 hover:text-blue-400 dark:hover:text-blue-300">
-              Admin Noticias
-            </a>
-          </li>
-          <li>
-            <a routerLink="/dashboard-warehouses" routerLinkActive="text-blue-500 dark:text-blue-400"
-              class="nav-link-item block py-2 pr-4 pl-3 text-gray-700 border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-blue-700 lg:p-0 dark:text-gray-400 lg:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white lg:dark:hover:bg-transparent dark:border-gray-700 transition-all duration-300 hover:text-blue-400 dark:hover:text-blue-300">
-              Admin Bodegas
-            </a>
-          </li>
-          <li *ngIf="hasRole(['admin']) | async">
-            <a routerLink="/dashboard-users" routerLinkActive="text-blue-500 dark:text-blue-400"
-              class="nav-link-item block py-2 pr-4 pl-3 text-gray-700 border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-blue-700 lg:p-0 dark:text-gray-400 lg:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white lg:dark:hover:bg-transparent dark:border-gray-700 transition-all duration-300 hover:text-blue-400 dark:hover:text-blue-300">
-              Admin Usuarios
-            </a>
-          </li>
-        </ng-container>
-      </ul>
+      <!-- Mobile Auth Links -->
+      <ng-container *ngIf="isAuthenticated$ | async; else mobileLoginButton">
+        <div class="border-t border-gray-700/50 pt-3 mt-3">
+          <a routerLink="/dashboard-home" (click)="closeMobileMenu()" routerLinkActive="text-blue-400 bg-blue-900/30 dark:text-blue-300"
+            class="mobile-nav-link block px-3 py-2 text-gray-300 hover:text-blue-400 hover:bg-gray-700/50 dark:hover:text-blue-300 rounded-md transition-all duration-200">
+            Dashboard
+          </a>
+          
+          <a routerLink="/dashboard-news" (click)="closeMobileMenu()" routerLinkActive="text-blue-400 bg-blue-900/30 dark:text-blue-300"
+            class="mobile-nav-link block px-3 py-2 text-gray-300 hover:text-blue-400 hover:bg-gray-700/50 dark:hover:text-blue-300 rounded-md transition-all duration-200">
+            Admin Noticias
+          </a>
+          
+          <a routerLink="/dashboard-warehouses" (click)="closeMobileMenu()" routerLinkActive="text-blue-400 bg-blue-900/30 dark:text-blue-300"
+            class="mobile-nav-link block px-3 py-2 text-gray-300 hover:text-blue-400 hover:bg-gray-700/50 dark:hover:text-blue-300 rounded-md transition-all duration-200">
+            Admin Bodegas
+          </a>
+          
+          <a *ngIf="hasRole(['admin']) | async" routerLink="/dashboard-users" (click)="closeMobileMenu()" routerLinkActive="text-blue-400 bg-blue-900/30 dark:text-blue-300"
+            class="mobile-nav-link block px-3 py-2 text-gray-300 hover:text-blue-400 hover:bg-gray-700/50 dark:hover:text-blue-300 rounded-md transition-all duration-200">
+            Admin Usuarios
+          </a>
+        </div>
+
+        <!-- User Info in Mobile -->
+        <div class="border-t border-gray-700/50 pt-3 mt-3">
+          <div class="px-3 py-2 text-sm text-gray-400">
+            <div class="font-medium text-white">{{ (currentUser$ | async)?.nombre_usuario }}</div>
+            <div class="text-xs">{{ (currentUser$ | async)?.email }}</div>
+            <div class="text-xs capitalize">Rol: {{ currentUserRole }}</div>
+          </div>
+          <a (click)="logout()"
+            class="mobile-nav-link block px-3 py-2 text-red-400 hover:text-red-300 hover:bg-red-900/20 rounded-md cursor-pointer transition-all duration-200">
+            Cerrar Sesión
+          </a>
+        </div>
+      </ng-container>
+
+      <ng-template #mobileLoginButton>
+        <div class="border-t border-gray-700/50 pt-3 mt-3">
+          <a routerLink="/login-web" (click)="closeMobileMenu()"
+            class="mobile-nav-link block px-3 py-2 text-blue-400 hover:text-blue-300 hover:bg-blue-900/20 rounded-md transition-all duration-200 font-medium">
+            Iniciar Sesión
+          </a>
+        </div>
+      </ng-template>
     </div>
   </div>
 </nav>

@@ -39,7 +39,7 @@ export class ThemeService {
     }
   }
 
-  // --- ¡AÑADE ESTE NUEVO MÉTODO! ---
+
   isDarkMode(): boolean {
     return this.darkModeSubject.getValue();
   }

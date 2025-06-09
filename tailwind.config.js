@@ -4,7 +4,22 @@ module.exports = {
   content: [
     './src/**/*.{html,ts}', // Escanea todos los archivos HTML y TS en src
     './src/app/web/components/web-header/web-header.component.html', // Asegúrate de incluir el header
+       // Esto asegura que Tailwind compile todas las variantes de color que usas.
+    './src/app/web/components/location-map/location-map.component.ts',
+    './src/app/web/components/location-map/location-map.component.html',
     "./node_modules/flowbite/**/*.js" // Incluye los archivos JS de Flowbite para sus clases de utilidad
+  ],
+    safelist: [ // Opcional, pero más robusto para clases dinámicas
+    {
+      pattern: /bg-(blue|green|yellow|red|teal|purple|gray)-(100|200|500|700|800|900)/,
+      variants: ['hover', 'dark'],
+    },
+    {
+      pattern: /border-(blue|green|yellow|red|teal|purple|gray)-500/,
+    },
+        {
+      pattern: /text-(xl|lg)/,
+    }
   ],
   theme: {
     extend: {

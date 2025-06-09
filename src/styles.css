@@ -2,107 +2,101 @@
 
 /* Importa la fuente para toda la aplicación */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&display=swap');
 @import "tailwindcss";
 @import "flowbite/src/themes/default";
 @plugin "flowbite/plugin";
 @source "../node_modules/flowbite";
 @custom-variant dark (&:where(.dark, .dark *));
 
-/* --- Estilos base para HTML y BODY --- */
 
-html {
-  /* Asegura que el HTML ocupe toda la altura disponible */
-  height: 100%;
-  /* Define el tamaño de fuente base, "rem" es bueno para la accesibilidad */
-  font-size: 16px; /* O el tamaño base que prefieras */
+#particles-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -100; /* Asegurar que esté detrás de todo */
+  pointer-events: none;
+  background: transparent; /* Asegurar que no haya interferencia */
 }
 
+@keyframes fadeInBackground {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+#particles-canvas {
+  animation: fadeInBackground 1s ease-out forwards;
+}
+
+@keyframes pulseParticles {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.7;
+  }
+}
+
+/* --- Nuevos estilos para el fondo del BODY con destellos de líneas --- */
 body {
-  /* Restablece márgenes y rellenos del body */
-  margin: 0;
-  padding: 0;
-  /* Aplica la fuente global solo al body, permitiendo que componentes la sobrescriban */
-  font-family: 'Poppins', sans-serif;
-  /* Asegura que el body tenga al menos la altura de la ventana */
-  min-height: 100vh;
-  /* Evita el scroll horizontal no deseado */
-  overflow-x: hidden;
-  /* Color de texto por defecto, si no lo tienes ya en el body */
-  color: #333;
-  /* Un color de fondo global si lo necesitas */
-  /* background-color: #f4f7f6; */
+  /* Fondo base y color de texto para el modo claro */
+  background-color: #f8fafc; /* Tailwind gray-50 */
+  color: #334155; /* Tailwind slate-700 */
+
+  /* Transición suave para el color de fondo y la imagen de fondo */
+  transition: background-color 0.5s ease-in-out, background-image 0.5s ease-in-out;
+
+  /* Estilos del patrón de líneas para el modo CLARO */
+  background-image:
+    url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><path d="M-10 100 L100 -10 L110 0 L0 110 Z M-10 0 L100 110 L110 100 L0 -10 Z" fill="%23cbd5e1" opacity="0.15"/></svg>'); /* light gray-300, opacity 0.15 */
+  background-size: 150px 150px; /* Tamaño del patrón, ajusta para la densidad deseada */
+  background-repeat: repeat; /* Que se repita el patrón */
+  background-attachment: fixed; /* Para que el fondo no se mueva con el scroll */
+  background-blend-mode: multiply; /* Para un efecto más integrado con el color base */
 }
 
-/* --- Estilos para elementos básicos, pero específicos --- */
+/* Estilos para el modo OSCURO - aplicados cuando html tiene la clase 'dark' */
+html.dark body {
+  /* Fondo base y color de texto para el modo oscuro */
+  background-color: #020617; /* Tailwind gray-950 */
+  color: #e2e8f0; /* Tailwind slate-200 */
 
-/* Restablece el box-sizing para la mayoría de los elementos de bloque */
-/* Esto es útil, pero si un componente lo sobrescribe, está bien. */
-h1, h2, h3, h4, h5, h6, p, div, span, ul, ol, li, a, button, input, textarea, select {
-  box-sizing: border-box;
+  /* Estilos del patrón de líneas para el modo OSCURO */
+  background-image:
+    url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><path d="M-10 100 L100 -10 L110 0 L0 110 Z M-10 0 L100 110 L110 100 L0 -10 Z" fill="%231f2937" opacity="0.1"/></svg>'); /* dark gray-800, opacity 0.1 */
+  background-size: 150px 150px; /* Mismo tamaño para consistencia */
+  background-repeat: repeat;
+  background-attachment: fixed;
+  background-blend-mode: multiply;
 }
 
-/* Estilos para títulos si quieres un reset suave */
-h1, h2, h3, h4, h5, h6 {
-  margin-top: 0;
-  margin-bottom: 0.5em; /* Un pequeño margen inferior para separar */
-  font-weight: 600; /* Un peso de fuente consistente */
-  line-height: 1.2;
+/* Opcional: Si quieres un degradado radial sutil sobre el fondo de líneas y partículas */
+/**/ 
+body::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: -90; 
+  background: radial-gradient(circle at center, rgba(0,0,0,0.02) 0%, transparent 70%);
+  opacity: 1;
+  transition: background 0.5s ease-in-out;
 }
 
-/* Estilos para párrafos */
-p {
-  margin-top: 0;
-  margin-bottom: 1em; /* Un pequeño margen inferior para separar párrafos */
-  line-height: 1.6;
-}
-
-/* Estilos para enlaces */
-a {
-  text-decoration: none; /* Quita el subrayado por defecto */
-  color: #007bff; /* Un color de enlace por defecto */
-  cursor: pointer;
-}
-
-a:hover {
-  text-decoration: underline; /* Subraya al pasar el mouse */
-}
-
-/* Estilos para botones (puedes crear una clase específica para esto) */
-button {
-  cursor: pointer;
-  /* Agrega estilos básicos aquí si quieres, o maneja los botones con clases */
-}
-
-/* --- Clases de utilidad globales (opcional pero muy recomendado) --- */
-/* Estas clases las aplicarías directamente en tu HTML cuando las necesites */
-
-/* Para centrar texto */
-.text-center {
-  text-align: center;
-}
-
-/* Para ocultar elementos visualmente pero mantenerlos accesibles */
-.sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border-width: 0;
-}
-
-/* Para limpiar floats */
-.clearfix::after {
-  content: "";
-  display: table;
-  clear: both;
-}
-
-/* --- Ajustes específicos para Angular Material (si lo estás usando) --- */
-/* Si estás usando Angular Material, ellos ya tienen sus propios estilos. */
-/* Asegúrate de que sus estilos se importen DENTRO de tu 'angular.json' */
-/* body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; } -- Esto es de Material */
-/* Lo puedes dejar si lo estás usando, pero si no, es redundante. */
+html.dark body::after {
+  background: radial-gradient(circle at center, rgba(255,255,255,0.02) 0%, transparent 70%);
+} 

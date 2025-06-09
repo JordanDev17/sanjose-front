@@ -1,0 +1,17 @@
+.nav-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  max-width: 1200px;
+  padding: 0 16px;
+}
+
+
+.user-dropdown {
+  position: absolute;
+  right: 0;
+  top: 100%; /* Asegura que aparezca debajo del botón */
+  min-width: 180px; /* Evita cambios bruscos de tamaño */
+  z-index: 1000; /* Asegura que esté por encima */
+}

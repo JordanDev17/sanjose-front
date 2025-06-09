@@ -1,0 +1,94 @@
+/* src/app/web/components/location-map/location-map.component.css */
+
+/* No hay cambios necesarios para el contenedor del mapa */
+#map-container {
+  /* La altura ya está definida en el HTML como h-[500px] */
+}
+
+/* 1. Wrapper principal para el icono Leaflet divIcon */
+/* Este div es creado y posicionado por Leaflet */
+.custom-poi-icon-wrapper {
+  background-color: transparent;
+  border: none;
+  display: flex;
+  /* Centrar horizontalmente el contenido dentro del wrapper */
+  justify-content: center;
+  /* Alinear el contenido (el círculo del icono) en la parte superior del wrapper */
+  align-items: flex-start;
+  position: relative;
+  /* IMPORTANTE: Asegurar que Font Awesome se renderice */
+  /* Re-declarar font-family si hay conflictos globales */
+  font-family: "Font Awesome 5 Free", "Font Awesome 5 Pro"; /* O solo "Font Awesome 5 Free" */
+  font-weight: 900; /* Asegura que se usen los iconos sólidos (fas) */
+}
+
+/* 2. Estilo para el círculo que contiene el icono de Font Awesome */
+.custom-poi-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white; /* Color del ícono de Font Awesome (dentro del círculo) */
+  font-size: 1.2rem; /* Tamaño del ícono de Font Awesome */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Sombra para que destaque */
+  transition: transform 0.2s ease-out; /* Para la animación de bounce */
+  /* No se necesita transform inicial aquí; Leaflet.divIcon y la animación lo manejan */
+}
+
+/* 3. Animación de "bounce" para los iconos del mapa al hacer clic */
+.bounce-animation {
+  animation: bounce-icon 1s ease-in-out;
+}
+
+@keyframes bounce-icon {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-15px) scale(1.1); } /* Salta hacia arriba y se agranda ligeramente */
+}
+
+/* 4. Estilo para la "punta" del marcador personalizado */
+.custom-marker-tip {
+  position: absolute;
+  top: 30px; /* Se posiciona justo debajo del círculo de 30px */
+  left: 50%;
+  transform: translateX(-50%); /* Centra la punta horizontalmente bajo el círculo */
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent; /* Ancho de la punta */
+  border-right: 6px solid transparent; /* Ancho de la punta */
+  border-top: 12px solid; /* Alto de la punta. El color se establece dinámicamente en el HTML inyectado. */
+  z-index: -1; /* Para que esté detrás del icono */
+}
+
+/* Opcional: Estilos para barras de scroll si usas overflow-y-auto */
+#poi-list-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+#poi-list-container::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+#poi-list-container::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 10px;
+}
+
+#poi-list-container::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Dark mode scrollbar styles */
+.dark #poi-list-container::-webkit-scrollbar-track {
+  background: #333;
+}
+
+.dark #poi-list-container::-webkit-scrollbar-thumb {
+  background: #666;
+}
+
+.dark #poi-list-container::-webkit-scrollbar-thumb:hover {
+  background: #aaa;
+}

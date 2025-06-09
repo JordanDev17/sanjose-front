@@ -1,5 +1,5 @@
 // src/app/web/components/web-header/web-header.component.ts
-import { Component, OnInit, OnDestroy, CUSTOM_ELEMENTS_SCHEMA, AfterViewInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, CUSTOM_ELEMENTS_SCHEMA, AfterViewInit, HostListener } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { Observable, Subscription } from 'rxjs';
@@ -24,14 +24,13 @@ export class WebHeaderComponent implements OnInit, OnDestroy, AfterViewInit {
   currentUser$: Observable<User | null>;
   currentUserRole: string | null = null;
   isDarkMode$: Observable<boolean>;
+  
+  // Estados separados para cada menú
   isMobileMenuOpen: boolean = false;
+  isUserMenuOpen: boolean = false;
 
   private userSubscription!: Subscription;
-  private mobileMenuToggleListener: (() => void) | undefined;
-
-  private themeButtonHoverAnimation!: gsap.core.Tween;
-  private loginButtonHoverAnimation!: gsap.core.Tween;
-  private userAvatarHoverAnimation!: gsap.core.Tween;
+  private gsapAnimations: gsap.core.Tween[] = [];
 
   constructor(
     private authService: AuthService,
@@ -44,55 +43,62 @@ export class WebHeaderComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnInit(): void {
-    // La suscripción a currentUser$ ya está en el constructor, pero podemos asegurarnos de que
-    // el rol se actualice cada vez que el componente se inicialice o el usuario cambie.
     this.userSubscription = this.currentUser$.subscribe(user => {
       this.currentUserRole = user ? user.rol : null;
-      // console.log('WebHeaderComponent: Current User:', user); // Para depuración
-      // console.log('WebHeaderComponent: Current User Role:', this.currentUserRole); // Para depuración
     });
   }
 
   ngAfterViewInit(): void {
     this.setupGSAPAnimations();
-    this.setupFlowbiteMobileMenu();
   }
 
   ngOnDestroy(): void {
     if (this.userSubscription) {
       this.userSubscription.unsubscribe();
     }
+    // Limpiar todas las animaciones GSAP
+    this.gsapAnimations.forEach(animation => animation.kill());
     gsap.killTweensOf('*');
-    if (this.mobileMenuToggleListener) {
-      this.mobileMenuToggleListener();
+  }
+
+  // Cerrar menús al hacer clic fuera
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: Event): void {
+    const target = event.target as HTMLElement;
+    
+    // Cerrar menú de usuario si se hace clic fuera
+    if (this.isUserMenuOpen && !target.closest('.relative')) {
+      this.closeUserMenu();
+    }
+    
+    // Cerrar menú móvil si se hace clic fuera (opcional)
+    if (this.isMobileMenuOpen && !target.closest('.hamburger-button') && !target.closest('.mobile-menu')) {
+      this.closeMobileMenu();
+    }
+  }
+
+  // Cerrar menús al presionar Escape
+  @HostListener('document:keydown.escape', ['$event'])
+  onEscapeKey(event: KeyboardEvent): void {
+    if (this.isUserMenuOpen) {
+      this.closeUserMenu();
+    }
+    if (this.isMobileMenuOpen) {
+      this.closeMobileMenu();
     }
   }
 
   /**
    * Genera un color de fondo dinámico para el avatar basado en el ID del usuario.
-   * Esto proporciona una "personalización" simple sin imágenes de perfil.
-   * @param userId El ID numérico del usuario.
-   * @returns Una cadena de color hexadecimal.
    */
   getAvatarColor(userId: number | undefined): string {
     if (userId === undefined || userId === null) {
-      return '#6B7280'; // Color gris por defecto si no hay ID
+      return '#6B7280'; // Color gris por defecto
     }
     const colors = [
-      '#EF4444', // red-500
-      '#F97316', // orange-500
-      '#EAB308', // yellow-500
-      '#22C55E', // green-500
-      '#10B981', // emerald-500
-      '#06B6D4', // cyan-500
-      '#3B82F6', // blue-500
-      '#6366F1', // indigo-500
-      '#8B5CF6', // violet-500
-      '#D946EF', // fuchsia-500
-      '#EC4899', // pink-500
-      '#F43F5E'  // rose-500
+      '#EF4444', '#F97316', '#EAB308', '#22C55E', '#10B981', '#06B6D4',
+      '#3B82F6', '#6366F1', '#8B5CF6', '#D946EF', '#EC4899', '#F43F5E'
     ];
-    // Usa el ID del usuario para determinar el índice del color
     const index = userId % colors.length;
     return colors[index];
   }
@@ -101,7 +107,7 @@ export class WebHeaderComponent implements OnInit, OnDestroy, AfterViewInit {
    * Configura animaciones GSAP para elementos interactivos del header.
    */
   private setupGSAPAnimations(): void {
-    // Animación de entrada para el header completo usando un timeline para orquestar
+    // Animación de entrada para el header
     const headerTimeline = gsap.timeline({ defaults: { ease: 'power2.out' } });
     headerTimeline.fromTo(
       'nav.animate-slide-in-from-top',
@@ -109,131 +115,199 @@ export class WebHeaderComponent implements OnInit, OnDestroy, AfterViewInit {
       { y: 0, opacity: 1, duration: 0.7 }
     )
     .fromTo(
-      'nav .flex.items-center.lg\\:order-2 > *', // Selecciona los elementos dentro del contenedor de botones de acción
+      '.flex.items-center.space-x-3 > *',
       { opacity: 0, x: 20 },
       { opacity: 1, x: 0, duration: 0.4, stagger: 0.1 },
       "-=0.3"
-    )
-    .fromTo(
-      '#mobile-menu-2 ul li', // Selecciona cada elemento de la lista de navegación
-      { opacity: 0, y: 20 },
-      { opacity: 1, y: 0, duration: 0.3, stagger: 0.08 },
-      "-=0.3"
     );
 
-    // Animación de hover para el botón de toggle theme (efecto neón)
-    const themeButton = document.querySelector('.theme-toggle-button');
-    if (themeButton) {
-      this.themeButtonHoverAnimation = gsap.to(themeButton, {
-        scale: 1.1,
-        boxShadow: '0px 0px 20px rgba(0, 128, 255, 0.8), 0px 0px 40px rgba(0, 128, 255, 0.4)', // Múltiples sombras para efecto neón
-        duration: 0.3,
+    // Animación para el botón de tema
+    this.setupButtonAnimation('.theme-toggle-button', {
+      scale: 1.1,
+      boxShadow: '0px 0px 20px rgba(59, 130, 246, 0.6)',
+      duration: 0.3
+    });
+
+    // Animación para el botón de avatar
+    this.setupButtonAnimation('.user-avatar-button', {
+      scale: 1.08,
+      boxShadow: '0px 5px 15px rgba(0,0,0,0.2)',
+      rotate: 5,
+      duration: 0.2
+    });
+
+    // Animación para el botón de login
+    this.setupButtonAnimation('a.animated-button', {
+      scale: 1.05,
+      boxShadow: '0px 8px 20px rgba(0,0,0,0.3)',
+      y: -3,
+      duration: 0.2
+    });
+
+    // Animaciones para enlaces de navegación
+    this.setupNavigationLinksAnimation();
+  }
+
+  /**
+   * Configura animación para un botón específico
+   */
+  private setupButtonAnimation(selector: string, animationProps: gsap.TweenVars): void {
+    const element = document.querySelector(selector);
+    if (element) {
+      const animation = gsap.to(element, {
+        ...animationProps,
         paused: true,
         onReverseComplete: () => {
-          gsap.to(themeButton, {
-            scale: 1,
-            boxShadow: '0px 0px rgba(0,0,0,0)',
-            duration: 0.2
+          gsap.to(element, { 
+            scale: 1, 
+            boxShadow: 'none', 
+            y: 0, 
+            rotate: 0, 
+            duration: 0.2 
           });
         }
       });
-      themeButton.addEventListener('mouseenter', () => this.themeButtonHoverAnimation.play());
-      themeButton.addEventListener('mouseleave', () => this.themeButtonHoverAnimation.reverse());
+      
+      this.gsapAnimations.push(animation);
+      
+      element.addEventListener('mouseenter', () => animation.play());
+      element.addEventListener('mouseleave', () => animation.reverse());
     }
+  }
 
-    // Animación de hover para el botón de Iniciar Sesión (.animated-button)
-    const loginButton = document.querySelector('a.animated-button');
-    if (loginButton) {
-      this.loginButtonHoverAnimation = gsap.to(loginButton, {
-        scale: 1.05,
-        boxShadow: '0px 8px 20px rgba(0,0,0,0.3)',
-        y: -3,
-        duration: 0.2,
-        paused: true,
-        onReverseComplete: () => {
-          gsap.to(loginButton, { scale: 1, boxShadow: 'none', y: 0, duration: 0.2 });
-        }
-      });
-      loginButton.addEventListener('mouseenter', () => this.loginButtonHoverAnimation.play());
-      loginButton.addEventListener('mouseleave', () => this.loginButtonHoverAnimation.reverse());
-    }
-
-    // Animación de hover para el botón de avatar de usuario (.user-avatar-button)
-    const userAvatarButton = document.querySelector('button.user-avatar-button');
-    if (userAvatarButton) {
-        this.userAvatarHoverAnimation = gsap.to(userAvatarButton, {
-            scale: 1.08,
-            boxShadow: '0px 5px 15px rgba(0,0,0,0.2)',
-            rotate: 5,
-            duration: 0.2,
-            paused: true,
-            onReverseComplete: () => {
-                gsap.to(userAvatarButton, { scale: 1, boxShadow: 'none', rotate: 0, duration: 0.2 });
-            }
-        });
-        userAvatarButton.addEventListener('mouseenter', () => this.userAvatarHoverAnimation.play());
-        userAvatarButton.addEventListener('mouseleave', () => this.userAvatarHoverAnimation.reverse());
-    }
-
-    // Animación de hover para los enlaces de navegación (sin subrayado)
-    document.querySelectorAll('.nav-link-item').forEach((linkElement: Element) => {
+  /**
+   * Configura animaciones para los enlaces de navegación
+   */
+  private setupNavigationLinksAnimation(): void {
+    document.querySelectorAll('.nav-link-item, .mobile-nav-link').forEach((linkElement: Element) => {
       const link = linkElement as HTMLElement;
-      // Creamos la animación de hover para cada enlace
       const linkHoverAnimation = gsap.to(link, {
-        y: -3, // Ligero movimiento hacia arriba
-        color: '#60A5FA', // Color de texto de hover (Tailwind blue-500)
+        y: -3,
+        color: '#60A5FA',
         ease: 'power2.out',
         duration: 0.2,
         paused: true,
         overwrite: 'auto',
         onReverseComplete: () => {
-          // Volver al color original basado en el modo oscuro
-          // Necesitamos leer el color actual del enlace para el modo claro/oscuro
-          const computedStyle = window.getComputedStyle(link);
-          const originalColor = computedStyle.color; // Obtener el color real computado
-          gsap.to(link, { color: originalColor, y: 0, duration: 0.2 });
+          gsap.to(link, { y: 0, duration: 0.2 });
         }
       });
 
-      // Añadimos los event listeners para controlar la animación
+      this.gsapAnimations.push(linkHoverAnimation);
+      
       link.addEventListener('mouseenter', () => linkHoverAnimation.play());
       link.addEventListener('mouseleave', () => linkHoverAnimation.reverse());
     });
   }
 
   /**
-   * Configura el listener para el menú móvil de Flowbite.
+   * Alternar menú móvil
    */
-  private setupFlowbiteMobileMenu(): void {
-    const mobileMenuButton = document.querySelector('[data-collapse-toggle="mobile-menu-2"]');
-    const mobileMenu = document.getElementById('mobile-menu-2');
+  toggleMobileMenu(): void {
+    this.isMobileMenuOpen = !this.isMobileMenuOpen;
+    
+    // Cerrar menú de usuario si está abierto
+    if (this.isMobileMenuOpen && this.isUserMenuOpen) {
+      this.closeUserMenu();
+    }
+    
+    this.animateMobileMenu();
+  }
 
-    if (mobileMenuButton && mobileMenu) {
-      const observer = new MutationObserver(() => {
-        const expanded = mobileMenuButton.getAttribute('aria-expanded') === 'true';
-        this.isMobileMenuOpen = expanded;
-
-        if (expanded) {
-          gsap.fromTo(mobileMenu,
-            { opacity: 0, y: -20, display: 'none' },
-            { opacity: 1, y: 0, duration: 0.3, ease: 'power2.out', display: 'block' }
-          );
-        } else {
-          gsap.to(mobileMenu,
-            { opacity: 0, y: -20, duration: 0.3, ease: 'power2.in', onComplete: () => { mobileMenu.style.display = 'none'; } }
-          );
-        }
-      });
-
-      observer.observe(mobileMenuButton, { attributes: true, attributeFilter: ['aria-expanded'] });
-      this.mobileMenuToggleListener = () => observer.disconnect();
+  /**
+   * Cerrar menú móvil
+   */
+  closeMobileMenu(): void {
+    if (this.isMobileMenuOpen) {
+      this.isMobileMenuOpen = false;
+      this.animateMobileMenu();
     }
   }
 
-  toggleMobileMenu(): void {
-    // La lógica del icono se actualiza a través del MutationObserver en setupFlowbiteMobileMenu
+  /**
+   * Animar menú móvil
+   */
+  private animateMobileMenu(): void {
+    const mobileMenu = document.getElementById('mobile-menu');
+    if (mobileMenu) {
+      if (this.isMobileMenuOpen) {
+        gsap.fromTo(mobileMenu,
+          { height: 0, opacity: 0 },
+          { 
+            height: 'auto', 
+            opacity: 1, 
+            duration: 0.3, 
+            ease: 'power2.out',
+            onStart: () => {
+              mobileMenu.classList.remove('hidden');
+            }
+          }
+        );
+        
+        // Animar elementos internos
+        gsap.fromTo('.mobile-nav-link',
+          { opacity: 0, x: -20 },
+          { opacity: 1, x: 0, duration: 0.2, stagger: 0.05, delay: 0.1 }
+        );
+      } else {
+        gsap.to(mobileMenu,
+          { 
+            height: 0, 
+            opacity: 0, 
+            duration: 0.3, 
+            ease: 'power2.in',
+            onComplete: () => {
+              mobileMenu.classList.add('hidden');
+            }
+          }
+        );
+      }
+    }
   }
 
+  /**
+   * Alternar menú de usuario
+   */
+  toggleUserMenu(): void {
+    if (this.isMobileMenuOpen) {
+      this.closeMobileMenu(); // Cierra el menú móvil antes de abrir el usuario
+    }
+
+    this.isUserMenuOpen = !this.isUserMenuOpen;
+    this.animateUserMenu();
+  }
+
+
+  /**
+   * Cerrar menú de usuario
+   */
+  closeUserMenu(): void {
+    if (this.isUserMenuOpen) {
+      this.isUserMenuOpen = false;
+      this.animateUserMenu();
+    }
+  }
+
+  /**
+   * Animar menú de usuario
+   */
+private animateUserMenu(): void {
+  const userDropdown = document.querySelector('.user-dropdown');
+  if (userDropdown) {
+    gsap.to(userDropdown, {
+      opacity: this.isUserMenuOpen ? 1 : 1,
+      y: this.isUserMenuOpen ? 0 : -10,
+      scale: this.isUserMenuOpen ? 1 : 0.95,
+      duration: 0.2,
+      ease: 'back.inOut'
+    });
+  }
+}
+
+
+  /**
+   * Verificar si el usuario tiene roles específicos
+   */
   hasRole(allowedRoles: string[]): Observable<boolean> {
     return this.authService.currentUser$.pipe(
       map(user => {
@@ -245,11 +319,19 @@ export class WebHeaderComponent implements OnInit, OnDestroy, AfterViewInit {
     );
   }
 
+  /**
+   * Cerrar sesión
+   */
   logout(): void {
+    this.closeUserMenu();
+    this.closeMobileMenu();
     this.authService.logout();
     this.router.navigate(['/login-web']);
   }
 
+  /**
+   * Alternar tema
+   */
   toggleTheme(): void {
     this.themeService.toggleDarkMode();
   }

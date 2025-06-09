@@ -1,0 +1,14 @@
+/* src/app/web/components/news-card/news-card.component.css */
+
+.news-card img {
+  display: block; /* Ayuda a la renderización consistente de imágenes */
+}
+
+/* Estilo para limitar el texto del resumen a 3 líneas. */
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

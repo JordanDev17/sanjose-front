@@ -1,0 +1,65 @@
+/* src/app/web/components/footercomponent/footercomponent.css */
+
+/* Animación de flotación sutil para los íconos al hacer hover */
+.group-hover .animate-icon-float {
+  animation: icon-float 1.2s ease-in-out infinite alternate;
+}
+
+@keyframes icon-float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px); /* Flota 5px hacia arriba */
+  }
+}
+
+/* Animación de pulso para el botón "Volver arriba" */
+#back-to-top-btn.animate-btn-pulse {
+  animation: btn-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes btn-pulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Sombra base */
+  }
+  50% {
+    transform: scale(1.05); /* Ligeramente más grande */
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3), 0 0 0 0 rgba(60, 150, 255, 0.7); /* Sombra más grande y un halo sutil */
+  }
+}
+
+/* Animación para el fondo del footer (fadeInBlur) */
+.animate-fade-in-blur {
+  animation: fade-in-blur 1s ease-out forwards;
+}
+
+@keyframes fade-in-blur {
+  0% {
+    opacity: 0;
+    filter: blur(10px);
+  }
+  100% {
+    opacity: 1;
+    filter: blur(0);
+  }
+}
+
+/* Animaciones de entrada genéricas que ya tenías y que siguen siendo útiles */
+.animate-slide-up-fade {
+  animation: slide-up-fade 0.7s ease-out forwards;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+/* Retrasos para las animaciones (puedes ajustar estos en tailwind.config.js o aquí) */
+/* Estos se aplican con clases como 'delay-200' en el HTML si están en Tailwind */
+/* Si no, puedes definirlos aquí:
+.delay-200 { animation-delay: 0.2s; }
+.delay-300 { animation-delay: 0.3s; }
+.delay-500 { animation-delay: 0.5s; }
+.delay-700 { animation-delay: 0.7s; }
+*/

@@ -1,1 +1,213 @@
-<p>web-home works!</p>
+<div class="relative w-full h-screen overflow-hidden font-inter">
+  <video autoplay muted loop playsinline
+         class="absolute top-0 left-0 w-full h-full object-cover z-10">
+    <source src="assets/web/media/vds/videoHome.mp4" type="video/mp4">
+    Tu navegador no soporta la etiqueta de video.
+  </video>
+
+  <div class="absolute inset-0 flex flex-col items-center justify-center p-4 text-center
+              bg-black bg-opacity-80 backdrop-blur-sm z-10 rounded-lg">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h1 id="main-heading"
+          class="text-4xl md:text-6xl lg:text-7xl font-extrabold text-white mb-6 leading-tight opacity-0 drop-shadow-lg">
+        ¡Bienvenido al Parque Industrial San José!
+      </h1>
+
+      <p id="typewriter-text"
+         class="text-lg md:text-xl text-white mb-8 opacity-0 drop-shadow-md">
+        </p>
+
+      <div class="flex flex-wrap justify-center gap-4 mt-8">
+        <a href="/servicios"
+           class="btn-hero opacity-0 transform translate-y-4 bg-blue-600 hover:bg-blue-700 focus:ring-blue-500">
+          Nuestros Servicios
+        </a>
+
+        <a href="/contacto"
+           class="btn-hero opacity-0 transform translate-y-4 bg-transparent border-2 border-white text-white hover:bg-white hover:text-blue-600 focus:ring-white">
+          Contáctanos
+        </a>
+
+        <a href="/galeria"
+           class="btn-hero opacity-0 transform translate-y-4 bg-white text-blue-600 hover:bg-gray-100 focus:ring-white">
+          Galería
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- espaciado -->
+<section class="py-10">
+  <div id="image-carousel" class="relative w-full h-[200px]">
+    <!-- Imágenes se insertan dinámicamente con Angular -->
+  </div>
+</section>
+
+
+
+<!-- SECCIONES DE INFORMACIÓN -->
+<section class="py-20 bg-gray-100 dark:bg-gray-900 transition-colors duration-300">
+  <div class="container mx-auto text-center px-4 sm:px-6 lg:px-8 relative z-10">
+    <h2 id="services-title" class="text-4xl md:text-5xl font-extrabold text-blue-600 dark:text-blue-400 mb-6 leading-tight">
+      Nuestros Servicios Integrales
+    </h2>
+    <p id="services-description" class="mt-4 text-lg md:text-xl text-gray-700 dark:text-gray-300 max-w-3xl mx-auto">
+      Impulsamos tu crecimiento con infraestructura de primer nivel y soluciones a medida, diseñadas para el éxito de tu empresa.
+    </p>
+  </div>
+
+  <div class="container mx-auto mt-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 px-4 sm:px-6 lg:px-8 relative z-10">
+
+    <div #serviceCard id="serviceCard"
+         *ngFor="let service of services; let i = index"
+         [ngClass]="[service.bgColorLight, service.bgColorDark]"
+         class="service-card rounded-xl shadow-lg p-8 transform transition-all duration-300 ease-in-out border border-gray-200 dark:border-gray-700 relative overflow-hidden group">
+      <div class="absolute inset-0"
+           [ngClass]="[service.gradientFrom, service.gradientTo, 'opacity-10 group-hover:opacity-20 transition-opacity duration-300']"></div>
+      <div class="icon-container relative z-10">
+        <div class="service-icon mb-4" [ngClass]="['text-' + service.iconColor + '-500', 'dark:text-' + service.iconColor + '-400']">
+          <svg class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" [attr.d]="service.iconPath"></path>
+          </svg>
+        </div>
+        <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-3">{{ service.title }}</h3>
+        <p class="text-gray-600 dark:text-gray-400 leading-relaxed">{{ service.description }}</p>
+        <ul class="list-disc list-inside mt-6 text-sm opacity-80"
+            [ngClass]="['text-' + service.iconColor + '-600', 'dark:text-' + service.iconColor + '-400']">
+          <li *ngFor="let feature of service.features">{{ feature }}</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- SECCIÓN DE SERVICIOS CON CARRUSEL 
+
+<section class="py-16 md:py-24 bg-gray-50 dark:bg-gray-900 overflow-hidden">
+  <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+    <h2 id="services-title" class="text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
+      Nuestros Servicios
+    </h2>
+    <p id="services-description" class="mt-4 max-w-2xl mx-auto text-xl text-gray-500 dark:text-gray-400">
+      Descubra las soluciones integrales que impulsarán el crecimiento y la eficiencia de su empresa.
+    </p>
+
+    <div id="horizontal-scroll-section" class="mt-12 overflow-hidden w-full relative">
+      <div id="service-carousel-container" class="flex flex-nowrap w-max gap-8 px-4 sm:px-6 lg:px-8 pb-8">
+        <div *ngFor="let service of services; let i = index"
+             #serviceCard
+             class="service-card flex-none w-80 min-h-80 md:w-96 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700
+                    transition-colors duration-300 ease-in-out cursor-pointer group
+                    {{ service.bgColorLight }} {{ service.bgColorDark }}">
+
+          <div class="flex-shrink-0 mb-4">
+            <svg class="h-16 w-16 {{ service.iconColor === 'blue' ? 'text-blue-500 group-hover:text-blue-700' : '' }}
+                                {{ service.iconColor === 'green' ? 'text-green-500 group-hover:text-green-700' : '' }}
+                                {{ service.iconColor === 'yellow' ? 'text-yellow-500 group-hover:text-yellow-700' : '' }}
+                                {{ service.iconColor === 'red' ? 'text-red-500 group-hover:text-red-700' : '' }}
+                                {{ service.iconColor === 'teal' ? 'text-teal-500 group-hover:text-teal-700' : '' }}
+                                {{ service.iconColor === 'purple' ? 'text-purple-500 group-hover:text-purple-700' : '' }}
+                                transition-colors duration-300 service-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="[http://www.w3.org/2000/svg](http://www.w3.org/2000/svg)">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" [attr.d]="service.iconPath"></path>
+            </svg>
+          </div>
+
+          <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">{{ service.title }}</h3>
+          <p class="text-gray-600 dark:text-gray-300 text-sm mb-4">{{ service.description }}</p>
+
+          <ul class="text-left space-y-2 text-gray-700 dark:text-gray-200">
+            <li *ngFor="let feature of service.features" class="flex items-start">
+              <svg class="h-5 w-5 mr-2 flex-shrink-0
+                          {{ service.iconColor === 'blue' ? 'text-blue-500' : '' }}
+                          {{ service.iconColor === 'green' ? 'text-green-500' : '' }}
+                          {{ service.iconColor === 'yellow' ? 'text-yellow-500' : '' }}
+                          {{ service.iconColor === 'red' ? 'text-red-500' : '' }}
+                          {{ service.iconColor === 'teal' ? 'text-teal-500' : '' }}
+                          {{ service.iconColor === 'purple' ? 'text-purple-500' : '' }}" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+              </svg>
+              <span>{{ feature }}</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+CIERRE COMENTARIO CARRUSEL-->
+
+<!-- CARRUSEL DE IMÁGENES -->
+<section class="py-10">
+  <div id="image-carousel" class="relative w-full h-[200px]">
+    <!-- Imágenes se insertan dinámicamente con Angular -->
+  </div>
+</section>
+
+<!-- SECCIÓN DE NOTICIAS -->
+<section class="py-16 md:py-20 bg-gray-100 dark:bg-gray-900">
+  <div class="container mx-auto text-center px-4 md:px-8">
+    <h2 class="text-4xl md:text-5xl font-extrabold text-blue-600 dark:text-blue-400 mb-12 animate-fade-in-down">
+      Últimas Noticias <ion-icon name="newspaper-outline" class="ml-2 text-blue-500"></ion-icon>
+    </h2>
+
+    <div *ngIf="loading" class="flex justify-center items-center h-64">
+      <div role="status" class="flex flex-col items-center">
+        <svg aria-hidden="true" class="w-16 h-16 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"
+          viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path
+            d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+            fill="currentColor" />
+          <path
+            d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7231 75.2124 7.41289C69.5422 4.10259 63.4002 1.95452 56.8378 1.05118C51.7656 0.367541 46.6976 0.446843 41.7345 1.27873C36.7713 2.11063 31.8797 3.61463 27.2639 5.90323C22.6482 8.19183 18.2743 11.4116 14.4042 15.1192C10.5341 18.8269 7.22379 23.2343 4.59042 28.0773C1.95705 32.9203 0.380324 38.2175 0.00977 43.627C-0.36075 49.0364 0.772548 54.3758 3.06124 59.389C5.34993 64.3948 8.61851 68.9669 12.5916 72.8687C16.5647 76.7695 21.2198 80.0883 26.3761 82.5966C31.5323 85.1049 37.064 86.6006 42.6072 87.6001C48.1494 88.5994 53.7441 88.9463 59.2909 88.2486C64.8377 87.5509 70.3017 85.9723 75.3051 83.567C79.3879 81.3429 83.1362 78.3148 86.4446 74.6331C89.753 70.9513 92.4965 66.8617 94.4944 62.4754Z"
+            fill="currentFill" />
+        </svg>
+        <p class="mt-4 text-gray-700 dark:text-gray-300 text-lg font-medium">Cargando noticias...</p>
+      </div>
+    </div>
+
+    <div *ngIf="errorMessage" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg relative mt-8 mx-auto max-w-lg"
+      role="alert">
+      <strong class="font-bold">¡Error!</strong>
+      <span class="block sm:inline"> {{ errorMessage }}</span>
+      <p class="text-sm mt-1">Por favor, inténtalo de nuevo más tarde.</p>
+    </div>
+
+    <div *ngIf="newsList.length > 0 && !loading"
+      class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 xl:gap-10 mt-8">
+      <app-news-card *ngFor="let news of newsList; trackBy: trackById" [news]="news"></app-news-card>
+    </div>
+
+    <div *ngIf="!loading && newsList.length === 0 && !errorMessage"
+      class="text-gray-500 dark:text-gray-400 mt-8 py-10">
+      <ion-icon name="information-circle-outline" class="text-6xl mb-4 text-blue-500"></ion-icon>
+      <p class="text-xl font-medium">No hay noticias disponibles en este momento.</p>
+      <p class="text-md mt-2">Vuelve a intentarlo más tarde o explora otras secciones.</p>
+    </div>
+  </div>
+</section>
+
+<!-- espaciado -->
+<section class="py-10">
+  <div id="image-carousel" class="relative w-full h-[200px]">
+    <!-- Imágenes se insertan dinámicamente con Angular -->
+  </div>
+</section>
+
+
+
+<!-- MAPA INTERACTIVO -->
+<section class="py-20 bg-white dark:bg-gray-800">
+  <div class="container mx-auto">
+    <h2 class="text-3xl font-bold text-blue-500 text-center mb-8">Ubicación y Puntos de Interés</h2>
+    <app-location-map></app-location-map> </div>
+</section>
+
+<!-- espaciado -->
+<section class="py-10">
+  <div id="image-carousel" class="relative w-full h-[200px]">
+    <!-- Imágenes se insertan dinámicamente con Angular -->
+  </div>
+</section>

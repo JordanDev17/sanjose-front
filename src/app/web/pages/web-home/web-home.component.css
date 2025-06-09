@@ -1,0 +1,114 @@
+.btn-hero {
+  @apply inline-block px-6 py-3 text-base font-semibold rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all;
+}
+/* Animaciones para la sección hero y otros elementos */
+
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.fade-in-up {
+  animation: fadeInUp 1s ease-out forwards;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.8s ease-out forwards;
+}
+
+/* home.component.css o home.component.scss */
+
+/* Fuente Inter: Asegúrate de que esta fuente esté importada globalmente en tu proyecto
+   (por ejemplo, en index.html o styles.css).
+   Si no, puedes añadirla aquí con @import:
+   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&display=swap');
+*/
+
+/* Estilos base para los botones de la sección hero */
+.btn-hero {
+  /* @apply se usa para incluir directamente las clases de Tailwind CSS */
+  @apply inline-flex items-center justify-center px-8 py-3 
+         text-base font-medium rounded-full shadow-lg 
+         transition duration-300 ease-in-out 
+         focus:outline-none focus:ring-2 focus:ring-offset-2;
+  /* 'inline-flex': Permite usar flexbox para centrar el texto dentro del botón.
+     'items-center justify-center': Centra el contenido (texto) dentro del botón.
+     'px-8 py-3': Relleno horizontal y vertical generoso.
+     'text-base font-medium': Tamaño de fuente y grosor.
+     'rounded-full': Bordes completamente redondeados para un diseño moderno.
+     'shadow-lg': Sombra prominente para un efecto elevado.
+     'transition duration-300 ease-in-out': Transición suave para efectos hover y focus.
+     'focus:outline-none focus:ring-2 focus:ring-offset-2': Estilos de enfoque para accesibilidad, 
+                                                            sin el contorno predeterminado del navegador. */
+}
+
+/* Puedes añadir más estilos específicos si es necesario, por ejemplo, para un cursor parpadeante en el typewriter: */
+/*
+#typewriter-text::after {
+  content: '|';
+  display: inline-block;
+  animation: blink-caret .75s infinite step-end;
+}
+
+@keyframes blink-caret {
+  from, to { opacity: 0; }
+  50% { opacity: 1; }
+}
+*/
+
+/* Estilo para asegurar que los elementos comiencen invisibles para que GSAP los anime. */
+/* Se utiliza 'initial-hidden-opacity' en el HTML. */
+.initial-hidden-opacity {
+  opacity: 0;
+}
+
+/* Opcional: Estilos para el cursor parpadeante del Typewriter */
+.cursor {
+  display: inline-block;
+  background-color: currentColor; /* Usa el color del texto actual */
+  width: 2px;
+  height: 1.1em; /* Altura relativa al tamaño de la fuente */
+  margin-left: 2px;
+  animation: blink 0.8s infinite step-end; /* Animación de parpadeo */
+}
+
+@keyframes blink {
+  0% { opacity: 1; }
+  50% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+/* Estilos de sombra para las tarjetas (mejor que solo con Tailwind) */
+.service-card {
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Sombra inicial sutil */
+}
+
+/* Ajustes para el modo oscuro (si está configurado en Tailwind) */
+.dark .service-card {
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3); /* Sombra más oscura para el dark mode */
+}
+
+/* --- NUEVAS REGLAS CSS PARA MANEJAR LAS TRANSICIONES DE FONDO CON GSAP --- */
+/* Asegura que la transición de color de fondo sea suave cuando GSAP agrega/quita clases */
+.service-card {
+  transition-property: background-color, transform, box-shadow; /* Agrega background-color */
+  transition-duration: 300ms;
+  transition-timing-function: ease-in-out;
+}
+

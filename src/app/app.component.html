@@ -1,9 +1,10 @@
-<app-particle-background></app-particle-background>
+<!-- El componente de partículas se colocará al principio para que se muestre en el fondo -->
 
 <app-web-header></app-web-header>
 
-<main class="relative z-10 pt-20 min-h-screen bg-gray-100 dark:bg-gray-900 transition-colors duration-300">
+<!-- Asegúrate de que el contenido principal tenga un z-index superior al del fondo de partículas -->
+<main class="">
   <router-outlet></router-outlet>
 </main>
 
-<app-footer></app-footer> 
+<app-footer></app-footer>

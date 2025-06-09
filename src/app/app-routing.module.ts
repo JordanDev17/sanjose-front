@@ -32,6 +32,7 @@ import { NotFoundComponent } from './web/components/not-found/not-found.componen
 // --- Importar los nuevos Guards ---
 import { AuthGuard } from './core/auth/auth.guard'; // <-- Nueva ubicación de tu AuthGuard
 import { PublicGuard } from './core/auth/public/public.guard'; // <-- Nueva guardia para rutas públicas
+import { NewsCardComponent } from './web/components/news-card/news-card.component';
 
 
 const routes: Routes = [
@@ -43,6 +44,8 @@ const routes: Routes = [
   { path: 'warehouses/:id', component: WarehouseDetailComponent }, // Detalle de bodega
   { path: 'about', component: AboutComponent }, // Página "Acerca de"
   { path: 'contact', component: ContactComponent }, // Página de contacto
+  { path: 'prueba', component: NewsCardComponent }, // Página de contacto
+
 
   // === Página de Login ===
   // Esta ruta usará PublicGuard para redirigir si el usuario ya está logueado.

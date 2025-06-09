@@ -33,18 +33,19 @@ import { DashboardNewsComponent } from './web/pages/dashboard-news/dashboard-new
 import { DashboardWarehousesComponent } from './web/pages/dashboard-warehouses/dashboard-warehouses.component';
 import { DashboardUsersComponent } from './web/pages/dashboard-users/dashboard-users.component';
 
-// COMPONENTES WEB (Asumo que son standalone: false, si no, irían en imports)
+// COMPONENTES WEB 
 import { NewsCardComponent } from './web/components/news-card/news-card.component';
 import { WarehouseCardComponent } from './web/components/warehouse-card/warehouse-card.component';
 import { NotFoundComponent } from './web/components/not-found/not-found.component';
-
-
-// COMPONENTES STANDALONE (Deben ir en imports)
 import { WebHeaderComponent } from './web/components/web-header/web-header.component'; // <-- Standalone, va en imports
 import { FooterComponent } from './web/components/footer/footer.component'; // <-- Standalone, va en imports (asumiendo que es tu nuevo FooterComponent)
 import { WebLoginComponent } from './web/pages/web-login/web-login.component'; // <-- Standalone, va en imports
+import { ParticlesBackgroundComponent } from './web/components/particles-background/particles-background.component'; // Importa el componente de fondo
+
 
 import { JwtInterceptor } from './core/auth/jwt.interceptor';
+import { LocationMapComponent } from './web/components/location-map/location-map.component';
+import { AnimatedLinesBackgroundService } from './core/background/animated-lines-background.service';
 
 @NgModule({
   declarations: [
@@ -76,6 +77,8 @@ import { JwtInterceptor } from './core/auth/jwt.interceptor';
     NewsCardComponent,
     WarehouseCardComponent,
     NotFoundComponent,
+    LocationMapComponent,
+
   ],
   imports: [
     BrowserModule,
@@ -88,7 +91,9 @@ import { JwtInterceptor } from './core/auth/jwt.interceptor';
     RouterModule, // <-- Necesario para el enrutamiento
     WebHeaderComponent, // <-- Componente STANDALONE IMPORTADO AQUÍ
     FooterComponent,    // <-- Componente STANDALONE IMPORTADO AQUÍ (si es standalone)
-    WebLoginComponent,  // <-- Componente STANDALONE IMPORTADO AQUÍ (si es standalone)
+    WebLoginComponent, 
+    ParticlesBackgroundComponent,
+    
   ],
   providers: [
     {
