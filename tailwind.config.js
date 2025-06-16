@@ -7,6 +7,10 @@ module.exports = {
        // Esto asegura que Tailwind compile todas las variantes de color que usas.
     './src/app/web/components/location-map/location-map.component.ts',
     './src/app/web/components/location-map/location-map.component.html',
+    './src/app/web/components/chatbot/chatbot.component.ts',
+    './src/app/web/components/chatbot/chatbot.component.html',
+
+    
     "./node_modules/flowbite/**/*.js" // Incluye los archivos JS de Flowbite para sus clases de utilidad
   ],
     safelist: [ // Opcional, pero más robusto para clases dinámicas

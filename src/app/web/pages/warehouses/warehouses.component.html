@@ -1,1 +1,216 @@
-<p>warehouses works!</p>
+<section [class.dark]="isDarkMode" class="main-page-section min-h-screen">
+  <div class="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+    <section class="hero-intro-section py-20 text-center">
+      <h1
+        class="text-5xl font-extrabold leading-tight text-slate-900 dark:text-slate-50 sm:text-6xl lg:text-7xl"
+      >
+        Bienvenido al <span class="text-gradient">Ecosistema</span> Logístico del
+        Futuro
+      </h1>
+      <p
+        class="mx-auto mt-6 max-w-3xl text-xl text-slate-700 dark:text-slate-300 sm:text-2xl"
+      >
+        Descubre las empresas líderes y las bodegas de vanguardia que impulsan la
+        innovación.
+      </p>
+      <a
+        href="#"
+        class="group relative mt-10 inline-flex transform items-center justify-center overflow-hidden rounded-full bg-indigo-600 px-8 py-4 text-lg font-bold text-white shadow-lg transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-indigo-500/30 dark:bg-indigo-500"
+      >
+        <span
+          class="absolute h-0 w-0 rounded-full bg-indigo-500 transition-all duration-500 ease-out group-hover:h-56 group-hover:w-56 dark:bg-indigo-400"
+        ></span>
+        <span class="relative flex items-center">
+          Explorar Instalaciones
+          <svg
+            class="ml-3 h-6 w-6 transition-transform duration-300 group-hover:translate-x-1"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M17.25 8.25L21 12m0 0l-3.75 3.75M21 12H3"
+            ></path>
+          </svg>
+        </span>
+      </a>
+    </section>
+
+    <section class="carousel-section relative mb-20 mt-16">
+      <div class="c-carousel">
+        <div
+          class="carousel-inner flex"
+          [style.transform]="'translateX(-' + currentSlide * 100 + '%)'"
+        >
+          <div class="c-carousel-item c-carousel-item-1">
+            <h3
+              class="text-3xl font-extrabold text-indigo-600 dark:text-indigo-400 md:text-4xl"
+            >
+              Conectividad Estratégica 🚀
+            </h3>
+            <p
+              class="mx-auto mt-4 max-w-3xl text-lg text-slate-800 dark:text-slate-200 md:text-xl"
+            >
+              Ubicados en un nodo logístico clave para acceso inigualable a mercados.
+            </p>
+          </div>
+          <div class="c-carousel-item c-carousel-item-2">
+            <h3
+              class="text-3xl font-extrabold text-green-600 dark:text-green-400 md:text-4xl"
+            >
+              Innovación Constante 💡
+            </h3>
+            <p
+              class="mx-auto mt-4 max-w-3xl text-lg text-slate-800 dark:text-slate-200 md:text-xl"
+            >
+              Impulsamos el desarrollo tecnológico y la eficiencia operativa para todos.
+            </p>
+          </div>
+          <div class="c-carousel-item c-carousel-item-3">
+            <h3
+              class="text-3xl font-extrabold text-purple-600 dark:text-purple-400 md:text-4xl"
+            >
+              Comunidad Próspera 🤝
+            </h3>
+            <p
+              class="mx-auto mt-4 max-w-3xl text-lg text-slate-800 dark:text-slate-200 md:text-xl"
+            >
+              Fomentamos un ambiente colaborativo que potencia sinergias y crecimiento.
+            </p>
+          </div>
+        </div>
+        <button
+          (click)="prevSlide()"
+          aria-label="Anterior"
+          class="absolute left-4 top-1/2 -translate-y-1/2 rounded-full bg-black/20 p-2 text-white transition hover:bg-black/40 focus:outline-none"
+        >
+          <svg
+            class="h-6 w-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M15 19l-7-7 7-7"
+            ></path>
+          </svg>
+        </button>
+        <button
+          (click)="nextSlide()"
+          aria-label="Siguiente"
+          class="absolute right-4 top-1/2 -translate-y-1/2 rounded-full bg-black/20 p-2 text-white transition hover:bg-black/40 focus:outline-none"
+        >
+          <svg
+            class="h-6 w-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M9 5l7 7-7 7"
+            ></path>
+          </svg>
+        </button>
+        <div class="absolute bottom-4 left-1/2 flex -translate-x-1/2 space-x-2">
+          <button
+            *ngFor="let slide of [0, 1, 2]; let i = index"
+            (click)="goToSlide(i)"
+            [attr.aria-label]="'Ir a slide ' + (i + 1)"
+            class="h-2.5 w-2.5 rounded-full transition-all duration-300"
+            [ngClass]="i === currentSlide ? 'w-6 bg-white' : 'bg-white/50 hover:bg-white/75'"
+          ></button>
+        </div>
+      </div>
+    </section>
+
+    <section class="warehouses-grid-section" id="warehouses-list-section">
+      <h2 class="text-3xl font-bold mb-8 text-center text-gray-800 dark:text-gray-200">
+        Nuestras Empresas Destacadas
+      </h2>
+
+      <div *ngIf="isLoading" class="flex h-64 flex-col items-center justify-center">
+        <div
+          class="h-20 w-20 animate-spin rounded-full border-b-4 border-t-4 border-indigo-500"
+          style="border-bottom-color: transparent"
+        ></div>
+        <p class="mt-4 text-xl text-gray-700 dark:text-gray-300">Cargando empresas...</p>
+      </div>
+
+      <div
+        *ngIf="warehouses.length > 0 && !isLoading"
+        class="grid grid-cols-1 gap-8 sm:grid-cols-1 md:grid-cols-1"
+      >
+        <div
+          *ngFor="let warehouse of warehouses; let i = index"
+          #warehouseCard
+          class="c-warehouse-banner"
+          [ngClass]="{'c-banner-reverse': i % 2 !== 0}"
+          data-aos="fade-up"
+          data-aos-once="true"
+          data-aos-duration="1000"
+          [attr.data-aos-delay]="i * 100"
+        >
+          <div class="c-banner-content-wrapper">
+            <div class="c-banner-logo-container">
+              <img
+                [src]="getWarehouseImageUrl(warehouse)"
+                [alt]="'Logotipo de ' + warehouse.nombre"
+                class="c-banner-logo"
+              />
+            </div>
+            <div class="c-banner-info">
+              <h3 class="c-banner-title">{{ warehouse.nombre }}</h3>
+              <p class="c-banner-sector">{{ warehouse.sector }}</p>
+              <p class="c-banner-description">
+                {{ warehouse.descripcion || 'Sin descripción disponible.' }}
+              </p>
+              <a [routerLink]="['/bodegas', warehouse.slug]" class="c-banner-link">
+                Ver Perfil
+                <svg
+                  class="ml-2 h-4 w-4"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
+                    clip-rule="evenodd"
+                  ></path>
+                </svg>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div
+        *ngIf="warehouses.length === 0 && !isLoading && !error"
+        class="py-16 text-center text-gray-500 dark:text-gray-400"
+      >
+        <p class="text-xl">No hay bodegas disponibles en este momento.</p>
+      </div>
+
+      <div
+        *ngIf="error"
+        class="flex h-64 flex-col items-center justify-center text-red-500 dark:text-red-400"
+      >
+        <p class="text-xl">{{ error }}</p>
+        <button
+          (click)="loadWarehouses()"
+          class="mt-4 rounded-md bg-red-600 px-4 py-2 text-white hover:bg-red-700"
+        >
+          Reintentar
+        </button>
+      </div>
+    </section>
+  </div>
+</section>

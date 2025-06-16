@@ -15,7 +15,7 @@ import { ApiResponse } from '../models/api-response.model'; // Ajusta la ruta a 
   providedIn: 'root'
 })
 export class UserService {
-  private apiUrl = `${environment.apiUrl}/users-admin`; 
+  private apiUrl = `${environment.apiUrl}api/auth/users-admin`; 
 
   constructor(private http: HttpClient) { }
 

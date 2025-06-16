@@ -1,0 +1,69 @@
+<div class="chatbot-container" [ngClass]="{'open': isChatOpen}">
+  <div class="chatbot-header" (click)="toggleChat()"
+       [ngClass]="{'bg-blue-600': !isDarkModeActive, 'bg-gray-800': isDarkModeActive}">
+    <span class="text-white font-semibold">Asistente Virtual</span>
+    <ion-icon [name]="isChatOpen ? 'close-outline' : 'chatbox-ellipses-outline'"
+              class="text-white text-xl cursor-pointer"></ion-icon>
+  </div>
+
+  <div class="chatbot-body" *ngIf="isChatOpen"
+       [ngClass]="{'bg-white': !isDarkModeActive, 'bg-gray-700': isDarkModeActive}">
+    
+    <!-- Área de mensajes con referencia para el scroll -->
+    <div #chatMessages class="chat-messages"
+         [ngClass]="{'text-gray-900': !isDarkModeActive, 'text-gray-100': isDarkModeActive}">
+      
+      <!-- Mensajes del historial -->
+      <div *ngFor="let message of messages; trackBy: trackByMessage"
+           [ngClass]="{
+             'user-message': message.type === 'user',
+             'bot-message': message.type === 'bot',
+             'bg-blue-100 dark:bg-blue-800 text-blue-900 dark:text-blue-100': message.type === 'user',
+             'bg-gray-200 dark:bg-gray-600 text-gray-900 dark:text-gray-100': message.type === 'bot'
+           }">
+        <p>{{ message.text }}</p>
+        <span class="message-timestamp" 
+              [ngClass]="{'text-blue-700 dark:text-blue-300': message.type === 'user', 
+                         'text-gray-500 dark:text-gray-400': message.type === 'bot'}">
+          {{ message.timestamp | date:'short' }}
+        </span>
+      </div>
+
+      <!-- Indicador de escritura -->
+      <div *ngIf="isLoading" class="bot-message typing-indicator"
+           [ngClass]="{'bg-gray-200 dark:bg-gray-600': true}">
+        <div class="typing-dots">
+          <div class="dot" [ngClass]="{'bg-gray-600 dark:bg-gray-300': true}"></div>
+          <div class="dot" [ngClass]="{'bg-gray-600 dark:bg-gray-300': true}"></div>
+          <div class="dot" [ngClass]="{'bg-gray-600 dark:bg-gray-300': true}"></div>
+        </div>
+        <span class="typing-text">Escribiendo...</span>
+      </div>
+    </div>
+
+    <!-- Opciones/Botones del bot -->
+    <div *ngIf="currentOptions && currentOptions.length > 0 && !isLoading" 
+         class="bot-options"
+         [@fadeInUp]>
+      <button *ngFor="let option of currentOptions; trackBy: trackByOption" 
+              (click)="selectOption(option)" 
+              [disabled]="isLoading"
+              [ngClass]="{
+                'bg-blue-500 text-white hover:bg-blue-600 focus:ring-blue-300': !isDarkModeActive,
+                'bg-gray-600 text-white hover:bg-gray-500 focus:ring-gray-400': isDarkModeActive,
+                'opacity-50 cursor-not-allowed': isLoading
+              }"
+              class="option-button px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2">
+        {{ option.text }}
+      </button>
+    </div>
+
+    <!-- Estado vacío cuando no hay mensajes -->
+    <div *ngIf="messages.length === 0 && !isLoading" 
+         class="empty-state"
+         [ngClass]="{'text-gray-500 dark:text-gray-400': true}">
+      <ion-icon name="chatbubbles-outline" class="text-4xl mb-2"></ion-icon>
+      <p>¡Hola! ¿En qué puedo ayudarte hoy?</p>
+    </div>
+  </div>
+</div>

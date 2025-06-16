@@ -2,7 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { initFlowbite } from 'flowbite';
 import { ParticlesBackgroundService } from './core/background/particles-background.service';
 import { AnimatedLinesBackgroundService } from './core/background/animated-lines-background.service';
-import { ThemeService } from './core/theme/theme.service'; // Asegúrate de que la ruta a tu ThemeService sea correcta
+import { ThemeService } from './core/theme/theme.service'; 
+
 import { Observable } from 'rxjs'; // Importa Observable
 
 @Component({

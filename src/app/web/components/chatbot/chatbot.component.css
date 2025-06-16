@@ -1,0 +1,388 @@
+/* chatbot.component.css */
+
+/* --- Contenedor Principal del Chatbot --- */
+.chatbot-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 60px;
+    height: 60px;
+    background-color: #3B82F6; /* Tailwind blue-500 */
+    border-radius: 9999px; /* Tailwind rounded-full */
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    overflow: hidden; 
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+    z-index: 1000;
+}
+
+/* Estado "open" del contenedor */
+.chatbot-container.open {
+    width: 380px;
+    height: 550px;
+    border-radius: 12px;
+    box-shadow: 0 20px 25px rgba(0, 0, 0, 0.3);
+}
+
+/* Responsividad para pantallas pequeñas */
+@media (max-width: 640px) {
+    .chatbot-container.open {
+        width: 95vw;
+        height: 85vh;
+        bottom: 2.5vw;
+        right: 2.5vw;
+        border-radius: 12px;
+    }
+}
+
+/* --- Encabezado del Chatbot --- */
+.chatbot-header {
+    width: 100%;
+    padding: 12px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+    font-size: 1.125rem;
+    transition: background-color 0.3s ease-in-out, border-radius 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+    flex-shrink: 0;
+    color: white; /* Asegura que el texto y el icono sean blancos */
+}
+
+/* Estilos para el encabezado cuando el chat está cerrado (botón) */
+.chatbot-container:not(.open) .chatbot-header {
+    border-radius: 9999px;
+    justify-content: center;
+    height: 100%;
+    padding: 0;
+}
+
+.chatbot-header span {
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
+    pointer-events: none;
+}
+
+.chatbot-container.open .chatbot-header span {
+    opacity: 1;
+    pointer-events: auto;
+    transition-delay: 0.2s;
+}
+
+.chatbot-header ion-icon {
+    font-size: 1.5rem;
+    transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+}
+
+/* Animación para el icono de chatbox cuando el chat se abre */
+.chatbot-container.open .chatbot-header ion-icon[name="chatbox-ellipses-outline"] {
+    transform: scale(0.5);
+    opacity: 0;
+}
+
+/* Animación para el icono de cierre cuando el chat se cierra */
+.chatbot-container:not(.open) .chatbot-header ion-icon[name="close-outline"] {
+    transform: scale(0.5);
+    opacity: 0;
+}
+
+/* Asegurar que el icono correcto esté visible y animado */
+.chatbot-container.open .chatbot-header ion-icon[name="close-outline"] {
+    transform: scale(1);
+    opacity: 1;
+}
+
+.chatbot-container:not(.open) .chatbot-header ion-icon[name="chatbox-ellipses-outline"] {
+    transform: scale(1);
+    opacity: 1;
+}
+
+/* --- Cuerpo del Chatbot (mensajes y entrada) --- */
+.chatbot-body {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 16px; /* p-4 */
+    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 12px;
+    transition: background-color 0.3s ease-in-out;
+    position: relative;
+    /* CAMBIO CLAVE: min-height asegura que el body tenga siempre un tamaño,
+       incluso si chat-messages está vacío. */
+    min-height: 0; /* Permite que el flex item se encoja correctamente */
+}
+
+/* Ocultar el body cuando el chat está cerrado */
+.chatbot-container:not(.open) .chatbot-body {
+    display: none;
+}
+
+/* --- Área de Mensajes --- */
+.chat-messages {
+    flex-grow: 1; /* Permite que los mensajes tomen todo el espacio disponible */
+    overflow-y: auto; /* Habilita el scroll vertical cuando el contenido excede el alto */
+    padding-right: 8px; /* Espacio para la barra de scroll */
+    /* REMOVIDO: margin-bottom aquí, se manejará con gap en el flex container o padding en el body */
+    scrollbar-width: thin;
+    scrollbar-color: #A0AEC0 #CBD5E0;
+    /* CAMBIO CLAVE: Establece una altura base para que el scroll funcione correctamente
+       cuando hay mucho contenido. min-height: 0 es crucial para flexbox. */
+    min-height: 0; 
+}
+
+/* Estilos para la barra de scroll (Webkit) */
+.chat-messages::-webkit-scrollbar {
+    width: 8px;
+}
+
+.chat-messages::-webkit-scrollbar-track {
+    background: #E2E8F0;
+    border-radius: 10px;
+}
+
+.chat-messages::-webkit-scrollbar-thumb {
+    background-color: #94A3B8;
+    border-radius: 10px;
+    border: 2px solid #E2E8F0;
+}
+
+/* Estilos para la barra de scroll en Dark Mode */
+.dark-mode .chat-messages::-webkit-scrollbar-track {
+    background: #4A5568;
+}
+
+.dark-mode .chat-messages::-webkit-scrollbar-thumb {
+    background-color: #64748B;
+    border: 2px solid #4A5568;
+}
+
+/* --- Mensajes Individuales --- */
+.user-message,
+.bot-message {
+    max-width: 85%;
+    padding: 10px 14px;
+    border-radius: 18px;
+    margin-bottom: 8px;
+    line-height: 1.4;
+    position: relative;
+    word-wrap: break-word;
+    animation: messageFadeIn 0.3s ease-out forwards;
+    transform-origin: bottom;
+}
+
+@keyframes messageFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9) translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.user-message {
+    margin-left: auto;
+    background-color: #DBEAFE;
+    color: #1E40AF;
+    border-bottom-right-radius: 4px;
+}
+
+.dark-mode .user-message {
+    background-color: #1E3A8A;
+    color: #DBEAFE;
+}
+
+.bot-message {
+    margin-right: auto;
+    background-color: #E2E8F0;
+    color: #1A202C;
+    border-bottom-left-radius: 4px;
+}
+
+.dark-mode .bot-message {
+    background-color: #4A5568;
+    color: #F7FAFC;
+}
+
+.message-timestamp {
+    display: block;
+    font-size: 0.75rem;
+    margin-top: 4px;
+    text-align: right;
+    opacity: 0.8;
+}
+
+.user-message .message-timestamp {
+    color: #2563EB;
+}
+
+.dark-mode .user-message .message-timestamp {
+    color: #93C5FD;
+}
+
+.bot-message .message-timestamp {
+    color: #718096;
+}
+
+.dark-mode .bot-message .message-timestamp {
+    color: #A0AEC0;
+}
+
+/* --- Indicador de Escritura (Typing Indicator) --- */
+.typing-indicator {
+    display: flex;
+    align-items: center;
+    padding: 10px 14px;
+    border-radius: 18px;
+    width: fit-content;
+    margin-right: auto;
+    background-color: #E2E8F0;
+    animation: messageFadeIn 0.3s ease-out forwards;
+    flex-shrink: 0; /* Asegura que no se encoja */
+    margin-bottom: 8px; /* Añade un pequeño margen inferior */
+}
+
+.dark-mode .typing-indicator {
+    background-color: #4A5568;
+}
+
+.typing-dots {
+    display: flex;
+    gap: 4px;
+    margin-right: 8px;
+}
+
+.typing-dots .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #4A5568;
+    animation: bounce 1.4s infinite ease-in-out;
+}
+
+.dark-mode .typing-dots .dot {
+    background-color: #A0AEC0;
+}
+
+.typing-dots .dot:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.typing-dots .dot:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+.typing-text {
+    font-size: 0.875rem;
+    color: #4A5568;
+}
+
+.dark-mode .typing-text {
+    color: #CBD5E0;
+}
+
+@keyframes bounce {
+    0%, 80%, 100% { transform: translateY(0); }
+    40% { transform: translateY(-7px); }
+}
+
+/* --- Opciones del Bot (Botones) --- */
+.bot-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px; /* Espacio entre los botones */
+    margin-top: auto; /* Empuja las opciones al final del cuerpo */
+    padding-top: 16px;
+    border-top: 1px solid #E2E8F0;
+    transition: border-color 0.3s ease-in-out;
+    flex-shrink: 0; /* CAMBIO CLAVE: Asegura que las opciones no se encojan */
+}
+
+.dark-mode .bot-options {
+    border-color: #4A5568;
+}
+
+.option-button {
+    flex-grow: 1;
+    min-width: 120px;
+    max-width: calc(50% - 4px);
+    text-align: center;
+    border: none;
+    cursor: pointer;
+    white-space: normal;
+    word-wrap: break-word;
+    line-height: 1.3;
+    font-size: 0.9rem;
+    transition: background-color 0.2s ease-in-out, transform 0.1s ease-out, opacity 0.2s ease-in-out;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-weight: 500;
+    outline: none;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.option-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.option-button:active {
+    transform: translateY(0);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.option-button[disabled] {
+    cursor: not-allowed;
+    opacity: 0.6;
+    transform: none;
+    box-shadow: none;
+}
+
+.option-button:focus-visible {
+    box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.5);
+}
+
+/* --- Estado Vacío (sin mensajes) --- */
+.empty-state {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    animation: fadeIn 0.5s ease-out forwards;
+    /* CAMBIO CLAVE: Asegura que ocupe todo el espacio disponible */
+    width: calc(100% - 32px); /* Ancho del body menos el padding */
+    max-height: 100%; /* Limita la altura */
+    overflow-y: auto; /* Permite scroll si el contenido es demasiado grande */
+    display: flex; /* Para centrar el contenido del empty-state */
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.empty-state ion-icon {
+    font-size: 3rem;
+    margin-bottom: 0.5rem;
+    color: #9CA3AF;
+}
+
+.dark-mode .empty-state ion-icon {
+    color: #6B7280;
+}
+
+.empty-state p {
+    font-weight: 500;
+}

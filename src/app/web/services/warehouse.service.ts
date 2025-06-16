@@ -16,32 +16,34 @@ import { ApiResponse } from '../models/api-response.model'; // Ajusta la ruta a 
   providedIn: 'root'
 })
 export class WarehouseService {
-  private apiUrl = `${environment.apiUrl}/warehouse`; // Asume que tu backend tiene rutas como /api/warehouse
+  // Ajustamos la URL para usar la ruta pública de visualización
+  private apiUrl = `${environment.apiUrl}/api/dashboard-warehouse`;
 
   constructor(private http: HttpClient) { }
 
+
   /**
-   * Obtiene una lista paginada de almacenes.
-   * Puede filtrar por estado.
-   * Accesible por 'admin', 'editor', 'visualizador'.
+   * Obtiene una lista paginada de almacenes/empresas.
+   * AHORA ESPERA UN ARRAY DE WAREHOUSE DIRECTAMENTE
    */
-  getWarehouses(page: number = 1, limit: number = 10, status?: 'activa' | 'inactiva'): Observable<WarehousePaginatedResponse> {
+  getWarehouses(page: number = 1, limit: number = 10, status?: 'activa' | 'inactiva'): Observable<Warehouse[]> { // <-- ¡CAMBIO AQUÍ!
     let params = new URLSearchParams();
     params.append('page', page.toString());
     params.append('limit', limit.toString());
     if (status) {
-      params.append('estado', status); // Asegúrate de que el parámetro de backend sea 'estado'
+      params.append('estado', status);
     }
-    return this.http.get<WarehousePaginatedResponse>(`${this.apiUrl}?${params.toString()}`).pipe(
+    return this.http.get<Warehouse[]>(`${this.apiUrl}?${params.toString()}`).pipe(
       catchError(this.handleError)
     );
   }
 
   /**
-   * Obtiene un almacén por su ID.
-   * Accesible por 'admin', 'editor', 'visualizador'.
+   * Obtiene un almacén/empresa por su ID.
+   * Accesible públicamente.
    */
   getWarehouseById(id: number): Observable<Warehouse> {
+    // Usamos el `apiUrl` que ya apunta a /dashboard-warehouse
     return this.http.get<Warehouse>(`${this.apiUrl}/${id}`).pipe(
       catchError(this.handleError)
     );
@@ -49,9 +51,10 @@ export class WarehouseService {
 
   /**
    * Crea un nuevo almacén.
-   * Requiere rol 'admin' o 'editor'.
+   * Requiere rol 'admin' o 'editor'. (Estas rutas son para el panel de administración, no la web pública)
    */
   createWarehouse(warehouse: CreateWarehouseDto): Observable<Warehouse> {
+    // La ruta para crear sigue siendo `dashboard-warehouse` pero con POST
     return this.http.post<Warehouse>(this.apiUrl, warehouse).pipe(
       catchError(this.handleError)
     );

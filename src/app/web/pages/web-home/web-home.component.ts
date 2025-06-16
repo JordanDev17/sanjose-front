@@ -1,6 +1,6 @@
 // home.component.ts
 
-import { Component, OnInit, AfterViewInit, OnDestroy, ViewChildren, QueryList, ElementRef } from '@angular/core';
+import { Component, OnInit, AfterViewInit, OnDestroy, ViewChildren, ViewChild, QueryList, ElementRef,  HostListener } from '@angular/core';
 import { gsap } from 'gsap'; // Importa la librería principal de GSAP
 import { TextPlugin } from 'gsap/TextPlugin'; // Importa el plugin TextPlugin para el efecto typewriter
 import { ScrollTrigger } from 'gsap/ScrollTrigger'; // Importa ScrollTrigger para animaciones basadas en el scroll
@@ -32,6 +32,9 @@ interface ServiceItem {
 // Importaciones para las secciones de noticias y modelos
 import { NewsService } from '../../services/news.service'; // Asegúrate de que esta ruta sea correcta
 import { News } from '../../models/news.model'; // Asegúrate de que esta ruta y el modelo sean correctos
+
+// Importa el componente del chatbot
+import { ChatbotComponent } from '../../components/chatbot/chatbot.component';
 
 @Component({
   selector: 'app-web-home', // Selector del componente, usado en el HTML de la aplicación
@@ -157,6 +160,19 @@ export class WebHomeComponent implements OnInit, AfterViewInit, OnDestroy {
   // ElementRef es una envoltura nativa de Angular para acceder directamente al elemento del DOM.
   @ViewChildren('serviceCard') serviceCards!: QueryList<ElementRef>;
 
+   // Decorador para obtener una referencia al componente hijo del chatbot
+  // 'chatbotComponentRef' debe coincidir con el #nombre en tu HTML.
+  // La exclamación (!) le dice a TypeScript que esta propiedad se inicializará
+  // antes de ser usada (durante el ciclo de vida de Angular).
+  @ViewChild('chatbotComponentRef') chatbotComponentRef!: ChatbotComponent;
+
+  // Referencias a los elementos del DOM para animar
+  // Las cadenas en @ViewChild deben coincidir con las variables de referencia de plantilla (#nombreVariable) en el HTML.
+  @ViewChild('tourTitle') tourTitle!: ElementRef;
+  @ViewChild('tourSubtitle') tourSubtitle!: ElementRef;
+  @ViewChild('tourCta') tourCta!: ElementRef;
+  @ViewChild('tourContainer') tourContainer!: ElementRef;
+
   newsList: News[] = []; // Array para almacenar las noticias
   loading: boolean = true; // Indicador de carga de noticias
   errorMessage: string | null = null; // Mensaje de error si falla la carga de noticias
@@ -185,6 +201,94 @@ export class WebHomeComponent implements OnInit, AfterViewInit, OnDestroy {
     this.setupServiceCardAnimations(); // Configura las animaciones de las tarjetas de servicios.
     this.setupServiceCardAnimationsTwo(); // Configura hovers y animaciones sutiles
     this.setupHorizontalScrollCarousel(); // Configura el carrusel horizontal
+
+     // Ahora, el check de ViewChild será más fiable.
+    // Aunque el setTimeout es una buena medida de seguridad, con las referencias correctas,
+    // deberían estar disponibles en ngAfterViewInit casi siempre.
+    if (this.tourTitle && this.tourSubtitle && this.tourCta && this.tourContainer) {
+      this.animateTourSection();
+    } else {
+      console.warn('Elementos del tour virtual no encontrados directamente en ngAfterViewInit. Reintentando en 500ms.');
+      setTimeout(() => {
+        if (this.tourTitle && this.tourSubtitle && this.tourCta && this.tourContainer) {
+          this.animateTourSection();
+        } else {
+          console.error('Elementos del tour virtual no encontrados para animar después del reintento. Por favor, verifica el HTML y los nombres de las variables de referencia de plantilla (#nombreVariable).');
+        }
+      }, 500);
+    }
+  }
+
+  private animateTourSection(): void {
+    const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
+
+    // Animación para el título
+    tl.to("#tour-title", {
+      opacity: 1,
+      y: 0,
+      duration: 1.2,
+      delay: 0.2 // Pequeño retraso para que no sea instantáneo
+    });
+
+    // Animación para el subtítulo
+    tl.to("#tour-subtitle", {
+      opacity: 1,
+      y: 0,
+      duration: 1,
+    }, "-=0.8"); // Empieza 0.8s antes de que termine la animación anterior (superposición)
+
+    // Animación para el botón CTA
+    tl.to("#tour-cta", {
+      opacity: 1,
+      scale: 1,
+      duration: 0.8,
+    }, "-=0.6"); // Empieza 0.6s antes de que termine la animación anterior
+
+    // Animación para el contenedor del tour virtual (aparece sutilmente detrás)
+    tl.to("#tour-container", {
+      opacity: 1,
+      scale: 1,
+      filter: "blur(0px)", // Elimina el desenfoque
+      duration: 1.5,
+    }, "-=1.2"); // Empieza 1.2s antes de que termine la animación anterior
+
+    // Opcional: Animar algo más cuando el tour ya esté visible, por ejemplo,
+    // que la autorotación comience después de un tiempo si quieres que se vea el texto principal primero.
+    // Esto ya lo tienes controlado en virtual-tour.component.ts si APP_DATA.settings.autorotateEnabled es true.
+  }
+
+
+    // --- Nueva función para animar la salida del texto ---
+  // @HostListener para capturar el click en el botón CTA
+  // Esto es más robusto que agregar un listener directamente en el HTML
+  @HostListener('click', ['$event.target'])
+  onClick(targetElement: HTMLElement): void {
+    if (targetElement.id === 'tour-cta') {
+      this.hideTourOverlayText();
+    }
+  }
+
+  private hideTourOverlayText(): void {
+    const tl = gsap.timeline({ defaults: { ease: "power2.inOut" } });
+
+    // Animar el contenedor principal del texto para que se deslice hacia abajo y se desvanezca
+    tl.to(this.tourTitle.nativeElement.parentElement?.parentElement, { // Accede al div que contiene el texto y el botón
+      y: '100%', // Mueve hacia abajo por el 100% de su propia altura
+      opacity: 0,
+      duration: 1.0,
+      onComplete: () => {
+        // Opcional: remover el elemento del DOM o esconderlo con display: none después de la animación
+        // para asegurar que no interfiera si hay alguna situación rara con pointer-events
+        if (this.tourTitle.nativeElement.parentElement?.parentElement) {
+          this.tourTitle.nativeElement.parentElement.parentElement.style.display = 'none';
+        }
+      }
+    });
+
+    // Opcional: Podrías querer que el tour haga un zoom in o alguna otra animación
+    // si el tour no está ya en su estado final de animación de entrada.
+    // En este caso, ya está en opacity: 1, scale: 1, blur: 0, así que no es estrictamente necesario,
+    // pero si lo haces visible solo con el botón, aquí iría.
   }
 
    /**
@@ -610,6 +714,8 @@ export class WebHomeComponent implements OnInit, AfterViewInit, OnDestroy {
       });
     }
   }
+
+
 
 
   /**

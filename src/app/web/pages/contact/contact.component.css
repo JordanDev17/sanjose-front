@@ -1,0 +1,23 @@
+/* src/app/web/pages/contact/contact.component.css */
+
+:host {
+  display: block;
+  width: 100%;
+}
+
+form input,
+form textarea {
+  border: 1px solid #ccc;
+  transition: border 0.3s ease;
+}
+
+form input:focus,
+form textarea:focus {
+  border-color: #3b82f6; /* azul Tailwind */
+  outline: none;
+}
+
+button:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5);
+}

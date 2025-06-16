@@ -46,6 +46,8 @@ import { ParticlesBackgroundComponent } from './web/components/particles-backgro
 import { JwtInterceptor } from './core/auth/jwt.interceptor';
 import { LocationMapComponent } from './web/components/location-map/location-map.component';
 import { AnimatedLinesBackgroundService } from './core/background/animated-lines-background.service';
+import { ChatbotComponent } from './web/components/chatbot/chatbot.component';
+import { VirtualTourComponent } from './web/components/virtual-tour/virtual-tour.component';
 
 @NgModule({
   declarations: [
@@ -78,6 +80,8 @@ import { AnimatedLinesBackgroundService } from './core/background/animated-lines
     WarehouseCardComponent,
     NotFoundComponent,
     LocationMapComponent,
+    ChatbotComponent,
+    VirtualTourComponent,
 
   ],
   imports: [
@@ -90,11 +94,10 @@ import { AnimatedLinesBackgroundService } from './core/background/animated-lines
     BrowserAnimationsModule,
     RouterModule, // <-- Necesario para el enrutamiento
     WebHeaderComponent, // <-- Componente STANDALONE IMPORTADO AQUÍ
-    FooterComponent,    // <-- Componente STANDALONE IMPORTADO AQUÍ (si es standalone)
-    WebLoginComponent, 
+    FooterComponent, // <-- Componente STANDALONE IMPORTADO AQUÍ (si es standalone)
+    WebLoginComponent,
     ParticlesBackgroundComponent,
-    
-  ],
+],
   providers: [
     {
       provide: HTTP_INTERCEPTORS,

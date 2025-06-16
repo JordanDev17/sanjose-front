@@ -20,7 +20,7 @@ export class AuthService {
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   currentUser$: Observable<User | null> = this.currentUserSubject.asObservable();
 
-  private readonly AUTH_API_URL = environment.apiUrl + '/auth';
+  private readonly AUTH_API_URL = environment.apiUrl + '/api/auth';
 
   constructor(private http: HttpClient, private router: Router) {
     this.loadUserFromLocalStorage();

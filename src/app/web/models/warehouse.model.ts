@@ -1,39 +1,36 @@
 // src/app/web/models/warehouse.model.ts
 
-/**
- * Interface para representar los datos de un Almacén tal como son devueltos por el backend.
- */
 export interface Warehouse {
   id: number;
-  nombre: string;
+  nombre: string; // Cambiado de 'name' a 'nombre'
   slug: string;
-  descripcion: string;
-  sector: string | null; // VARCHAR puede ser nulo
-  logotipo_url: string | null; // VARCHAR puede ser nulo
-  sitio_web: string | null; // VARCHAR puede ser nulo
-  contacto_email: string | null; // VARCHAR puede ser nulo
-  contacto_telefono: string | null; // VARCHAR puede ser nulo
-  direccion_bodega: string | null; // VARCHAR puede ser nulo
-  fecha_registro: string; // DATETIME se representará como string ISO 8601
-  fecha_actualizacion: string; // DATETIME se representará como string ISO 8601
-  estado: 'activa' | 'inactiva'; // Tipos literales para el ENUM
+  descripcion: string; // Cambiado de 'description' a 'descripcion'
+  sector: string;
+  logotipo_url: string; // URL del logo
+  sitio_web: string; // URL del sitio web de la empresa
+  contacto_email: string;
+  contacto_telefono: string;
+  direccion_bodega: string; // La ubicación específica de la bodega
+  fecha_registro: string; // Usar string para fechas y luego formatear si es necesario
+  fecha_actualizacion: string;
+  estado: 'activa' | 'inactiva'; // Mantenemos el estado
+  // Si tu backend enviara 'images', podrías añadirlo aquí:
+  // images?: string[];
 }
 
-/**
- * Interface para la creación de un nuevo almacén (sin ID, y con campos opcionales)
- */
+// DTOs para la creación y actualización, si las usas
 export type CreateWarehouseDto = Omit<Warehouse, 'id' | 'fecha_registro' | 'fecha_actualizacion'>;
+export type UpdateWarehouseDto = Partial<CreateWarehouseDto>;
 
-/**
- * Interface para la actualización parcial de un almacén (todos los campos son opcionales)
- */
-export type UpdateWarehouseDto = Partial<Omit<Warehouse, 'id' | 'fecha_registro' | 'fecha_actualizacion' | 'slug'>>; // No se suele actualizar el slug directamente en el frontend
-
-// Interfaz para la respuesta paginada de almacenes
 export interface WarehousePaginatedResponse {
   data: Warehouse[];
-  totalItems: number;
-  currentPage: number;
+  total: number;
+  page: number;
+  limit: number;
   totalPages: number;
-  itemsPerPage: number;
+}
+
+export interface ApiResponse {
+  message: string;
+  status: number;
 }
