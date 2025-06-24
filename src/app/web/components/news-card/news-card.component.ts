@@ -1,18 +1,12 @@
 // src/app/web/components/news-card/news-card.component.ts
-import { Component, OnInit, Input, OnDestroy, AfterViewInit, ElementRef, ViewChild } from '@angular/core';
-import { News } from '../../models/news.model'; // Asegúrate que la ruta a tu modelo News sea correcta
-import { gsap } from 'gsap'; // Importa la librería GSAP
-import { ScrollTrigger } from 'gsap/ScrollTrigger'; // Importa el plugin ScrollTrigger para animaciones al hacer scroll
+import { Component, OnInit, Input, OnDestroy, AfterViewInit, ElementRef, ViewChild, HostListener, Output, EventEmitter } from '@angular/core';
+import { News } from '../../models/news.model';
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
-// Importación dinámica de initFlowbite. Esto es clave para que Flowbite funcione.
-// TypeScript podría quejarse si no hay un archivo de declaración de tipos para Flowbite directamente en 'flowbite',
-// pero debería funcionar en tiempo de ejecución si la librería está instalada.
-// Si sigues teniendo un error de 'no tiene un default export', intenta:
-// import * as Flowbite from 'flowbite'; o import { initFlowbite } from 'flowbite';
-// La forma más robusta es con import() como se muestra.
-declare const initFlowbite: any; // Declara la función global de Flowbite si se carga vía script en index.html
+declare const initFlowbite: any;
 
-gsap.registerPlugin(ScrollTrigger); // Registra el plugin ScrollTrigger
+gsap.registerPlugin(ScrollTrigger);
 
 @Component({
   selector: 'app-news-card',
@@ -21,68 +15,88 @@ gsap.registerPlugin(ScrollTrigger); // Registra el plugin ScrollTrigger
   styleUrls: ['./news-card.component.css']
 })
 export class NewsCardComponent implements OnInit, AfterViewInit, OnDestroy {
-  @Input() news!: News; // Propiedad de entrada para recibir los datos de la noticia
+  @Input() news!: News;
+  @Output() cardClicked = new EventEmitter<News>();
 
-  @ViewChild('card') cardElement!: ElementRef; // Referencia al elemento DIV de la tarjeta para animaciones GSAP
+  @ViewChild('card') cardElement!: ElementRef;
+
+  private hoverTween: gsap.core.Tween | null = null; // Para controlar la animación de hover
 
   constructor() { }
 
   ngOnInit(): void {
-    // Aquí puedes realizar cualquier lógica de inicialización o pre-procesamiento de datos.
+    // console.log('News Card Init:', this.news.titulo);
   }
 
   ngAfterViewInit(): void {
-        // Llama a initFlowbite después de que la vista se haya inicializado
-    // para que Flowbite pueda escanear el DOM y activar sus componentes.
-    // Usamos un pequeño timeout para asegurarnos de que el DOM esté completamente listo.
     setTimeout(() => {
-      // Verifica si initFlowbite está disponible globalmente (si lo cargaste via script en index.html)
       if (typeof initFlowbite !== 'undefined') {
         initFlowbite();
       } else {
-        // Alternativa: Si cargaste Flowbite como módulo y lo importaste en tu ts,
-        // podrías necesitar algo como Flowbite.initFlowbite();
-        // Depende de cómo esté configurado tu Flowbite.
-        // Si tienes el import 'flowbite' en tu main.ts o app.module.ts, o si usas el script en index.html.
-        // Lo más común es el script en index.html, que expone initFlowbite globalmente.
+        console.warn('Flowbite global initFlowbite not found. Ensure Flowbite script is loaded.');
       }
     }, 0);
 
-    // Animación de entrada de la tarjeta con GSAP al hacer scroll
     gsap.from(this.cardElement.nativeElement, {
-      opacity: 0,         // La animación comienza con la tarjeta completamente transparente
-      y: 50,              // La tarjeta comienza 50 píxeles más abajo de su posición final
-      duration: 0.8,      // La duración de la animación es de 0.8 segundos
-      ease: 'power3.out', // Un tipo de easing que hace que la animación sea suave y natural al final
-      delay: 0.1,         // Un pequeño retraso para que las tarjetas no aparezcan todas al mismo tiempo
-      scrollTrigger: {    // Configuración para que la animación se active al hacer scroll
-        trigger: this.cardElement.nativeElement, // El elemento que "observa" el ScrollTrigger
-        start: 'top 85%', // La animación se dispara cuando la parte superior de la tarjeta alcanza el 85% del viewport
-        toggleActions: 'play none none none' // Define cuándo se reproduce la animación: 'play' al entrar, y luego no se revierte ni se repite
+      opacity: 0,
+      y: 50,
+      duration: 0.8,
+      ease: 'power3.out',
+      delay: 0.1,
+      scrollTrigger: {
+        trigger: this.cardElement.nativeElement,
+        start: 'top 85%',
+        toggleActions: 'play none none none'
       }
+    });
+
+    // Definir la animación de hover pero sin ejecutarla inmediatamente.
+    // Usamos el 'boxShadow' para la sombra dinámica que querías con GSAP.
+    this.hoverTween = gsap.to(this.cardElement.nativeElement, {
+      boxShadow: '0px 15px 30px rgba(0,0,0,0.25)', // Sombra más pronunciada en hover
+      duration: 0.3,
+      ease: 'power2.out',
+      paused: true // La animación está pausada por defecto
     });
   }
 
   ngOnDestroy(): void {
-    // Este hook se ejecuta justo antes de que Angular destruya el componente.
-    // Es el lugar para limpiar recursos, como desuscribirse de observables o
-    // "matar" animaciones GSAP si fueran persistentes o complejas.
+    ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+    // Asegurarse de limpiar la animación de hover si existe
+    if (this.hoverTween) {
+      this.hoverTween.kill();
+    }
   }
 
-  /**
-   * Formatea una cadena de fecha ISO 8601 a un formato legible en español.
-   * @param dateString La cadena de fecha a formatear (ej. "2023-10-27T10:00:00Z").
-   * @returns La fecha formateada (ej. "27 de octubre de 2023").
-   */
-  formatDate(dateString: string): string {
-    return new Date(dateString).toLocaleDateString('es-CO', { year: 'numeric', month: 'long', day: 'numeric' });
+  // Animación al pasar el ratón sobre la tarjeta
+  @HostListener('mouseenter')
+  onMouseEnter(): void {
+    if (this.hoverTween) {
+      this.hoverTween.play(); // Reproduce la animación de sombra al entrar
+    }
   }
 
-  /**
-   * Maneja el evento de error cuando la imagen destacada no se carga correctamente.
-   * Reemplaza la URL de la imagen por una de placeholder para evitar imágenes rotas.
-   * @param event El evento de error del elemento <img>.
-   */
+  // Animación al quitar el ratón de la tarjeta
+  @HostListener('mouseleave')
+  onMouseLeave(): void {
+    if (this.hoverTween) {
+      this.hoverTween.reverse(); // Revierte la animación de sombra al salir
+    }
+  }
+
+  onCardClick(): void {
+    this.cardClicked.emit(this.news);
+  }
+
+  formatDate(isoDate: string): string {
+    if (!isoDate) {
+      return '';
+    }
+    const date = new Date(isoDate);
+    const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'long', day: 'numeric' };
+    return date.toLocaleDateString('es-ES', options);
+  }
+
   onImageError(event: Event): void {
     (event.target as HTMLImageElement).src = 'assets/web/media/img/logo-screen.png';
   }

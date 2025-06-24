@@ -132,6 +132,15 @@
       </div>
     </section>
 
+    <!-- espaciado -->
+<section class="py-10 md:py-16 flex items-center justify-center relative overflow-hidden ">
+  <div class="relative w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+    <div class="animated-gradient-line absolute inset-0 rounded-full"></div>
+  </div>
+</section>
+
+
+
     <section class="warehouses-grid-section" id="warehouses-list-section">
       <h2 class="text-3xl font-bold mb-8 text-center text-gray-800 dark:text-gray-200">
         Nuestras Empresas Destacadas
@@ -147,49 +156,16 @@
 
       <div
         *ngIf="warehouses.length > 0 && !isLoading"
-        class="grid grid-cols-1 gap-8 sm:grid-cols-1 md:grid-cols-1"
+        class="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3"
       >
-        <div
+        <!-- Aquí usamos el nuevo componente WarehouseCard! -->
+        <app-warehouse-card
           *ngFor="let warehouse of warehouses; let i = index"
+          [warehouse]="warehouse"
+          (viewDetails)="openWarehouseDetailModal($event)"
           #warehouseCard
-          class="c-warehouse-banner"
-          [ngClass]="{'c-banner-reverse': i % 2 !== 0}"
-          data-aos="fade-up"
-          data-aos-once="true"
-          data-aos-duration="1000"
           [attr.data-aos-delay]="i * 100"
-        >
-          <div class="c-banner-content-wrapper">
-            <div class="c-banner-logo-container">
-              <img
-                [src]="getWarehouseImageUrl(warehouse)"
-                [alt]="'Logotipo de ' + warehouse.nombre"
-                class="c-banner-logo"
-              />
-            </div>
-            <div class="c-banner-info">
-              <h3 class="c-banner-title">{{ warehouse.nombre }}</h3>
-              <p class="c-banner-sector">{{ warehouse.sector }}</p>
-              <p class="c-banner-description">
-                {{ warehouse.descripcion || 'Sin descripción disponible.' }}
-              </p>
-              <a [routerLink]="['/bodegas', warehouse.slug]" class="c-banner-link">
-                Ver Perfil
-                <svg
-                  class="ml-2 h-4 w-4"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
-                  <path
-                    fill-rule="evenodd"
-                    d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
-                    clip-rule="evenodd"
-                  ></path>
-                </svg>
-              </a>
-            </div>
-          </div>
-        </div>
+        ></app-warehouse-card>
       </div>
 
       <div
@@ -214,3 +190,11 @@
     </section>
   </div>
 </section>
+
+<!-- Aquí se incluirá el modal de detalle de la bodega -->
+<!-- Se mostrará solo cuando showDetailModal sea true -->
+<app-warehouse-detail
+  *ngIf="showDetailModal"
+  [warehouse]="selectedWarehouseForDetail"
+  (closeModal)="closeWarehouseDetailModal()"
+></app-warehouse-detail>

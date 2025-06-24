@@ -1,37 +1,141 @@
-// src/app/web/pages/dashboard-home/dashboard-home.component.ts
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common'; // Importa CommonModule para *ngIf
-import { AuthService } from 'src/app/core/auth/auth.service'; // Asegúrate de la ruta correcta
-
-// --- ¡CORRECCIÓN CLAVE AQUÍ! ---
-// Importamos la interfaz 'User' de donde realmente la proporciona el AuthService.
-// Asumo que tu archivo 'auth.models.ts' tiene una interfaz 'User' (o similar) para el usuario logueado.
-import { User } from 'src/app/core/auth/auth.models'; // <-- ¡CORREGIDO!
-import { RouterModule } from '@angular/router';
-
+import { Component, OnInit, OnDestroy, AfterViewInit } from '@angular/core';
+import { AuthService } from '../../../core/auth/auth.service'; // AuthService
+import { ThemeService } from '../../../core/theme/theme.service'; // AuthService
+import { User } from '../../models/user.model'; // Model user
+import { Observable, Subscription } from 'rxjs';
+import { map } from 'rxjs/operators';
+import AOS from 'aos'; // Importa AOS
+import { gsap } from 'gsap'; // Importa GSAP
+import { CountUp } from 'countup.js'; // Importa CountUp
 
 @Component({
   selector: 'app-dashboard-home',
+  standalone: false, // Este componente no es standalone
   templateUrl: './dashboard-home.component.html',
-  styleUrls: ['./dashboard-home.component.css'],
-  standalone: true,
-  imports: [CommonModule, RouterModule]
+  styleUrls: ['./dashboard-home.component.css']
 })
-export class DashboardHomeComponent implements OnInit {
-  currentUser: User | null = null; // <-- Usamos la interfaz 'User' del módulo 'auth'
+export class DashboardHomeComponent implements OnInit, AfterViewInit, OnDestroy {
+  currentUser: User | null = null;
+  darkMode$: Observable<boolean>;
+  private userSubscription: Subscription | undefined;
 
-  constructor(private authService: AuthService) { }
+  currentYear: number = new Date().getFullYear();
+
+  // Aquí podrías obtener estos datos de tu backend
+  newsCount: number = 2450;
+  warehousesCount: number = 185;
+  usersCount: number = 52;
+
+  // ¡CAMBIO EN EL CONSTRUCTOR!
+  constructor(
+    private authService: AuthService,
+    private themeService: ThemeService // Inyecta el ThemeService
+  ) {
+    this.darkMode$ = this.themeService.darkMode$; // Usa el observable del ThemeService
+  }
 
   ngOnInit(): void {
-    // Suscríbete al BehaviorSubject para obtener el usuario actual
-    this.authService.currentUser$.subscribe(user => {
-      this.currentUser = user;
+    // Suscribirse al usuario actual para mostrar su nombre y rol
+    this.userSubscription = this.authService.currentUser$.subscribe(
+      user => {
+        this.currentUser = user;
+      }
+    );
+
+    // Inicializar AOS
+    AOS.init({
+      duration: 800,
+      easing: 'ease-out-quad',
+      once: true,
+      mirror: false
     });
   }
 
-  // Método para obtener el rol del usuario (opcional, si no lo tienes ya en currentUser)
-  // Asegúrate de que 'rol' exista en la interfaz User de auth.models.ts
-  getUserRole(): string {
-    return this.currentUser ? this.currentUser.rol : 'invitado';
+  ngAfterViewInit(): void {
+    setTimeout(() => {
+      this.animateHeader();
+      this.animateCounters();
+    }, 0);
+  }
+
+  animateHeader(): void {
+    if (this.currentUser) {
+      gsap.from(".welcome-title", {
+        opacity: 0,
+        y: -50,
+        duration: 1,
+        ease: "power3.out",
+        delay: 0.5
+      });
+      gsap.from(".role-text", {
+        opacity: 0,
+        y: -30,
+        duration: 1,
+        ease: "power3.out",
+        delay: 0.7
+      });
+      gsap.from(".tagline", {
+        opacity: 0,
+        y: -20,
+        duration: 1,
+        ease: "power3.out",
+        delay: 0.9
+      });
+      gsap.from(".icon-dashboard", {
+        opacity: 0,
+        scale: 0.5,
+        duration: 1.2,
+        ease: "back.out(1.7)",
+        delay: 1.2
+      });
+      gsap.fromTo(".pattern-dots",
+        { opacity: 0, scale: 0.8 },
+        { opacity: 0.2, scale: 1, duration: 1.5, ease: "power2.out", delay: 1 }
+      );
+    }
+  }
+
+  animateCounters(): void {
+    const newsCountEl = document.getElementById('newsCount');
+    if (newsCountEl) {
+      const newsCountUp = new CountUp('newsCount', this.newsCount, {
+        duration: 2.5,
+      });
+      if (!newsCountUp.error) {
+        newsCountUp.start();
+      } else {
+        console.error(newsCountUp.error);
+      }
+    }
+
+    const warehousesCountEl = document.getElementById('warehousesCount');
+    if (warehousesCountEl) {
+      const warehousesCountUp = new CountUp('warehousesCount', this.warehousesCount, {
+        duration: 2.5
+      });
+      if (!warehousesCountUp.error) {
+        warehousesCountUp.start();
+      } else {
+        console.error(warehousesCountUp.error);
+      }
+    }
+
+    const usersCountEl = document.getElementById('usersCount');
+    if (usersCountEl) {
+      const usersCountUp = new CountUp('usersCount', this.usersCount, {
+        duration: 2.5
+      });
+      if (!usersCountUp.error) {
+        usersCountUp.start();
+      } else {
+        console.error(usersCountUp.error);
+      }
+    }
+  }
+
+  ngOnDestroy(): void {
+    if (this.userSubscription) {
+      this.userSubscription.unsubscribe();
+    }
   }
 }

@@ -8,6 +8,12 @@
 @plugin "flowbite/plugin";
 @source "../node_modules/flowbite";
 @custom-variant dark (&:where(.dark, .dark *));
+/* Importa Font Awesome */
+@import '@fortawesome/fontawesome-free/css/all.min.css';
+/*  Importación de estilos de Leaflet para el mapa */
+@import 'leaflet/dist/leaflet.css';
+/* Importación de estilos de AOS (Animate On Scroll) para animaciones al hacer scroll */
+@import 'aos/dist/aos.css';
 
 
 #particles-canvas {
@@ -48,55 +54,31 @@
   }
 }
 
-/* --- Nuevos estilos para el fondo del BODY con destellos de líneas --- */
-body {
-  /* Fondo base y color de texto para el modo claro */
-  background-color: #f8fafc; /* Tailwind gray-50 */
-  color: #334155; /* Tailwind slate-700 */
 
-  /* Transición suave para el color de fondo y la imagen de fondo */
-  transition: background-color 0.5s ease-in-out, background-image 0.5s ease-in-out;
 
-  /* Estilos del patrón de líneas para el modo CLARO */
-  background-image:
-    url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><path d="M-10 100 L100 -10 L110 0 L0 110 Z M-10 0 L100 110 L110 100 L0 -10 Z" fill="%23cbd5e1" opacity="0.15"/></svg>'); /* light gray-300, opacity 0.15 */
-  background-size: 150px 150px; /* Tamaño del patrón, ajusta para la densidad deseada */
-  background-repeat: repeat; /* Que se repita el patrón */
-  background-attachment: fixed; /* Para que el fondo no se mueva con el scroll */
-  background-blend-mode: multiply; /* Para un efecto más integrado con el color base */
+
+
+/* Para el patrón de puntos sutil en el header */
+.pattern-dots {
+  background-image: radial-gradient(currentColor 1px, transparent 1px);
+  background-size: 16px 16px; /* Ajusta el tamaño de los puntos */
+  color: rgba(255, 255, 255, 0.1); /* Color muy sutil */
 }
 
-/* Estilos para el modo OSCURO - aplicados cuando html tiene la clase 'dark' */
-html.dark body {
-  /* Fondo base y color de texto para el modo oscuro */
-  background-color: #020617; /* Tailwind gray-950 */
-  color: #e2e8f0; /* Tailwind slate-200 */
-
-  /* Estilos del patrón de líneas para el modo OSCURO */
-  background-image:
-    url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><path d="M-10 100 L100 -10 L110 0 L0 110 Z M-10 0 L100 110 L110 100 L0 -10 Z" fill="%231f2937" opacity="0.1"/></svg>'); /* dark gray-800, opacity 0.1 */
-  background-size: 150px 150px; /* Mismo tamaño para consistencia */
-  background-repeat: repeat;
-  background-attachment: fixed;
-  background-blend-mode: multiply;
+/* Animación de entrada para el header (si no usas AOS para todo el header) */
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-/* Opcional: Si quieres un degradado radial sutil sobre el fondo de líneas y partículas */
-/**/ 
-body::after {
-  content: '';
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: -90; 
-  background: radial-gradient(circle at center, rgba(0,0,0,0.02) 0%, transparent 70%);
-  opacity: 1;
-  transition: background 0.5s ease-in-out;
+.animate-fade-in {
+  animation: fade-in 1s ease-out forwards;
 }
 
-html.dark body::after {
-  background: radial-gradient(circle at center, rgba(255,255,255,0.02) 0%, transparent 70%);
-} 
+/* Clases de rol para las etiquetas (si no las tienes ya) */
+.role-tag {
+  @apply px-3 py-1 rounded-full text-sm font-semibold uppercase tracking-wide shadow-md transition-colors duration-300;
+}
+.role-admin { @apply bg-red-400 text-red-900; } /* Un color más distintivo para admin */
+.role-editor { @apply bg-yellow-400 text-yellow-900; }
+.role-visualizador { @apply bg-blue-400 text-blue-900; }

@@ -1,0 +1,29 @@
+/* src/app/web/components/warehouse-detail-modal/warehouse-detail-modal.component.css */
+
+/* Estilos para el scrollbar del modal si el contenido es largo */
+.detail-modal-card::-webkit-scrollbar {
+  width: 8px;
+}
+
+.detail-modal-card::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.detail-modal-card::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 10px;
+}
+
+.detail-modal-card::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Para navegadores Firefox */
+.detail-modal-card {
+  scrollbar-width: thin;
+  scrollbar-color: #888 #f1f1f1;
+}
+
+/* El resto de estilos se manejan principalmente con Tailwind CSS en el HTML. */
+/* Las animaciones GSAP se controlan a través de JS cambiando la opacidad y transformaciones. */

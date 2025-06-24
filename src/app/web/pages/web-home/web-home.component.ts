@@ -1,10 +1,11 @@
-// home.component.ts
+// src/app/web/pages/web-home/web-home.component.ts
 
-import { Component, OnInit, AfterViewInit, OnDestroy, ViewChildren, ViewChild, QueryList, ElementRef,  HostListener } from '@angular/core';
+import { Component, OnInit, AfterViewInit, OnDestroy, ViewChildren, ViewChild, QueryList, ElementRef, HostListener } from '@angular/core';
 import { gsap } from 'gsap'; // Importa la librería principal de GSAP
 import { TextPlugin } from 'gsap/TextPlugin'; // Importa el plugin TextPlugin para el efecto typewriter
 import { ScrollTrigger } from 'gsap/ScrollTrigger'; // Importa ScrollTrigger para animaciones basadas en el scroll
-import { Subscription } from 'rxjs'; // Importa Subscription para manejar las suscripciones de forma segura
+import { Subscription, interval } from 'rxjs'; // Importa Subscription para manejar las suscripciones de forma segura
+import { Renderer2 } from '@angular/core'; // Importa Renderer2 para manipulación segura del DOM
 
 // IMPORTANTE: Registra los plugins de GSAP AQUÍ, FUERA DE LA CLASE DEL COMPONENTE.
 // Esto asegura que los plugins estén disponibles globalmente para todas las animaciones de GSAP
@@ -12,15 +13,14 @@ import { Subscription } from 'rxjs'; // Importa Subscription para manejar las su
 gsap.registerPlugin(TextPlugin, ScrollTrigger);
 
 // Define la interfaz Servicio para tipar los servicios que se mostrarán en la sección de servicios
-// --- NUEVA INTERFAZ PARA DEFINIR LA ESTRUCTURA DE UN SERVICIO ---
 interface ServiceItem {
   iconPath: string; // El atributo 'd' del SVG
   iconColor: string; // Color para el ícono y la lista (ej. 'blue', 'green', 'yellow', 'red', 'teal', 'purple')
   gradientFrom: string; // Clase de Tailwind para el inicio del degradado (ej. 'from-blue-500')
   gradientTo: string; // Clase de Tailwind para el final del degradado (ej. 'to-blue-700')
   // Clases de fondo para modo claro y oscuro
-  bgColorLight: string;      // Ej: 'bg-white'
-  bgColorDark: string;       // Ej: 'dark:bg-gray-800'
+  bgColorLight: string;       // Ej: 'bg-white'
+  bgColorDark: string;      // Ej: 'dark:bg-gray-800'
   hoverBgColorLight: string; // Ej: 'bg-blue-100'
   hoverBgColorDark: string;  // Ej: 'dark:bg-blue-900'
   title: string;
@@ -31,10 +31,10 @@ interface ServiceItem {
 
 // Importaciones para las secciones de noticias y modelos
 import { NewsService } from '../../services/news.service'; // Asegúrate de que esta ruta sea correcta
-import { News } from '../../models/news.model'; // Asegúrate de que esta ruta y el modelo sean correctos
+import { News, NewsPaginatedResponse } from '../../models/news.model'; // Asegúrate de que esta ruta y el modelo sean correctos
 
-// Importa el componente del chatbot
-import { ChatbotComponent } from '../../components/chatbot/chatbot.component';
+// Importa el componente del chatbot (si es necesario y está en uso)
+// import { ChatbotComponent } from '../../components/chatbot/chatbot.component';
 
 @Component({
   selector: 'app-web-home', // Selector del componente, usado en el HTML de la aplicación
@@ -47,7 +47,6 @@ import { ChatbotComponent } from '../../components/chatbot/chatbot.component';
 export class WebHomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // Define un array de servicios que se mostrarán en la sección de servicios
-   // --- ARRAY DE SERVICIOS - ¡AHORA PUEDES MANEJARLOS AQUÍ! ---
   services: ServiceItem[] = [
     {
       iconPath: "M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 16h6m-6 0h-6m-9 0H3m2 0h5M7 8h10V5H7v3z",
@@ -91,7 +90,7 @@ export class WebHomeComponent implements OnInit, AfterViewInit, OnDestroy {
       bgColorLight: "bg-white",
       bgColorDark: "dark:bg-gray-800",
       hoverBgColorLight: "bg-yellow-100",
-      hoverBgColorDark: "dark:bg-yellow-900", // Ajusta el tono de gris para dark mode o usa dark:bg-yellow-900
+      hoverBgColorDark: "dark:bg-yellow-900",
       title: "Servicios Empresariales Integrados",
       description: "Asesoría legal, apoyo en gestión de talento, servicios financieros y soluciones tecnológicas para optimizar tu operación.",
       features: [
@@ -101,14 +100,14 @@ export class WebHomeComponent implements OnInit, AfterViewInit, OnDestroy {
       ]
     },
     {
-      iconPath: "M9 12l2 2 4-4m5.618-4.382a12.007 12.007 0 011.066 0c.45-.008.902.072 1.332.222a2.49 2.49 0 011.455 1.455c.15.43.23.882.222 1.332a12.007 12.007 0 010 1.066c-.008.45-.072.902-.222 1.332a2.49 2.49 0 01-1.455 1.455c-.43.15-.882.23-1.332.222a12.007 12.007 0 01-1.066 0c-.45.008-.902-.072-1.332-.222a2.49 2.49 0 01-1.455-1.455c-.15-.43-.23-.882-.222-1.332a12.007 12.007 0 010-1.066c.008-.45.072-.902.222-1.332a2.49 2.49 0 011.455-1.455c.43-.15.882-.23 1.332-.222z",
+      iconPath: "M9 12l2 2 4-4m5.618-4.382a12.007 12.007 0 011.066 0c.45-.008.902.072 1.332.222a2.49 2.49 0 011.455 1.455c.15.43.23.882.222 1.332a12.007 12.007 0 010 1.066c-.008.45-.072.902-.222 1.332a2.49 2.49 0 01-1.455-1.455c-.15-.43-.23-.882-.222-1.332a12.007 12.007 0 010-1.066c.008-.45.072-.902.222-1.332a2.49 2.49 0 011.455-1.455c.43-.15.882-.23 1.332-.222z",
       iconColor: "red",
       gradientFrom: "from-red-500",
       gradientTo: "to-red-700",
       bgColorLight: "bg-white",
       bgColorDark: "dark:bg-gray-800",
       hoverBgColorLight: "bg-red-100",
-      hoverBgColorDark: "dark:bg-red-900", // Ajusta el tono de gris para dark mode o usa dark:bg-red-900
+      hoverBgColorDark: "dark:bg-red-900",
       title: "Seguridad y Vigilancia 24/7",
       description: "Un entorno seguro con vigilancia constante, control de acceso y protocolos de emergencia eficientes para tu tranquilidad.",
       features: [
@@ -125,7 +124,7 @@ export class WebHomeComponent implements OnInit, AfterViewInit, OnDestroy {
       bgColorLight: "bg-white",
       bgColorDark: "dark:bg-gray-800",
       hoverBgColorLight: "bg-teal-100",
-      hoverBgColorDark: "dark:bg-teal-900", // Ajusta el tono de gris para dark mode o usa dark:bg-teal-900
+      hoverBgColorDark: "dark:bg-teal-900",
       title: "Compromiso con la Sostenibilidad",
       description: "Prácticas ecológicas, gestión de residuos y fomento de energías renovables para un futuro más verde y responsable.",
       features: [
@@ -142,7 +141,7 @@ export class WebHomeComponent implements OnInit, AfterViewInit, OnDestroy {
       bgColorLight: "bg-white",
       bgColorDark: "dark:bg-gray-800",
       hoverBgColorLight: "bg-purple-100",
-      hoverBgColorDark: "dark:bg-purple-900", // Ajusta el tono de gris para dark mode o usa 
+      hoverBgColorDark: "dark:bg-purple-900",
       title: "Conectividad Estratégica",
       description: "Ubicación privilegiada cerca de vías principales, aeropuertos y centros logísticos clave para una distribución eficiente.",
       features: [
@@ -153,142 +152,238 @@ export class WebHomeComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   ];
 
-
-  // @ViewChildren es un decorador que permite obtener referencias a los elementos del DOM
-  // que tienen la referencia local 'serviceCard' en el template.
-  // QueryList es una lista de elementos que se actualiza si el DOM cambia.
-  // ElementRef es una envoltura nativa de Angular para acceder directamente al elemento del DOM.
   @ViewChildren('serviceCard') serviceCards!: QueryList<ElementRef>;
 
-   // Decorador para obtener una referencia al componente hijo del chatbot
-  // 'chatbotComponentRef' debe coincidir con el #nombre en tu HTML.
-  // La exclamación (!) le dice a TypeScript que esta propiedad se inicializará
-  // antes de ser usada (durante el ciclo de vida de Angular).
-  @ViewChild('chatbotComponentRef') chatbotComponentRef!: ChatbotComponent;
-
   // Referencias a los elementos del DOM para animar
-  // Las cadenas en @ViewChild deben coincidir con las variables de referencia de plantilla (#nombreVariable) en el HTML.
-  @ViewChild('tourTitle') tourTitle!: ElementRef;
-  @ViewChild('tourSubtitle') tourSubtitle!: ElementRef;
-  @ViewChild('tourCta') tourCta!: ElementRef;
-  @ViewChild('tourContainer') tourContainer!: ElementRef;
+  @ViewChild('tourTitle') tourTitle!: ElementRef<HTMLHeadingElement>;
+  @ViewChild('tourSubtitle') tourSubtitle!: ElementRef<HTMLParagraphElement>;
+  @ViewChild('tourCta') tourCta!: ElementRef<HTMLButtonElement>;
+  @ViewChild('tourContainer') tourContainer!: ElementRef<HTMLDivElement>;
+  @ViewChild('tourOverlayText') tourOverlayText!: ElementRef<HTMLDivElement>;
+  @ViewChild('tourSection') tourSection!: ElementRef<HTMLElement>;
 
-  newsList: News[] = []; // Array para almacenar las noticias
-  loading: boolean = true; // Indicador de carga de noticias
-  errorMessage: string | null = null; // Mensaje de error si falla la carga de noticias
+  newsList: News[] = [];
+  loading: boolean = true;
+  errorMessage: string | null = null;
 
-  private typewriterTimeline!: gsap.core.Timeline; // Declara una línea de tiempo para controlar el efecto typewriter
-  private subscriptions: Subscription[] = []; // Array para almacenar todas las suscripciones y desuscribirse en OnDestroy
+  selectedNews: News | null = null;
+  isModalOpen: boolean = false;
+  currentIndex: number = 0;
+  isTourActive: boolean = false; // Controla si el tour está en modo pantalla completa
 
-  // Inyecta el servicio NewsService en el constructor de la clase.
-  constructor(private newsService: NewsService) {}
+  private typewriterTimeline!: gsap.core.Timeline;
+  private subscriptions: Subscription[] = [];
+  private serviceCarouselMainScrollTrigger: ScrollTrigger | null = null;
+  private masterTimeline?: gsap.core.Timeline;
+  private intervalSubscription!: Subscription;
+  private readonly INTERVAL_TIME = 5000;
 
-  /**
-   * Hook del ciclo de vida de Angular que se ejecuta una vez que el componente ha sido inicializado.
-   * Es un buen lugar para iniciar la carga de datos que no dependen de la vista.
-   */
+  constructor(private newsService: NewsService, private renderer: Renderer2) { }
+
   ngOnInit(): void {
     this.loadNews();
   }
 
-  /**
-   * Hook del ciclo de vida de Angular que se ejecuta después de que la vista del componente
-   * y sus vistas secundarias han sido completamente inicializadas.
-   * Es el lugar ideal para iniciar animaciones que interactúan con los elementos del DOM.
-   */
   ngAfterViewInit(): void {
-    this.animateHeroSection(); // Inicia las animaciones de la sección principal.
-    this.setupServiceCardAnimations(); // Configura las animaciones de las tarjetas de servicios.
-    this.setupServiceCardAnimationsTwo(); // Configura hovers y animaciones sutiles
-    this.setupHorizontalScrollCarousel(); // Configura el carrusel horizontal
+    this.initHeroAnimation();
 
-     // Ahora, el check de ViewChild será más fiable.
-    // Aunque el setTimeout es una buena medida de seguridad, con las referencias correctas,
-    // deberían estar disponibles en ngAfterViewInit casi siempre.
-    if (this.tourTitle && this.tourSubtitle && this.tourCta && this.tourContainer) {
-      this.animateTourSection();
+    // **OPTIMIZACIÓN Y CORRECCIÓN PARA EL CARRUSEL DE SERVICIOS**
+    // Se usa `QueryList.changes` para asegurar que las animaciones del carrusel
+    // se configuren solo cuando las tarjetas están presentes en el DOM,
+    // y se re-configuren si la lista de tarjetas cambia dinámicamente.
+    this.subscriptions.push(
+      this.serviceCards.changes.subscribe(() => {
+        // Limpiar animaciones de carrusel anteriores antes de configurar las nuevas
+        this.clearServiceCarouselAnimations();
+        this.setupHorizontalScrollCarousel();
+        this.setupServiceCardAnimationsTwo(); // Para los hovers
+      })
+    );
+
+    // Llamada inicial para el carrusel de servicios si las tarjetas ya están disponibles
+    if (this.serviceCards.length > 0) {
+      this.setupHorizontalScrollCarousel();
+      this.setupServiceCardAnimationsTwo(); // Para los hovers
+    }
+
+    // Inicializar la animación de la sección del tour cuando sea visible en el viewport
+    // Verificamos que todas las referencias existan antes de crear el ScrollTrigger
+    if (this.tourSection && this.tourTitle && this.tourSubtitle && this.tourCta && this.tourContainer && this.tourOverlayText) {
+      ScrollTrigger.create({
+        trigger: this.tourSection.nativeElement,
+        start: "top center", // Cuando la parte superior de la sección entra en el centro de la ventana
+        onEnter: () => this.animateTourSection(),
+        once: true // Para que la animación solo se ejecute una vez
+      });
     } else {
-      console.warn('Elementos del tour virtual no encontrados directamente en ngAfterViewInit. Reintentando en 500ms.');
-      setTimeout(() => {
-        if (this.tourTitle && this.tourSubtitle && this.tourCta && this.tourContainer) {
-          this.animateTourSection();
-        } else {
-          console.error('Elementos del tour virtual no encontrados para animar después del reintento. Por favor, verifica el HTML y los nombres de las variables de referencia de plantilla (#nombreVariable).');
-        }
-      }, 500);
+      console.warn('Algunos elementos de la sección del tour no están disponibles en ngAfterViewInit para ScrollTrigger. Asegúrate de que las referencias # están en el HTML.');
     }
   }
 
+  ngOnDestroy(): void {
+    this.masterTimeline?.kill();
+    // Mata el timeline del efecto typewriter si existe
+    if (this.typewriterTimeline) {
+      this.typewriterTimeline.kill();
+    }
+
+    if (this.intervalSubscription) {
+      this.intervalSubscription.unsubscribe();
+    }
+
+    // Mata explícitamente el ScrollTrigger principal del carrusel de servicios
+    if (this.serviceCarouselMainScrollTrigger) {
+      this.serviceCarouselMainScrollTrigger.kill();
+      this.serviceCarouselMainScrollTrigger = null; // Liberar la referencia
+    }
+
+    // Mata todos los ScrollTriggers anidados de las tarjetas de servicio
+    this.serviceCards.forEach((card, index) => {
+      const specificTrigger = ScrollTrigger.getById(`serviceCard-${index}`);
+      if (specificTrigger) {
+        specificTrigger.kill();
+      }
+      // Mata cualquier otra animación GSAP directamente aplicada a la tarjeta
+      gsap.killTweensOf(card.nativeElement);
+    });
+
+    // Restaurar clases de fondo de las tarjetas de servicio a su estado inicial
+    this.serviceCards.forEach((card, index) => {
+      const element = card.nativeElement;
+      const service = this.services[index];
+
+      if (service) {
+        const initialBgClasses = `${service.bgColorLight} ${service.bgColorDark}`;
+        const hoverBgClasses = `${service.hoverBgColorLight} ${service.hoverBgColorDark}`;
+
+        // Remover las clases de hover y añadir las iniciales
+        element.classList.remove(...hoverBgClasses.split(' '));
+        element.classList.add(...initialBgClasses.split(' '));
+      }
+
+    });
+
+    // Desuscribe de todas las suscripciones de RxJS para evitar fugas de memoria
+    this.subscriptions.forEach(sub => sub.unsubscribe());
+
+    ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+  }
+
+  /**
+   * Anima la entrada del texto de la sección del tour y del contenedor del tour.
+   * Se ejecuta una vez cuando la sección entra en el viewport.
+   */
   private animateTourSection(): void {
     const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
 
     // Animación para el título
-    tl.to("#tour-title", {
+    tl.to(this.tourTitle.nativeElement, {
       opacity: 1,
       y: 0,
       duration: 1.2,
-      delay: 0.2 // Pequeño retraso para que no sea instantáneo
+      delay: 0.2
     });
 
     // Animación para el subtítulo
-    tl.to("#tour-subtitle", {
+    tl.to(this.tourSubtitle.nativeElement, {
       opacity: 1,
       y: 0,
       duration: 1,
-    }, "-=0.8"); // Empieza 0.8s antes de que termine la animación anterior (superposición)
+    }, "-=0.8");
 
     // Animación para el botón CTA
-    tl.to("#tour-cta", {
+    tl.to(this.tourCta.nativeElement, {
       opacity: 1,
       scale: 1,
       duration: 0.8,
-    }, "-=0.6"); // Empieza 0.6s antes de que termine la animación anterior
+    }, "-=0.6");
 
     // Animación para el contenedor del tour virtual (aparece sutilmente detrás)
-    tl.to("#tour-container", {
+    tl.to(this.tourContainer.nativeElement, {
       opacity: 1,
       scale: 1,
       filter: "blur(0px)", // Elimina el desenfoque
       duration: 1.5,
-    }, "-=1.2"); // Empieza 1.2s antes de que termine la animación anterior
-
-    // Opcional: Animar algo más cuando el tour ya esté visible, por ejemplo,
-    // que la autorotación comience después de un tiempo si quieres que se vea el texto principal primero.
-    // Esto ya lo tienes controlado en virtual-tour.component.ts si APP_DATA.settings.autorotateEnabled es true.
+    }, "-=1.2");
   }
 
-
-    // --- Nueva función para animar la salida del texto ---
-  // @HostListener para capturar el click en el botón CTA
-  // Esto es más robusto que agregar un listener directamente en el HTML
-  @HostListener('click', ['$event.target'])
-  onClick(targetElement: HTMLElement): void {
-    if (targetElement.id === 'tour-cta') {
-      this.hideTourOverlayText();
+  /**
+   * Inicia el tour virtual.
+   * Oculta el texto de superposición y activa el modo de pantalla completa para el tour.
+   */
+  startVirtualTour(): void {
+    if (this.isTourActive) {
+      return; // Ya está activo, no hagas nada
     }
-  }
 
-  private hideTourOverlayText(): void {
     const tl = gsap.timeline({ defaults: { ease: "power2.inOut" } });
 
-    // Animar el contenedor principal del texto para que se deslice hacia abajo y se desvanezca
-    tl.to(this.tourTitle.nativeElement.parentElement?.parentElement, { // Accede al div que contiene el texto y el botón
-      y: '100%', // Mueve hacia abajo por el 100% de su propia altura
+    // 1. Animar la salida del texto de superposición
+    tl.to(this.tourOverlayText.nativeElement, {
+      y: '100%', // Desliza hacia abajo
       opacity: 0,
-      duration: 1.0,
+      duration: 0.8,
       onComplete: () => {
-        // Opcional: remover el elemento del DOM o esconderlo con display: none después de la animación
-        // para asegurar que no interfiera si hay alguna situación rara con pointer-events
-        if (this.tourTitle.nativeElement.parentElement?.parentElement) {
-          this.tourTitle.nativeElement.parentElement.parentElement.style.display = 'none';
-        }
+        // Asegúrate de que el texto no interfiera con los clics del tour
+        gsap.set(this.tourOverlayText.nativeElement, { display: 'none', pointerEvents: 'none' });
       }
     });
 
-    // Opcional: Podrías querer que el tour haga un zoom in o alguna otra animación
-    // si el tour no está ya en su estado final de animación de entrada.
-    // En este caso, ya está en opacity: 1, scale: 1, blur: 0, así que no es estrictamente necesario,
-    // pero si lo haces visible solo con el botón, aquí iría.
+    // 2. Transicionar la sección completa del tour a modo de "pantalla completa"
+    // Esto es si quieres que el tour ocupe toda la ventana del navegador.
+    // Cambia la posición a 'fixed' y ajusta el tamaño y z-index.
+    tl.to(this.tourContainer.nativeElement, {
+      position: 'fixed', // Cambiar a posición fija
+      top: 0,
+      left: 0,
+      width: '100vw',    // Ancho total del viewport
+      height: '100vh',   // Altura total del viewport
+      zIndex: 40,        // Asegúrate de que esto sea más alto que cualquier otro elemento que quieras que esté debajo
+      duration: 0.01     // Prácticamente instantáneo para el cambio de posición
+    }, "<"); // Empieza al mismo tiempo que la animación anterior.
+
+    // Deshabilita el scroll del cuerpo para la experiencia inmersiva
+    document.body.style.overflow = 'hidden';
+    this.isTourActive = true; // Activa el estado del tour
+  }
+
+  /**
+   * Cierra el tour virtual y restaura la visualización normal de la página.
+   */
+  closeVirtualTour(): void {
+    if (!this.isTourActive) {
+      return; // No hay tour activo para cerrar
+    }
+
+    const tl = gsap.timeline({ defaults: { ease: "power2.inOut" } });
+
+    // 1. Restaurar la posición y tamaño del tour a su estado en el flujo normal de la página
+    // Asegúrate de que estos valores coincidan con los estilos CSS iniciales en el HTML
+    tl.to(this.tourContainer.nativeElement, {
+      position: 'relative', // Vuelve a posición relativa
+      top: 'auto',          // Elimina top/left/bottom/right para que vuelva al flujo normal
+      left: 'auto',
+      width: '100%',        // Ancho normal de la sección
+      height: '700px',      // Altura normal de la sección (ajusta si es necesario)
+      zIndex: 0,            // Vuelve a su z-index original
+      duration: 0.01        // Prácticamente instantáneo
+    });
+
+
+    // 2. Animar la entrada del texto de superposición (restaurarlo)
+    tl.to(this.tourOverlayText.nativeElement, {
+      y: '0%', // Vuelve a su posición original
+      opacity: 1,
+      duration: 0.8,
+      onStart: () => {
+        // Haz que sea visible y recupere los eventos de puntero antes de que la animación empiece
+        gsap.set(this.tourOverlayText.nativeElement, { display: 'flex', pointerEvents: 'auto' });
+      }
+    }, ">-0.5"); // Empieza un poco antes de que termine la anterior para superponer
+
+    // Habilita el scroll del cuerpo nuevamente
+    document.body.style.overflow = '';
+    this.isTourActive = false; // Desactiva el estado del tour
   }
 
    /**
@@ -296,13 +391,13 @@ export class WebHomeComponent implements OnInit, AfterViewInit, OnDestroy {
    * Se suscribe al observable para manejar la respuesta exitosa o los errores.
    */
   private loadNews(): void {
-    this.loading = true;     // Activa el indicador de carga
-    this.errorMessage = '';  // Limpia cualquier mensaje de error anterior
+    this.loading = true; // Activa el indicador de carga
+    this.errorMessage = ''; // Limpia cualquier mensaje de error anterior
 
-    const newsSub = this.newsService.getNews(1, 5, 'publicado').subscribe({
-      next: (response: News[]) => {
-        console.log('Noticias recibidas:', response);
-        this.newsList = response;
+    const newsSub = this.newsService.getNews(1, 6, 'publicado').subscribe({ // Ajusta el límite de noticias si lo deseas
+      next: (response: NewsPaginatedResponse) => {
+        console.log('Noticias recibidas:', response.data);
+        this.newsList = response.data;
         this.loading = false;
       },
       error: (error: any) => {
@@ -312,6 +407,29 @@ export class WebHomeComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     });
     this.subscriptions.push(newsSub); // Añade la suscripción al array para limpiarla
+  }
+
+  /**
+   * onCardClick: Maneja el evento cuando una tarjeta de noticia es clicada.
+   * Abre el modal y establece la noticia seleccionada.
+   * @param news La noticia que fue clicada.
+   */
+  onCardClick(news: News): void {
+    this.selectedNews = news; // Establece la noticia seleccionada
+    this.isModalOpen = true; // Abre el modal
+    // Deshabilita el scroll del cuerpo de la página cuando el modal está abierto
+    document.body.style.overflow = 'hidden';
+  }
+
+  /**
+   * onCloseModal: Maneja el evento cuando el modal de detalle de noticias solicita ser cerrado.
+   * Limpia la noticia seleccionada y cierra el modal.
+   */
+  onCloseModal(): void {
+    this.selectedNews = null; // Limpia la noticia seleccionada
+    this.isModalOpen = false; // Cierra el modal
+    // Restaura el scroll del cuerpo de la página
+    document.body.style.overflow = 'auto';
   }
 
   /**
@@ -325,209 +443,73 @@ export class WebHomeComponent implements OnInit, AfterViewInit, OnDestroy {
     return news.id; // Asume que cada noticia tiene una propiedad `id` única.
   }
 
-  /**
-   * animateHeroSection: Función para orquestar todas las animaciones de la sección hero.
-   * Se llama en ngAfterViewInit para asegurar que el DOM esté listo.
+
+
+/**
+   * Inicializa la nueva secuencia de animación con foco en el título y el blur de la imagen.
    */
-  private animateHeroSection(): void {
-    // Animación de aparición para el título principal
-    gsap.from("#main-heading", {
-      duration: 1.5, // Duración de la animación en segundos
-      y: 50, // Mueve el elemento 50px hacia arriba desde su posición final (efecto de subir)
-      opacity: 0, // Inicia con opacidad 0 (invisible)
-      ease: "power3.out", // Tipo de easing para un movimiento suave y con un ligero "rebote" al final
-      delay: 0.5 // Retraso de 0.5 segundos antes de que comience la animación del título
-    });
+  private initHeroAnimation(): void {
+    // Referencias a los elementos que animaremos
+    const image = '#hero-background-image';
+    const heading = '#main-heading';
+    const subtitle = '#subtitle-text';
+    const buttons = '.btn-hero';
 
-    // Texto para el efecto Typewriter
-    const descriptionText = "Ofrecemos instalaciones de vanguardia, logística eficiente y un entorno seguro para su negocio. Descubra un espacio donde la innovación y el crecimiento se encuentran, diseñado para impulsar su éxito.";
-    const typewriterElement = document.getElementById('typewriter-text'); // Obtiene la referencia al elemento <p> por su ID
+    const titleText = "¡Bienvenido al Parque Industrial San José!";
 
-    if (typewriterElement) {
-      // Crea una línea de tiempo GSAP para el efecto typewriter.
-      // Las líneas de tiempo son útiles para encadenar y controlar múltiples animaciones secuencialmente.
-      this.typewriterTimeline = gsap.timeline({
-        delay: 2, // Retraso de 2 segundos antes de que inicie el efecto typewriter (después de la animación del título)
+    this.masterTimeline = gsap.timeline();
+
+    this.masterTimeline
+      // 1. Animación de la imagen de fondo (Efecto Ken Burns sutil)
+      // Empieza ligeramente ampliada y se ajusta, creando movimiento.
+      .fromTo(image, 
+        { scale: 1.1, opacity: 0 }, 
+        { scale: 1, opacity: 1, duration: 2.5, ease: 'power2.inOut' }
+      )
+      
+      // 2. Animación Typewriter para el TÍTULO. Comienza casi al mismo tiempo.
+      .to(heading, {
+        duration: titleText.length * 0.07, // Un poco más lento para darle peso al título
+        text: titleText,
+        ease: 'none',
         onComplete: () => {
-          // Callback que se ejecuta cuando el efecto typewriter ha terminado.
-          console.log('Efecto typewriter completado.');
-          // Aquí podrías añadir una animación de cursor parpadeante (ver CSS)
+          document.querySelector(heading)?.classList.add('has-cursor');
         }
-      });
+      }, '>-2.0') // Inicia 2s antes de que la animación de la imagen termine.
 
-      // Añade la animación del efecto typewriter a la línea de tiempo.
-      // La propiedad 'text' es proporcionada por el TextPlugin.
-      this.typewriterTimeline.to(typewriterElement, {
-        duration: descriptionText.length * 0.04, // Duración calculada: 0.04 segundos por caracter para velocidad constante
-        text: {
-          value: descriptionText, // El texto que se va a 'escribir'
-          // Para un cursor parpadeante, puedes añadir un span aquí:
-          // value: descriptionText + '<span class="cursor">|</span>'
-        },
-        ease: "none", // Easing 'none' para que la escritura sea a velocidad constante (sin aceleración/desaceleración)
-        onUpdate: () => {
-          // Callback que se ejecuta en cada frame de la animación del typewriter.
-          // Asegura que el elemento <p> se haga visible a medida que se escribe el texto.
-          if (typewriterElement.classList.contains('opacity-0')) {
-            typewriterElement.classList.remove('opacity-0');
-          }
-        }
-      });
-    }
+      // 3. Animación de DESENFOQUE (blur) de la imagen.
+      // Ocurre justo después de que el título termina de escribirse para centrar la atención.
+      .to(image, {
+        filter: 'blur(8px)', // Ajusta el valor del blur a tu gusto
+        duration: 1.5,
+        ease: 'power2.out'
+      }, '>-0.5') // Inicia un poco antes de que termine la animación anterior.
 
-    // Animación escalonada (staggered) para los botones de navegación (si existen, con clase .btn-hero)
-// Animación escalonada (staggered) para los botones de navegación (si existen, con clase .btn-hero)
-    // Se tipa explícitamente el array a HTMLElement[] para que TypeScript no infiera 'unknown'.
-    (gsap.utils.toArray('.btn-hero') as HTMLElement[]).forEach((button: HTMLElement, index: number) => {
-      gsap.to(button, {
-        duration: 0.8, // Duración de la animación de cada botón
-        y: 0, // Mueve el botón a su posición final (0px de desplazamiento vertical)
-        opacity: 1, // Cambia la opacidad a 1 (visible)
-        ease: "back.out(1.7)", // Easing con un ligero 'retroceso' para un efecto más dinámico y juguetón
-        delay: 3.5 + (index * 0.2) // Retraso: comienza después del typewriter (3.5s) y añade un retraso escalonado de 0.2s para cada botón
-      });
-    });
+      // 4. Animación del SUBTÍTULO. Aparece después del título.
+      .to(subtitle, {
+        y: 0,
+        opacity: 1,
+        duration: 1,
+        ease: 'power3.out'
+      }, '<') // '<' hace que inicie al mismo tiempo que la animación anterior (el blur)
+
+      // 5. Animación escalonada (stagger) para los BOTONES.
+      .to(buttons, {
+        y: 0,
+        opacity: 1,
+        duration: 0.8,
+        ease: 'back.out(1.7)',
+        stagger: 0.2
+      }, '>-0.5'); // Inicia de forma fluida después de que el subtítulo aparece.
   }
 
-  /**
-   * setupServiceCardAnimations: Configura las animaciones de las tarjetas de servicios.
-   * Utiliza la suscripción a 'serviceCards.changes' para asegurar que las animaciones se apliquen
-   * una vez que todos los elementos estén disponibles en el DOM.
-   */
-  
-  private setupServiceCardAnimations(): void {
-    // Suscribirse a los cambios en QueryList. Esto es crucial cuando los elementos pueden
-    // ser renderizados dinámicamente (ej. *ngFor) o no estar disponibles inmediatamente
-    // en ngAfterViewInit.
-    const serviceCardSub = this.serviceCards.changes.subscribe(() => {
-      if (this.serviceCards.length > 0) {
-        this.animateServiceCards();
-        // Una vez que las animaciones se han configurado, podemos desuscribirnos
-        // si no esperamos más cambios dinámicos en las tarjetas.
-        // Si las tarjetas pueden agregarse/eliminarse dinámicamente después de la carga inicial,
-        // podrías querer mantener la suscripción y ajustar la lógica.
-        serviceCardSub.unsubscribe();
-      }
-    });
-    this.subscriptions.push(serviceCardSub); // Añade la suscripción para limpiarla
-
-    // Si las tarjetas ya están disponibles en la primera comprobación (sin cambios iniciales),
-    // también debemos animarlas.
-    if (this.serviceCards.length > 0) {
-      this.animateServiceCards();
-    }
-
-    // Animación de los títulos y descripciones de la sección de servicios
-    gsap.from("#services-title", {
-      opacity: 0,
-      y: 50,
-      duration: 1,
-      ease: "power3.out",
-      scrollTrigger: {
-        trigger: "#services-title",
-        start: "top 85%", // Cuando el título entra en la vista
-        toggleActions: "play none none reverse",
-      }
-    });
-
-    gsap.from("#services-description", {
-      opacity: 0,
-      y: 50,
-      duration: 1,
-      ease: "power3.out",
-      delay: 0.2, // Ligero retraso después del título
-      scrollTrigger: {
-        trigger: "#services-description",
-        start: "top 85%", // Cuando la descripción entra en la vista
-        toggleActions: "play none none reverse",
-      }
-    });
 
 
-  }
-
-  /**
-   * animateServiceCards: Función que aplica las animaciones de GSAP a las tarjetas de servicios.
-   * Esta función se llama solo cuando se sabe que las tarjetas están presentes en el DOM.
-   */
 
 
-  private animateServiceCards(): void {
-    gsap.from("#serviceCard", {
-      opacity: 1, // Asegura que las tarjetas comiencen invisibles
-      y: 50,
-      duration: 0.5,
-      ease: "power3.out",
-      scrollTrigger: {
-        trigger: "#serviceCard",
-        start: "top 100%", 
-        toggleActions: "play none none reverse",
-        
-      }
-    });
 
-    // Animaciones individuales para cada tarjeta al pasar el mouse (hover) y al hacer scroll
-    this.serviceCards.forEach((card: ElementRef, i: number) => {
-      const element = card.nativeElement;
-      const service = this.services[i]; // Obtiene el objeto de servicio correspondiente
 
-      if (!service) return; // Seguridad en caso de que el índice no coincida
 
-      // Almacenar las clases de fondo iniciales y de hover para fácil manipulación
-      const initialBgClasses = `${service.bgColorLight} ${service.bgColorDark}`;
-      const hoverBgClasses = `${service.hoverBgColorLight} ${service.hoverBgColorDark}`;
-
-      // Efecto de escala y sombra al pasar el mouse, Y MANIPULACIÓN DE CLASES DE FONDO
-      element.addEventListener('mouseenter', () => {
-        // Remueve las clases de fondo iniciales y añade las de hover
-        element.classList.remove(...initialBgClasses.split(' '));
-        element.classList.add(...hoverBgClasses.split(' '));
-
-        gsap.to(element, {
-          scale: 1.05,
-          boxShadow: '0px 10px 20px rgba(0, 0, 0, 0.2)', // Sombra más pronunciada
-          duration: 0.3,
-          ease: 'power2.out',
-          overwrite: true // Evita conflictos con otras animaciones en el mismo elemento
-        });
-      });
-
-      element.addEventListener('mouseleave', () => {
-        // Remueve las clases de fondo de hover y añade las iniciales
-        element.classList.remove(...hoverBgClasses.split(' '));
-        element.classList.add(...initialBgClasses.split(' '));
-
-        gsap.to(element, {
-          scale: 1,
-          boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)', // Sombra original (establecida en CSS)
-          duration: 0.3,
-          ease: 'power2.out',
-          overwrite: true
-        });
-      });
-
-      // Animación de rotación y desplazamiento sutil al hacer scroll para cada tarjeta
-      // Crea una línea de tiempo para controlar la animación al hacer scroll.
-      // Esta animación es sutil y da una sensación de "vida" a las tarjetas.
-      gsap.to(element, {
-        rotationX: () => Math.random() * 2 - 1, // Pequeña rotación X aleatoria (muy sutil)
-        rotationY: () => Math.random() * 2 - 1, // Pequeña rotación Y aleatoria (muy sutil)
-        x: () => { // Desplaza ligeramente las tarjetas a la izquierda o derecha
-          const viewportWidth = window.innerWidth;
-          // Ajusta el factor para controlar la magnitud del desplazamiento
-          return (element.getBoundingClientRect().left - viewportWidth / 2) * 0.03;
-        },
-        ease: 'none', // Sin easing para un movimiento directo con el scroll
-        scrollTrigger: {
-          trigger: element,
-          start: 'top bottom', // Cuando la parte superior del elemento entra en la vista desde abajo
-          end: 'bottom top', // Cuando la parte inferior del elemento sale de la vista por arriba
-          scrub: 1, // Vincula la animación directamente al scroll (1 = suavizado)
-          // markers: true, // Para depuración
-        },
-      });
-    });
-  }
 
 
    /**
@@ -535,221 +517,211 @@ export class WebHomeComponent implements OnInit, AfterViewInit, OnDestroy {
    * y las animaciones sutiles de rotación/desplazamiento para cada tarjeta.
    * La animación inicial de entrada de las tarjetas es manejada por el ScrollTrigger del carrusel.
    */
-  private setupServiceCardAnimationsTwo(): void {
-    const initialSetup = () => {
-      if (this.serviceCards.length > 0) {
-        this.serviceCards.forEach((card: ElementRef, i: number) => {
-          const element = card.nativeElement;
-          const service = this.services[i];
-          const iconElement = element.querySelector('.service-icon'); // Selecciona el icono dentro de la tarjeta
+ private setupServiceCardAnimationsTwo(): void {
+    if (this.serviceCards.length === 0) {
+      console.warn("GSAP: No se encontraron elementos '.service-card' para las animaciones de hover.");
+      return;
+    }
 
-          if (!service) return;
+    this.serviceCards.forEach((card: ElementRef, i: number) => {
+      const element = card.nativeElement;
+      const service = this.services[i];
 
-          const initialBgClasses = `${service.bgColorLight} ${service.bgColorDark}`;
-          const hoverBgClasses = `${service.hoverBgColorLight} ${service.hoverBgColorDark}`;
+      if (!service) return;
 
-          // Asegurarse de que la tarjeta empiece con las clases de fondo iniciales
-          element.classList.remove(...hoverBgClasses.split(' '));
-          element.classList.add(...initialBgClasses.split(' '));
+      const initialBgClasses = `${service.bgColorLight} ${service.bgColorDark}`;
+      const hoverBgClasses = `${service.hoverBgColorLight} ${service.hoverBgColorDark}`;
+      const iconElement = element.querySelector('.service-icon'); // Asegúrate de que tu SVG tenga esta clase
 
-          // Efecto de escala y sombra al pasar el mouse, Y MANIPULACIÓN DE CLASES DE FONDO
-          element.addEventListener('mouseenter', () => {
-            element.classList.remove(...initialBgClasses.split(' '));
-            element.classList.add(...hoverBgClasses.split(' '));
+      // Asegurar que la tarjeta empiece con las clases de fondo iniciales
+      element.classList.remove(...hoverBgClasses.split(' '));
+      element.classList.add(...initialBgClasses.split(' '));
 
-            gsap.to(element, {
-              scale: 1.05,
-              boxShadow: '0px 10px 20px rgba(0, 0, 0, 0.2)',
-              duration: 0.3,
-              ease: 'power2.out',
-              overwrite: true
-            });
+      element.addEventListener('mouseenter', () => {
+        element.classList.remove(...initialBgClasses.split(' '));
+        element.classList.add(...hoverBgClasses.split(' '));
 
-            // Animación del icono al hacer hover
-            if (iconElement) {
-              gsap.to(iconElement, {
-                rotation: 360,
-                scale: 1.2,
-                duration: 0.5,
-                ease: 'back.out(1.7)',
-                overwrite: true
-              });
-            }
-          });
-
-          element.addEventListener('mouseleave', () => {
-            element.classList.remove(...hoverBgClasses.split(' '));
-            element.classList.add(...initialBgClasses.split(' '));
-
-            gsap.to(element, {
-              scale: 1,
-              boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)',
-              duration: 0.3,
-              ease: 'power2.out',
-              overwrite: true
-            });
-
-            // Revierte la animación del icono al salir del hover
-            if (iconElement) {
-              gsap.to(iconElement, {
-                rotation: 0,
-                scale: 1,
-                duration: 0.3,
-                ease: 'power2.out',
-                overwrite: true
-              });
-            }
-          });
-
-          // Animación de rotación y desplazamiento sutil al hacer scroll para cada tarjeta
-          // Esta animación se aplicará junto con el scroll horizontal del carrusel.
-          // El trigger ahora es la sección del carrusel.
-          gsap.to(element, {
-            rotationX: () => Math.random() * 2 - 1,
-            rotationY: () => Math.random() * 2 - 1,
-            ease: 'none',
-            scrollTrigger: {
-              trigger: '#horizontal-scroll-section',
-              start: 'top top',
-              end: 'bottom bottom',
-              scrub: 1,
-            },
-          });
+        gsap.to(element, {
+          scale: 1.05,
+          boxShadow: '0px 15px 30px rgba(0, 0, 0, 0.25)',
+          duration: 0.3,
+          ease: 'power2.out',
+          overwrite: true
         });
-      }
-    };
 
-    // Comprobar si las tarjetas ya están disponibles en la carga inicial
-    initialSetup();
+        if (iconElement) {
+          gsap.to(iconElement, {
+            rotation: 360,
+            scale: 1.1,
+            duration: 0.5,
+            ease: 'back.out(1.9)',
+            overwrite: true
+          });
+        }
+      });
 
-    // Suscribirse a cambios si las tarjetas se renderizan dinámicamente después
-    const serviceCardChangesSub = this.serviceCards.changes.subscribe(() => {
-      initialSetup();
-      // Una vez que las animaciones se han configurado para todas las tarjetas (asumiendo que no cambian más),
-      // podemos desuscribirnos para evitar ejecuciones repetidas innecesarias.
-      serviceCardChangesSub.unsubscribe();
+      element.addEventListener('mouseleave', () => {
+        element.classList.remove(...hoverBgClasses.split(' '));
+        element.classList.add(...initialBgClasses.split(' '));
+
+        gsap.to(element, {
+          scale: 1,
+          boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)',
+          duration: 0.3,
+          ease: 'power2.out',
+          overwrite: true
+        });
+
+        if (iconElement) {
+          gsap.to(iconElement, {
+            rotation: 0,
+            scale: 1,
+            duration: 0.3,
+            ease: 'power2.out',
+            overwrite: true
+          });
+        }
+      });
     });
-    this.subscriptions.push(serviceCardChangesSub);
   }
 
-  /**
-   * setupHorizontalScrollCarousel: Configura el carrusel horizontal con ScrollTrigger.
-   * Fija la sección y desplaza el contenido horizontalmente al hacer scroll vertical.
-   */
-  private setupHorizontalScrollCarousel(): void {
+
+/*
+ * setupHorizontalScrollCarousel: Configura el carrusel horizontal con ScrollTrigger.
+ * Ajustada para una aparición más natural y un mejor control del pin.
+ */
+/*
+ * setupHorizontalScrollCarousel: Configura el carrusel horizontal con ScrollTrigger.
+ * Mejorada para una aparición más natural de las tarjetas al inicio,
+ * un control más preciso del pin, y previene problemas de hover iniciales.
+ */
+private setupHorizontalScrollCarousel(): void {
     const carouselContainer = document.getElementById('service-carousel-container');
     const scrollSection = document.getElementById('horizontal-scroll-section');
 
-    if (carouselContainer && scrollSection && this.serviceCards.length > 0) {
-      const cards = this.serviceCards.toArray().map(card => card.nativeElement);
-
-      // Calcula cuánto necesitamos desplazar el contenedor.
-      // `scrollWidth` es el ancho total del contenido.
-      // `offsetWidth` es el ancho visible del contenedor que se va a fijar.
-      const scrollAmount = carouselContainer.scrollWidth - scrollSection.offsetWidth;
-
-      // Asegurarse de que las tarjetas comiencen ocultas para la animación de entrada controlada por el carrusel
-      gsap.set(cards, { opacity: 0, y: 80 });
-
-      gsap.to(carouselContainer, {
-        x: -scrollAmount, // Desplaza el contenedor hacia la izquierda
-        ease: "none",
-        scrollTrigger: {
-          trigger: scrollSection,
-          pin: true, // "Fija" la sección mientras se desplaza el carrusel
-          start: "top top", // Empieza a fijarse cuando la parte superior de la sección toca la parte superior del viewport
-          end: () => "+=" + scrollAmount, // Termina de fijarse después de desplazar el ancho total del carrusel
-          scrub: 1, // Vincula el movimiento directamente al scroll
-          // markers: true, // Para depuración - ¡descomenta para ver los marcadores de ScrollTrigger!
-          onUpdate: (self) => {
-            // Animación de entrada inicial de las tarjetas basada en el progreso del scroll.
-            // Cada tarjeta aparecerá a medida que el carrusel se desplaza por ella.
-            cards.forEach((card, index) => {
-              const cardPosition = card.offsetLeft; // Posición de la tarjeta dentro del carrusel
-              const sectionWidth = scrollSection.offsetWidth;
-              const scrollX = -gsap.getProperty(carouselContainer, "x"); // Posición actual del scroll horizontal del carrusel
-
-              // Define un rango de aparición para cada tarjeta cuando entra en la vista del carrusel
-              const startThreshold = cardPosition - sectionWidth * 0.7; // Empieza a aparecer cuando la tarjeta está 70% del ancho de la sección a la izquierda
-              const endThreshold = cardPosition - sectionWidth * 0.3; // Completamente visible cuando la tarjeta está 30% del ancho de la sección a la izquierda
-
-              // Normaliza el progreso de visibilidad de la tarjeta (0 a 1)
-              const cardVisibilityProgress = gsap.utils.normalize(startThreshold, endThreshold, scrollX);
-
-              if (cardVisibilityProgress > 0 && cardVisibilityProgress < 1) {
-                // Anima la tarjeta si está dentro del rango de visibilidad
-                gsap.to(card, {
-                  opacity: 1,
-                  y: 0,
-                  duration: 0.5,
-                  ease: "power3.out",
-                  overwrite: true, // Importante para que las animaciones no se pisen
-                });
-              } else if (cardVisibilityProgress <= 0) {
-                  // Si el scroll está antes de la tarjeta, asegúrate de que esté invisible y en su posición inicial
-                  gsap.set(card, { opacity: 0, y: 80 });
-              }
-              // Si cardVisibilityProgress >= 1, la tarjeta ya ha pasado y está completamente visible (o fuera de vista a la izquierda).
-              // No es necesario resetearla a invisible en este caso, ya que el ScrollTrigger principal las mantiene en su estado final.
-            });
-          }
-        },
-      });
-    } else {
-      // Fallback si no se encuentran los elementos para el carrusel
-      console.warn("No se encontraron los elementos necesarios para el carrusel horizontal. Se intentará una animación de grid tradicional.");
-      // Aquí, si el carrusel no se puede configurar, puedes volver a la animación de grid inicial
-      const cards = this.serviceCards.toArray().map(card => card.nativeElement);
-      gsap.from(cards, {
-        scrollTrigger: {
-          trigger: '.container.mx-auto.mt-16', // Usa el contenedor original de las tarjetas como trigger
-          start: 'top 75%',
-          toggleActions: 'play none none reverse',
-        },
-        opacity: 1,
-        y: 0,
-        stagger: 0.18,
-        duration: 0.9,
-        ease: 'power3.out',
-      });
-    }
-  }
-
-
-
-
-  /**
-   * ngOnDestroy: Hook del ciclo de vida que se ejecuta justo antes de que Angular destruya el componente.
-   * Es CRUCIAL para limpiar animaciones, suscripciones y evitar fugas de memoria,
-   * especialmente con GSAP y ScrollTrigger.
-   */
-    ngOnDestroy(): void {
-    if (this.typewriterTimeline) {
-      this.typewriterTimeline.kill();
+    if (!carouselContainer || !scrollSection || this.serviceCards.length === 0) {
+      console.warn("GSAP: No se encontraron todos los elementos necesarios para el carrusel horizontal o no hay tarjetas de servicio. Se intentará una animación de grid tradicional.");
+      this.fallbackGridAnimation();
+      return;
     }
 
-    // Mata todos los ScrollTriggers asociados al componente.
-    // Esto es CRUCIAL para liberar recursos y evitar comportamientos inesperados,
-    // especialmente con `pin: true`.
-    ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+    const cards = this.serviceCards.toArray().map(card => card.nativeElement);
 
-    // Limpia las animaciones de GSAP de cada tarjeta al destruir el componente
-    this.serviceCards.forEach(card => {
-      gsap.killTweensOf(card.nativeElement);
-      // Asegúrate de que las clases de fondo se restauren al estado original al destruir
-      const element = card.nativeElement;
-      const index = this.serviceCards.toArray().indexOf(card);
-      const service = this.services[index];
-      if (service) {
-        const initialBgClasses = `${service.bgColorLight} ${service.bgColorDark}`;
-        const hoverBgClasses = `${service.hoverBgColorLight} ${service.bgColorDark}`; // Bug fix: Usar bgColorDark aquí
-        element.classList.remove(...hoverBgClasses.split(' '));
-        element.classList.add(...initialBgClasses.split(' '));
-      }
-      // Considera remover los event listeners si el componente se va a crear y destruir con frecuencia
-      // Para un componente de página principal, es menos crítico, pero buena práctica.
+    // Calcular cuánto necesitamos desplazar el contenedor.
+    const scrollAmount = carouselContainer.scrollWidth - scrollSection.clientWidth;
+
+    // Si el contenido del carrusel no es lo suficientemente ancho, no necesitamos desplazamiento horizontal.
+    if (scrollAmount <= 0) {
+        console.warn("GSAP: El contenido del carrusel no es lo suficientemente ancho para el desplazamiento horizontal. No se aplicará el ScrollTrigger del carrusel.");
+        this.fallbackGridAnimation();
+        return;
+    }
+
+    // --- MEJORA CLAVE 1: Inicialización de las tarjetas para una entrada suave y sin interacción no deseada ---
+    // Usamos autoAlpha: 0 para asegurar que las tarjetas estén completamente invisibles
+    // y no reciban eventos de mouse antes de que su animación comience.
+    gsap.set(cards, { opacity: 0, y: 50, autoAlpha: 0 }); // autoAlpha gestiona visibility y opacity
+
+    // Animación principal del carrusel horizontal
+    const mainTween = gsap.to(carouselContainer, {
+      x: -scrollAmount,
+      ease: "none",
+      scrollTrigger: {
+        trigger: scrollSection,
+        pin: true,
+        // Tu 'start' original está bien, permite ver el título y la sección antes de fijar.
+        start: "5% 30%",
+        end: () => `+=${scrollAmount}`, // El pin dura lo mismo que el desplazamiento horizontal.
+        scrub: 1, // Desplazamiento suave con el scroll del usuario.
+        // markers: true, // ¡Útil para depurar! Descomenta para visualizar los puntos del ScrollTrigger.
+        invalidateOnRefresh: true, // Recalcula los valores al redimensionar la ventana.
+      },
     });
 
-    this.subscriptions.forEach(sub => sub.unsubscribe());
+    this.serviceCarouselMainScrollTrigger = mainTween.scrollTrigger!;
+
+    // --- MEJORA CLAVE 2: Animación de entrada de las tarjetas controlada y escalonada ---
+    // Creamos un nuevo timeline específicamente para la animación de entrada de las tarjetas.
+    // Esto es crucial para que aparezcan fluidamente ANTES o al inicio del scroll horizontal.
+    const cardEntryTimeline = gsap.timeline({
+        scrollTrigger: {
+            trigger: scrollSection,
+            // Las tarjetas empiezan a aparecer cuando la parte superior de la sección está al 80% del viewport.
+            // Esto es ANTES de que el carrusel principal comience a fijarse y desplazarse horizontalmente,
+            // dando tiempo para que la animación de entrada se complete.
+            start: "top 80%",
+            // La animación de entrada de las tarjetas terminará cuando la sección esté en un 10% de su altura y el 30% del viewport.
+            end: "10% 30%",
+            scrub: true, // Permite que la animación sea fluida con el scroll inicial del usuario.
+            // markers: true, // Descomenta para depurar este timeline de entrada.
+            toggleActions: "play none none reverse", // Asegura que la animación se reproduzca y se revierta al salir/entrar.
+        }
+    });
+
+    // Añade la animación de todas las tarjetas al timeline de entrada.
+    // Usamos 'stagger' para que aparezcan una tras otra, creando un efecto más dinámico.
+    cardEntryTimeline.to(cards, {
+        opacity: 1,
+        y: 0,
+        duration: 0.8, // Duración individual de la animación de cada tarjeta.
+        ease: "power2.out",
+        stagger: 0.15, // Retraso entre el inicio de la animación de cada tarjeta.
+        autoAlpha: 1 // Asegura que las tarjetas sean completamente visibles y reciban eventos de mouse.
+    }, 0); // El '0' aquí indica que esta animación comienza al principio del 'cardEntryTimeline'.
+
+    // Nota: Eliminamos los ScrollTriggers individuales para cada tarjeta que estaban
+    // vinculados a 'containerAnimation: mainTween'. Esos son útiles si quieres que las
+    // tarjetas aparezcan *mientras se desplaza el carrusel*, pero para tu caso de
+    // "carga inicial fluida", el `cardEntryTimeline` es la solución más directa y efectiva.
+}
+
+
+
+
+  
+   /**
+   * fallbackGridAnimation: Función de respaldo para animar las tarjetas en un diseño de rejilla
+   * si el carrusel horizontal no puede ser inicializado.
+   * **Nueva función: agregar si no la tienes.**
+   */
+  private fallbackGridAnimation(): void {
+    const cards = this.serviceCards.toArray().map(card => card.nativeElement);
+    gsap.from(cards, {
+      opacity: 0,
+      y: 50,
+      duration: 0.8,
+      ease: "power3.out",
+      stagger: 0.15,
+      scrollTrigger: {
+        trigger: ".container.mx-auto.px-4", // Asegúrate de que este selector apunte al contenedor de tus tarjetas
+        start: "top 80%",
+        toggleActions: "play none none reverse",
+        // once: true, // Descomenta si solo quieres que se anime una vez
+        // markers: true, // Descomenta para depuración
+      },
+    });
   }
+
+  /**
+   * clearServiceCarouselAnimations: Limpia y mata todos los ScrollTriggers relacionados con
+   * el carrusel de servicios. Esto es vital para evitar duplicados y fugas de memoria,
+   * especialmente cuando las `QueryList` detectan cambios.
+   */
+  private clearServiceCarouselAnimations(): void {
+    if (this.serviceCarouselMainScrollTrigger) {
+      this.serviceCarouselMainScrollTrigger.kill();
+      this.serviceCarouselMainScrollTrigger = null;
+    }
+    this.serviceCards.forEach((card, index) => {
+      const specificTrigger = ScrollTrigger.getById(`serviceCard-${index}`);
+      if (specificTrigger) {
+        specificTrigger.kill();
+      }
+    });
+  }
+
+
+
+
+  
 }

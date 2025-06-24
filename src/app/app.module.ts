@@ -9,17 +9,7 @@ import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterModule } from '@angular/router'; // Asegúrate de que esté aquí
 
-// COMPONENTES TRADICIONALES (standalone: false) - Van en declarations
-import { HomeComponent } from './components/home/home.component';
-import { BookFormComponent } from './components/book-form/book-form.component';
-import { TermsComponent } from './components/terms/terms.component';
-import { LoginComponent } from './components/login/login.component'; // Si este es el login antiguo que no es standalone
-import { AdminPerfilComponent } from './components/admin-perfil/admin-perfil.component';
-import { AdminLoginComponent } from './components/admin-login/admin-login.component';
-import { AdministradoresComponent } from './components/admin-perfil/lista-pages/administradores/administradores.component';
-import { DatosAdminsComponent } from './components/admin-perfil/lista-pages/datos-admins/datos-admins.component';
-import { BodegasComponent } from './components/admin-perfil/lista-pages/bodegas/bodegas.component';
-import { PersonasComponent } from './components/admin-perfil/lista-pages/personas/personas.component';
+
 
 // PAGINAS WEB (Asumo que son standalone: false, si no, irían en imports)
 import { WebHomeComponent } from './web/pages/web-home/web-home.component';
@@ -52,32 +42,21 @@ import { VirtualTourComponent } from './web/components/virtual-tour/virtual-tour
 @NgModule({
   declarations: [
     AppComponent,
-    BookFormComponent,
-    HomeComponent,
-    TermsComponent,
-    LoginComponent, // Si es standalone: false
-    AdminPerfilComponent,
-    AdminLoginComponent,
-    AdministradoresComponent,
-    DatosAdminsComponent,
-    BodegasComponent,
-    PersonasComponent,
+
 
     // Pages web (si son standalone: false)
     WebHomeComponent,
-    WarehousesComponent,
-    WarehouseDetailComponent,
-    NewsDetailComponent,
+    DashboardHomeComponent,
+    
     AboutComponent,
     ContactComponent,
-    DashboardNewsComponent,
-    DashboardWarehousesComponent,
+    
     // DashboardHomeComponent, // <--- Descomenta si es standalone: false y lo necesitas
     //DashboardUsersComponent, // <--- Descomenta si es standalone: false y lo necesitas
 
     // Componentes web (si son standalone: false)
     NewsCardComponent,
-    WarehouseCardComponent,
+   
     NotFoundComponent,
     LocationMapComponent,
     ChatbotComponent,
@@ -97,6 +76,12 @@ import { VirtualTourComponent } from './web/components/virtual-tour/virtual-tour
     FooterComponent, // <-- Componente STANDALONE IMPORTADO AQUÍ (si es standalone)
     WebLoginComponent,
     ParticlesBackgroundComponent,
+    NewsDetailComponent,
+    WarehousesComponent,
+    WarehouseDetailComponent,
+    DashboardWarehousesComponent, 
+     WarehouseCardComponent, 
+     DashboardNewsComponent
 ],
   providers: [
     {

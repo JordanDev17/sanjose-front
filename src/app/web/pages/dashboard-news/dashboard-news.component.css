@@ -1,0 +1,54 @@
+/* src/app/web/pages/dashboard-news/dashboard-news.component.css */
+
+/* Animación básica para el spinner de carga */
+.spinner {
+  border-color: #3B82F6; /* blue-500 */
+  border-top-color: transparent;
+  animation: spin 1s linear infinite;
+}
+
+.spinner-small {
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid currentColor;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  vertical-align: middle; /* Alinea el spinner con el texto del botón */
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Estilos para el overlay del modal */
+.modal-overlay {
+  transition: opacity 0.3s ease-in-out;
+}
+
+/* Estilos para la tarjeta del modal */
+.modal-card, .confirmation-card {
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.4s ease-in-out; /* back.out */
+}
+
+/* Ocultar scrollbar en tablas si no es necesario, pero permitir el scroll */
+.news-table-wrapper {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.news-table-wrapper::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+/* Estilos para truncar texto en la tabla */
+.max-w-xs {
+  max-width: 12rem; /* Puedes ajustar este valor según tus necesidades */
+}
+
+.max-w-md {
+  max-width: 24rem; /* Puedes ajustar este valor según tus necesidades */
+}
+

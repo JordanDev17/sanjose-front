@@ -1,9 +1,11 @@
 <!-- El componente de partículas se colocará al principio para que se muestre en el fondo -->
+<header class="header">
+  <app-web-header></app-web-header>
+</header>
 
-<app-web-header></app-web-header>
 
 <!-- Asegúrate de que el contenido principal tenga un z-index superior al del fondo de partículas -->
-<main>
+<main class="main-content pt-18" style="position: relative; z-index: 1;">
   <router-outlet></router-outlet>
 </main>
 

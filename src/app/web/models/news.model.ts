@@ -1,37 +1,49 @@
 // src/app/web/models/news.model.ts
 
-/**
- * Interface para representar los datos de una Noticia tal como son devueltos por el backend.
- */
 export interface News {
   id: number;
   titulo: string;
-  slug: string;
-  resumen: string | null; // TEXT puede ser nulo
+  slug: string; // YA ESTABA AQUÍ, ES CORRECTO
+  resumen: string;
   contenido: string;
-  imagen_destacada: string | null; // VARCHAR puede ser nulo
+  imagen_destacada: string; // URL de la imagen destacada
   categoria: string;
-  autor: string | null; // VARCHAR puede ser nulo
-  fecha_publicacion: string; // DATETIME se representará como string ISO 8601
-  fecha_actualizacion: string; // DATETIME se representará como string ISO 8601
-  estado: 'borrador' | 'publicado' | 'archivado'; // Tipos literales para el ENUM
+  autor: string;
+  fecha_publicacion: string; // Formato ISO 8601 (ej. "2025-05-21T06:01:42.000Z")
+  fecha_actualizacion: string; // Formato ISO 8601
+  estado: 'publicado' | 'borrador' | 'archivado' | string; // Asegúrate de cubrir los posibles estados
 }
 
-/**
- * Interface para la creación de una nueva noticia (sin ID, y con campos opcionales)
- */
-export type CreateNewsDto = Omit<News, 'id' | 'fecha_publicacion' | 'fecha_actualizacion'>;
+// DTO para crear una noticia
+export interface CreateNewsDto {
+  titulo: string;
+  slug: string; // AÑADIDO: El slug es obligatorio al crear
+  resumen: string;
+  contenido: string;
+  imagen_destacada?: string; // Opcional al crear
+  categoria: string;
+  autor: string;
+  fecha_publicacion: string; 
+  estado: 'publicado' | 'borrador' | string;
+}
 
-/**
- * Interface para la actualización parcial de una noticia (todos los campos son opcionales)
- */
-export type UpdateNewsDto = Partial<Omit<News, 'id' | 'fecha_publicacion' | 'fecha_actualizacion' | 'slug'>>; // No se suele actualizar el slug directamente en el frontend
+// DTO para actualizar una noticia (todos los campos son opcionales, excepto el ID implícito en la URL)
+export interface UpdateNewsDto {
+  titulo?: string;
+  slug?: string; // AÑADIDO: El slug es opcional al actualizar, pero se puede enviar
+  resumen?: string;
+  contenido?: string;
+  imagen_destacada?: string;
+  categoria?: string;
+  autor?: string;
+  fecha_publicacion?: string;
+  estado?: 'publicado' | 'borrador' | 'archivado' | string;
+}
 
-// Interfaz para la respuesta paginada de noticias
 export interface NewsPaginatedResponse {
   data: News[];
   totalItems: number;
   currentPage: number;
-  totalPages: number;
   itemsPerPage: number;
+  totalPages: number;
 }

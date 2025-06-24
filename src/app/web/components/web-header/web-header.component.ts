@@ -5,7 +5,7 @@ import { CommonModule } from '@angular/common';
 import { Observable, Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { AuthService } from 'src/app/core/auth/auth.service';
-import { User } from 'src/app/core/auth/auth.models';
+import { User } from '../../models/user.model';
 import { ThemeService } from 'src/app/core/theme/theme.service';
 
 // Importa GSAP

@@ -1,1 +1,70 @@
-<p>news-detail works!</p>
+<!-- src/app/web/pages/news-detail/news-detail.component.html -->
+<!-- Verifica que haya una noticia (newsItem) para mostrar; de lo contrario, no renderiza el modal -->
+<ng-container *ngIf="newsItem">
+  <!-- Fondo del modal con efecto de blur y opacidad controlada por GSAP -->
+  <div #modalBackdrop
+       class="fixed inset-0 z-50 bg-black bg-opacity-75 dark:bg-opacity-90 flex justify-center items-center overflow-auto
+              modal-backdrop"
+       (click)="onClose()"> <!-- Cierra el modal al hacer clic fuera del contenido -->
+
+    <!-- Contenido del modal, con un tamaño máximo para escritorio y scroll en caso de desbordamiento -->
+    <div #modalContent
+         (click)="$event.stopPropagation()" 
+         class="relative bg-white dark:bg-gray-900 rounded-xl shadow-2xl p-6 md:p-8 lg:p-10
+                max-w-md md:max-w-2xl lg:max-w-4xl w-11/12 max-h-[90vh] overflow-y-auto
+                transform transition-all duration-300 ease-out flex flex-col">
+
+      <!-- Botón de cerrar el modal -->
+      <button (click)="onClose()"
+              class="absolute top-4 right-4 text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white
+                     transition-colors duration-200 focus:outline-none z-10 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700">
+        <!-- Icono de Ionicons para cerrar -->
+        <ion-icon name="close-circle-outline" class="text-3xl"></ion-icon>
+      </button>
+
+      <!-- Encabezado de la noticia detallada -->
+      <h2 class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-4 leading-tight">
+        {{ newsItem.titulo }} <!-- Usa newsItem.titulo -->
+      </h2>
+
+      <!-- Imagen de la noticia detallada -->
+      <img [src]="newsItem.imagen_destacada" [alt]="newsItem.titulo"
+           class="w-full h-auto max-h-96 object-cover rounded-lg mb-6 shadow-md"
+           (error)="onImageError($event)"> <!-- Agrega el manejador de errores de imagen -->
+
+      <!-- Información adicional: categoría, autor y fecha -->
+      <div class="flex flex-wrap items-center text-sm text-gray-600 dark:text-gray-400 mb-6">
+        <span class="bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-3 py-1 rounded-full font-semibold mr-3 mb-2">
+          {{ newsItem.categoria }} <!-- Usa newsItem.categoria -->
+        </span>
+        <div class="flex items-center mr-3 mb-2">
+          <ion-icon name="person-outline" class="mr-1"></ion-icon>
+          <span>{{ newsItem.autor }}</span> <!-- Usa newsItem.autor -->
+        </div>
+        <div class="flex items-center mb-2">
+          <ion-icon name="calendar-outline" class="mr-1"></ion-icon>
+          <span>{{ formatDate(newsItem.fecha_publicacion) }}</span> <!-- Usa newsItem.fecha_publicacion y formatDate -->
+        </div>
+      </div>
+
+      <!-- Contenido completo de la noticia -->
+      <div class="prose dark:prose-invert max-w-none text-gray-800 dark:text-gray-200 text-lg leading-relaxed">
+        <p [innerHTML]="newsItem.contenido"></p> <!-- Usa newsItem.contenido y [innerHTML] si puede contener HTML -->
+        <!-- Si el contenido es texto plano, simplemente usa {{ newsItem.contenido }} -->
+      </div>
+
+      <!-- Opcional: Funcionalidades extra (compartir, favoritos) -->
+      <div class="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700 flex justify-end space-x-4">
+        <button class="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors duration-200">
+          <ion-icon name="share-social-outline" class="mr-2"></ion-icon>
+          Compartir
+        </button>
+        <button class="flex items-center px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 transition-colors duration-200">
+          <ion-icon name="heart-outline" class="mr-2"></ion-icon>
+          Favorito
+        </button>
+      </div>
+
+    </div>
+    </div>
+</ng-container>

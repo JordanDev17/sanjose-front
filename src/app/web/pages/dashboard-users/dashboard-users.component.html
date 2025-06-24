@@ -1,116 +1,298 @@
-<div class="dashboard-users-container">
-  <header class="page-header">
-    <h2 class="page-title">Gestión de Usuarios</h2>
-    <p class="page-subtitle">Panel exclusivo para administradores</p>
-  </header>
+<!-- src/app/web/pages/dashboard-users/dashboard-users.component.html -->
 
-  <div *ngIf="errorMessage" class="alert alert-danger">
-    <i class="fas fa-exclamation-circle"></i> {{ errorMessage }}
+<!-- 
+  Contenedor principal del dashboard.
+  
+  CLAVE PARA EL AJUSTE DE POSICIÓN:
+  El problema principal es que el "header" de tu aplicación (que está en otro componente)
+  probablemente tiene `position: fixed` o `sticky`. Esto hace que se superponga al contenido
+  normal del documento.
+  
+  La clase `pt-20` (padding-top: 80px) en este `div` es crucial.
+  Debes ajustar este valor (`pt-20`) para que sea IGUAL O LIGERAMENTE MAYOR
+  que la altura de tu componente de cabecera (header) en todas las pantallas.
+  
+  Por ejemplo, si tu header mide 64px, `pt-16` sería adecuado. Si mide 80px, `pt-20`.
+  Si el header cambia de altura en móvil, podrías necesitar clases responsivas:
+  `pt-16 sm:pt-20 lg:pt-24` (ejemplo: 64px en móvil, 80px en tablet, 96px en desktop).
+  
+  Además, `min-h-screen` asegura que el contenedor ocupe al menos la altura completa de la ventana
+  del navegador, y las clases `p-4 sm:p-6 lg:p-8` añaden padding lateral responsivo.
+  
+  MODIFICACIÓN CLAVE: Se han eliminado las clases `bg-gray-900` y `bg-gray-50`
+  para que el componente no tenga un fondo propio, permitiendo que el fondo del tema
+  sea manejado por un componente superior o el `body`.
+-->
+<div class="dashboard-container min-h-screen p-4 sm:p-6 lg:p-8 pt-20 transition-colors duration-300"
+     [ngClass]="(darkMode$ | async) ? 'text-gray-100' : 'text-gray-900'">
+
+  <!-- Sección de Encabezado del Dashboard: Título y Botones de Acción (Modo Oscuro, Añadir Usuario) -->
+  <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
+    <!-- Título principal de la Sección de Gestión de Usuarios -->
+    <h1 class="text-4xl font-extrabold text-blue-600 dark:text-purple-400 drop-shadow-lg transition-colors duration-300 flex items-center">
+      <i class="fas fa-users text-4xl mr-3"></i> <!-- Icono de FontAwesome para usuarios -->
+      Gestión de Usuarios
+    </h1>
+    
+    <!-- Contenedor de los botones de acción -->
+    <div class="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+
+
+      <!-- Botón para añadir un nuevo usuario: Dispara el formulario modal de creación -->
+      <!-- Este botón está estilizado para ser visible y atractivo en todas las pantallas -->
+      <button (click)="openCreateUserForm()"
+              class="add-user-button bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white rounded-full px-6 py-3 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 flex items-center justify-center w-full sm:w-auto">
+        <i class="fas fa-user-plus mr-2"></i> <!-- Icono de FontAwesome para añadir usuario -->
+        Añadir Usuario
+      </button>
+    </div>
   </div>
 
-  <!-- Formulario para crear/editar -->
-  <section class="form-section card">
-    <h3 class="section-heading">{{ isEditing ? 'Editar Usuario' : 'Crear Nuevo Usuario' }}</h3>
-    <form [formGroup]="userForm" (ngSubmit)="onSubmit()" class="user-form">
-      <div class="form-row">
-        <div class="form-group">
-          <label for="nombre_usuario">Nombre de Usuario:</label>
-          <input type="text" id="nombre_usuario" formControlName="nombre_usuario" class="form-control" placeholder="Ej: admin_user" />
-          <div *ngIf="userForm.get('nombre_usuario')?.invalid && userForm.get('nombre_usuario')?.touched" class="invalid-feedback">
-            Nombre de usuario es requerido.
-          </div>
-        </div>
+  <hr class="mb-8 border-gray-200 dark:border-gray-700"> <!-- Separador visual -->
 
-        <div class="form-group">
-          <label for="email">Email:</label>
-          <input type="email" id="email" formControlName="email" class="form-control" placeholder="Ej: usuario@example.com" />
-          <div *ngIf="userForm.get('email')?.invalid && userForm.get('email')?.touched" class="invalid-feedback">
-            <span *ngIf="userForm.get('email')?.errors?.['required']">Email es requerido.</span>
-            <span *ngIf="userForm.get('email')?.errors?.['email']">Formato inválido.</span>
-          </div>
-        </div>
+  <!-- --- Sección de Mensajes de Estado (Carga, Error General, Éxito General) --- -->
+  <!-- Indicador visual de carga cuando se están obteniendo datos -->
+  <div *ngIf="isLoading" class="loading-indicator flex items-center justify-center py-8 text-blue-500 dark:text-purple-400 text-lg font-medium animate-pulse">
+    <div class="spinner border-t-4 border-b-4 border-blue-500 dark:border-purple-400 rounded-full w-8 h-8 mr-3 animate-spin"></div>
+    Cargando usuarios...
+  </div>
+  <!-- Contenedor para mostrar mensajes de error generales en el dashboard -->
+  <div *ngIf="errorMessage" class="error-message bg-red-100 dark:bg-red-900 border border-red-400 dark:border-red-700 text-red-700 dark:text-red-200 px-4 py-3 rounded-lg relative mb-6 shadow-md" role="alert" #errorMessageDiv>
+    <strong class="font-bold">¡Error!</strong>
+    <span class="block sm:inline ml-2">{{ errorMessage }}</span>
+    <!-- Botón para cerrar el mensaje de error -->
+    <button (click)="errorMessage = null" class="absolute top-0 right-0 px-4 py-3 focus:outline-none text-red-700 dark:text-red-200 hover:text-red-900 dark:hover:text-red-50">
+      <i class="fas fa-times"></i>
+    </button>
+  </div>
+  <!-- Contenedor para mostrar mensajes de éxito generales en el dashboard -->
+  <div *ngIf="successMessage" class="success-message bg-green-100 dark:bg-green-900 border border-green-400 dark:border-green-700 text-green-700 dark:text-green-200 px-4 py-3 rounded-lg relative mb-6 shadow-md" role="alert" #successMessageDiv>
+    <strong class="font-bold">¡Éxito!</strong>
+    <span class="block sm:inline ml-2">{{ successMessage }}</span>
+    <!-- Botón para cerrar el mensaje de éxito -->
+    <button (click)="successMessage = null" class="absolute top-0 right-0 px-4 py-3 focus:outline-none text-green-700 dark:text-green-200 hover:text-green-900 dark:hover:text-green-50">
+      <i class="fas fa-times"></i>
+    </button>
+  </div>
+
+  <!-- --- Sección de Tabla de Usuarios --- -->
+  <!-- Muestra la tabla si hay usuarios disponibles y no se está cargando información -->
+  <div *ngIf="users.length > 0 && !isLoading" class="users-table-wrapper bg-white dark:bg-gray-800 rounded-lg shadow-2xl overflow-hidden border border-gray-200 dark:border-gray-700">
+    <div class="overflow-x-auto"> <!-- Permite el desplazamiento horizontal en pantallas pequeñas para ver toda la tabla -->
+      <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+        <thead class="bg-gray-100 dark:bg-gray-700">
+          <tr>
+            <th scope="col" class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-300 uppercase tracking-wider">ID</th>
+            <th scope="col" class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Nombre de Usuario</th>
+            <th scope="col" class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Email</th>
+            <th scope="col" class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Rol</th>
+            <th scope="col" class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Activo</th>
+            <th scope="col" class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-300 uppercase tracking-wider">2FA Habilitado</th>
+            <!-- Columnas 'Creado' y 'Actualizado' se omiten porque tu API no las devuelve en el GET actual -->
+            <th scope="col" class="px-6 py-4 text-center text-xs font-bold text-gray-500 dark:text-gray-300 uppercase tracking-wider">Acciones</th>
+          </tr>
+        </thead>
+        <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+          <tr *ngFor="let user of users" class="user-row hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150">
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">{{ user.id }}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">{{ user.nombre_usuario }}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">{{ user.email }}</td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <span [ngClass]="{
+                'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200': user.rol === 'admin',
+                'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200': user.rol === 'editor',
+                'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300': user.rol === 'visualizador'
+              }" class="px-2.5 py-0.5 rounded-full text-xs font-semibold uppercase">
+                {{ user.rol }}
+              </span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-center text-sm">
+              <!-- Muestra un icono de check o cruz basado en el valor numérico (0 o 1) de 'activo' -->
+              <i class="fas" [ngClass]="user.activo === 1 ? 'fa-check-circle text-green-500' : 'fa-times-circle text-red-500'"></i>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-center text-sm">
+              <!-- Muestra un icono de candado abierto o cerrado basado en el valor numérico (0 o 1) de 'two_factor_enabled' -->
+              <i class="fas" [ngClass]="user.two_factor_enabled === 1 ? 'fa-lock-open text-green-500' : 'fa-lock text-red-500'"></i>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium text-center">
+              <!-- Botón para editar usuario: Abre el formulario modal en modo edición -->
+              <button (click)="editUser(user)"
+                      class="inline-flex items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-500 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:bg-purple-600 dark:hover:bg-purple-700 transition-colors duration-200 mr-2 transform hover:scale-105">
+                <i class="fas fa-edit mr-1"></i> Editar
+              </button>
+              <!-- Botón para eliminar usuario: Abre el diálogo de confirmación -->
+              <button (click)="confirmDeleteUser(user.id, user.nombre_usuario)"
+                      class="inline-flex items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-red-500 hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors duration-200 transform hover:scale-105">
+                <i class="fas fa-trash-alt mr-1"></i> Eliminar
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Controles de Paginación -->
+    <div class="pagination-controls flex flex-col sm:flex-row justify-between items-center py-4 px-6 bg-gray-100 dark:bg-gray-700 border-t border-gray-200 dark:border-gray-700">
+      <!-- Información de la paginación actual -->
+      <div class="text-sm text-gray-700 dark:text-gray-300 mb-2 sm:mb-0">
+        Mostrando {{ (currentPage - 1) * itemsPerPage + 1 }} - {{ (currentPage - 1) * itemsPerPage + users.length }} de {{ totalItems }} usuarios
+      </div>
+      <!-- Grupo de botones de paginación. 'flex-wrap' para que los botones se envuelvan en móvil. -->
+      <div class="flex flex-wrap justify-center gap-2">
+        <!--<button (click)="onPageChange(1)" [disabled]="currentPage === 1"
+                class="px-4 py-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors duration-200 transform hover:scale-105">
+          Primera
+        </button>
+        <button (click)="onPageChange(totalPages)" [disabled]="currentPage === totalPages"
+          class="px-4 py-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors duration-200 transform hover:scale-105">
+          Última
+        </button>-->
+        <button (click)="onPageChange(currentPage - 1)" [disabled]="currentPage === 1"
+                class="px-4 py-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors duration-200 transform hover:scale-105">
+          Anterior
+        </button>
+        <span class="flex items-center justify-center px-4 py-2 text-gray-700 dark:text-gray-300">Página {{ currentPage }} de {{ totalPages }}</span>
+        <button (click)="onPageChange(currentPage + 1)" [disabled]="currentPage === totalPages"
+                class="px-4 py-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors duration-200 transform hover:scale-105">
+          Siguiente
+        </button>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Mensaje que se muestra cuando no hay usuarios registrados y no se está cargando ni hay errores -->
+  <div *ngIf="users.length === 0 && !isLoading && !errorMessage" class="no-users-message py-12 text-center text-gray-600 dark:text-gray-400 text-lg">
+    <i class="fas fa-info-circle text-6xl mx-auto mb-4 opacity-70"></i>
+    <p>No hay usuarios registrados.</p>
+    <p class="mt-2 text-sm">Haz clic en "Añadir Usuario" para empezar.</p>
+  </div>
+
+  <!-- --- Formulario de Creación/Edición (Overlay Modal Inline) --- -->
+  <!-- Este div crea un overlay de fondo oscuro que cubre toda la pantalla.
+       'fixed inset-0' lo posiciona sobre todo, 'z-50' asegura que esté en la parte superior. -->
+  <div *ngIf="showUserForm" class="user-form-overlay fixed inset-0 bg-black bg-opacity-50 dark:bg-opacity-75 flex items-center justify-center p-4 z-50">
+    <!-- La tarjeta del formulario modal: fondo, bordes, sombra, tamaño responsivo. -->
+    <div class="user-form-card bg-white dark:bg-gray-800 mt-12 rounded-lg shadow-2xl p-6 sm:p-8 w-full max-w-sm sm:max-w-md relative transition-all duration-300">
+      <!-- Botón para cerrar el formulario, posicionado en la esquina superior derecha. -->
+      <button (click)="closeUserForm()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 transition-colors duration-200 text-2xl">
+        <i class="fas fa-times"></i>
+      </button>
+      <!-- Título dinámico del formulario, cambia entre 'Editar Usuario' y 'Crear Nuevo Usuario'. -->
+      <h2 class="text-3xl font-bold mb-6 text-center text-gray-900 dark:text-white">
+        {{ isEditing ? 'Editar Usuario' : 'Crear Nuevo Usuario' }}
+      </h2>
+      <!-- Mensaje de error específico del formulario (ej. email duplicado, validación personalizada).
+           Se muestra dentro del modal y usa una referencia local para animaciones con GSAP. -->
+      <div *ngIf="formErrorMessage" class="form-error-message bg-red-100 dark:bg-red-900 border border-red-400 dark:border-red-700 text-red-700 dark:text-red-200 px-4 py-3 rounded-lg relative mb-6 shadow-md" role="alert" #formErrorMessageDiv>
+        <strong class="font-bold">¡Error!</strong>
+        <span class="block sm:inline ml-2">{{ formErrorMessage }}</span>
+        <!-- Botón para cerrar el mensaje de error del formulario -->
+        <button (click)="formErrorMessage = null" class="absolute top-0 right-0 px-4 py-3 focus:outline-none text-red-700 dark:text-red-200 hover:text-red-900 dark:hover:text-red-50">
+          <i class="fas fa-times"></i>
+        </button>
       </div>
 
-      <div class="form-group">
-        <label for="contrasena">Contraseña: <span *ngIf="isEditing" class="text-muted">(opcional al editar)</span></label>
-        <input type="password" id="contrasena" formControlName="contrasena" class="form-control" placeholder="********" />
-        <div *ngIf="userForm.get('contrasena')?.invalid && userForm.get('contrasena')?.touched" class="invalid-feedback">
-          <span *ngIf="userForm.get('contrasena')?.errors?.['required']">Contraseña requerida.</span>
-          <span *ngIf="userForm.get('contrasena')?.errors?.['minlength']">Mínimo 6 caracteres.</span>
-        </div>
-      </div>
-
-      <div class="form-row">
+      <!-- Formulario de Plantilla de Angular con NgForm para manejar el estado y la validación -->
+      <form (ngSubmit)="saveUser()" #userForm="ngForm" class="grid grid-cols-1 gap-6">
+        <!-- Campo para el Nombre de Usuario -->
         <div class="form-group">
-          <label for="rol">Rol:</label>
-          <select id="rol" formControlName="rol" class="form-control">
+          <label for="nombre_usuario" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nombre de Usuario:</label>
+          <input id="nombre_usuario" type="text" [(ngModel)]="newUser.nombre_usuario" name="nombre_usuario" required
+                 class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-purple-500 dark:bg-gray-700 dark:text-white transition-colors duration-200"
+                 #nombre_usuario="ngModel"> <!-- Referencia local al control de NgModel para validación -->
+          <div *ngIf="nombre_usuario.invalid && (nombre_usuario.dirty || nombre_usuario.touched)" class="text-red-500 text-xs mt-1">
+            <span *ngIf="nombre_usuario.errors?.['required']">El nombre de usuario es requerido.</span>
+          </div>
+        </div>
+        <!-- Campo para el Email -->
+        <div class="form-group">
+          <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email:</label>
+          <input id="email" type="email" [(ngModel)]="newUser.email" name="email" required pattern="^[^\s@]+@[^\s@]+\.[^\s@]+$"
+                 class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-purple-500 dark:bg-gray-700 dark:text-white transition-colors duration-200"
+                 #email="ngModel"> <!-- Referencia local al control de NgModel para validación -->
+          <div *ngIf="email.invalid && (email.dirty || email.touched)" class="text-red-500 text-xs mt-1">
+            <span *ngIf="email.errors?.['required']">El email es requerido.</span>
+            <span *ngIf="email.errors?.['pattern']">Formato de email inválido.</span>
+          </div>
+        </div>
+        <!-- Campo para la Contraseña: solo visible cuando se crea un nuevo usuario, no en edición -->
+        <div class="form-group" *ngIf="!isEditing">
+          <label for="contrasena" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Contraseña:</label>
+          <input id="contrasena" type="password" [(ngModel)]="newUser.contrasena" name="contrasena" required minlength="6"
+                 class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-purple-500 dark:bg-gray-700 dark:text-white transition-colors duration-200"
+                 #contrasena="ngModel"> <!-- Referencia local al control de NgModel para validación -->
+          <div *ngIf="contrasena.invalid && (contrasena.dirty || contrasena.touched)" class="text-red-500 text-xs mt-1">
+            <span *ngIf="contrasena.errors?.['required']">La contraseña es requerida.</span>
+            <span *ngIf="contrasena.errors?.['minlength']">La contraseña debe tener al menos 6 caracteres.</span>
+          </div>
+        </div>
+        <!-- Campo para el Rol del Usuario (selector) -->
+        <div class="form-group">
+          <label for="rol" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Rol:</label>
+          <select id="rol" [(ngModel)]="newUser.rol" name="rol" required
+                  class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-purple-500 dark:bg-gray-700 dark:text-white transition-colors duration-200 appearance-none bg-no-repeat bg-right-center pr-8"
+                  style="background-image: url('data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%2012%22%3E%3Cpath%20fill%3D%22%236b7280%22%20d%3D%22M7.41%2C8.59L4.83%2C6L7.41%2C3.41L6%2C2L2%2C6L6%2C10L7.41%2C8.59Z%22%20transform%3D%22rotate(90%206%206)%22%2F%3E%3C%2Fsvg%3E'); background-size: 0.75rem;"
+                  #rol="ngModel"> <!-- Referencia local al control de NgModel para validación -->
             <option value="admin">Administrador</option>
             <option value="editor">Editor</option>
             <option value="visualizador">Visualizador</option>
           </select>
+          <div *ngIf="rol.invalid && (rol.dirty || rol.touched)" class="text-red-500 text-xs mt-1">
+            <span *ngIf="rol.errors?.['required']">El rol es requerido.</span>
+          </div>
         </div>
-
-        <div class="form-group form-check">
-          <input type="checkbox" id="activo" formControlName="activo" class="form-check-input" />
-          <label for="activo" class="form-check-label">Activo</label>
+        <!-- Checkbox para el estado 'Activo' del usuario -->
+        <div class="form-group flex items-center mt-2">
+          <!-- El binding bidireccional '[ngModel]="..." (ngModelChange)="..."' convierte entre number (0/1) y boolean (true/false) para el checkbox -->
+          <input id="activo" type="checkbox" name="activo"
+                 [ngModel]="newUser.activo === 1"
+                 (ngModelChange)="newUser.activo = $event ? 1 : 0"
+                 class="h-4 w-4 text-blue-600 dark:text-purple-500 border-gray-300 dark:border-gray-600 rounded focus:ring-blue-500 dark:focus:ring-purple-500">
+          <label for="activo" class="ml-2 block text-sm text-gray-900 dark:text-gray-300">Activo</label>
         </div>
+        <!-- Checkbox para el estado '2FA Habilitado' del usuario -->
+        <div class="form-group flex items-center">
+          <!-- El binding bidireccional '[ngModel]="..." (ngModelChange)="..."' convierte entre number (0/1) y boolean (true/false) para el checkbox -->
+          <input id="two_factor_enabled" type="checkbox" name="two_factor_enabled"
+                 [ngModel]="newUser.two_factor_enabled === 1"
+                 (ngModelChange)="newUser.two_factor_enabled = $event ? 1 : 0"
+                 class="h-4 w-4 text-blue-600 dark:text-purple-500 border-gray-300 dark:border-gray-600 rounded focus:ring-blue-500 dark:focus:ring-purple-500">
+          <label for="two_factor_enabled" class="ml-2 block text-sm text-gray-900 dark:text-gray-300">2FA Habilitado</label>
+        </div>
+        <!-- Contenedor de botones de acción del formulario -->
+        <div class="form-actions flex justify-end gap-4 mt-6">
+          <button type="button" (click)="closeUserForm()"
+                  class="bg-gray-300 hover:bg-gray-400 dark:bg-gray-600 dark:hover:bg-gray-500 text-gray-800 dark:text-white rounded-lg px-6 py-3 transition-all duration-300 transform hover:scale-105 shadow-md">
+            Cancelar
+          </button>
+          <button type="submit" [disabled]="isLoading || userForm.invalid"
+                  class="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white rounded-lg px-6 py-3 transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center justify-center">
+            <span *ngIf="isLoading" class="spinner-sm mr-2"></span> <!-- Spinner si el formulario está enviando datos -->
+            {{ isEditing ? 'Guardar Cambios' : 'Crear Usuario' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- --- Diálogo de Confirmación (Overlay Modal Inline) --- -->
+  <!-- Este div crea un overlay similar al del formulario para el diálogo de confirmación de eliminación. -->
+  <div *ngIf="showConfirmationDialog" class="confirmation-dialog-overlay fixed inset-0 bg-black bg-opacity-50 dark:bg-opacity-75 flex items-center justify-center p-4 z-50">
+    <!-- La tarjeta del diálogo de confirmación: fondo, bordes, sombra, tamaño responsivo, centrado de texto. -->
+    <div class="confirmation-dialog-card bg-white dark:bg-gray-800 rounded-lg shadow-2xl p-6 sm:p-8 w-full max-w-sm text-center relative transition-all duration-300">
+      <h2 class="text-2xl font-bold mb-4 text-red-600 dark:text-red-400">{{ confirmDialogTitle }}</h2>
+      <p class="mb-6 text-gray-700 dark:text-gray-300">{{ confirmDialogMessage }}</p>
+      <div class="flex justify-center gap-4">
+        <button (click)="closeConfirmationDialog(false)"
+                class="bg-gray-300 hover:bg-gray-400 dark:bg-gray-600 dark:hover:bg-gray-500 text-gray-800 dark:text-white rounded-lg px-6 py-3 transition-all duration-300 transform hover:scale-105 shadow-md">
+          Cancelar
+        </button>
+        <button (click)="closeConfirmationDialog(true)"
+                class="bg-red-500 hover:bg-red-600 text-white rounded-lg px-6 py-3 transition-all duration-300 transform hover:scale-105 shadow-lg">
+          Confirmar
+        </button>
       </div>
-
-      <div class="form-actions">
-        <button type="submit" class="btn btn-primary">{{ isEditing ? 'Actualizar' : 'Crear' }}</button>
-        <button type="button" class="btn btn-secondary" (click)="resetForm()">Cancelar</button>
-      </div>
-    </form>
-  </section>
-
-  <!-- Lista de usuarios -->
-  <section class="users-table card" *ngIf="users.length > 0">
-    <h3 class="section-heading">Lista de Usuarios</h3>
-    <table class="table">
-      <thead>
-        <tr>
-          <th>Nombre</th>
-          <th>Email</th>
-          <th>Rol</th>
-          <th>Activo</th>
-          <th>Acciones</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let user of users">
-          <td>{{ user.nombre_usuario }}</td>
-          <td>{{ user.email }}</td>
-          <td>{{ user.rol }}</td>
-          <td>
-            <span [class.badge-success]="user.activo" [class.badge-danger]="!user.activo" class="badge">
-              {{ user.activo ? 'Sí' : 'No' }}
-            </span>
-          </td>
-          <td>
-            <button class="btn btn-sm btn-warning" (click)="openEditForm(user)">Editar</button>
-            <button class="btn btn-sm btn-danger" (click)="deleteUser(user.id)">Eliminar</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-
-    <!-- Paginación -->
-    <nav class="pagination-controls" *ngIf="totalUsers > itemsPerPage">
-      <ul class="pagination">
-        <li class="page-item" [class.disabled]="currentPage === 1">
-          <a class="page-link" (click)="goToPage(currentPage - 1)">Anterior</a>
-        </li>
-        <li
-          class="page-item"
-          *ngFor="let page of [].constructor(Math.ceil(totalUsers / itemsPerPage)); let i = index"
-          [class.active]="i + 1 === currentPage"
-        >
-          <a class="page-link" (click)="goToPage(i + 1)">{{ i + 1 }}</a>
-        </li>
-        <li class="page-item" [class.disabled]="currentPage === Math.ceil(totalUsers / itemsPerPage)">
-          <a class="page-link" (click)="goToPage(currentPage + 1)">Siguiente</a>
-        </li>
-      </ul>
-    </nav>
-  </section>
+    </div>
+  </div>
 </div>

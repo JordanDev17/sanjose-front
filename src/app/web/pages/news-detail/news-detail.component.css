@@ -1,0 +1,34 @@
+/* src/app/web/pages/news-detail/news-detail.component.css */
+
+/* Aplica el filtro de desenfoque al fondo del modal.
+   backdrop-filter es una propiedad CSS que procesa el área detrás de un elemento.
+   Esto crea el efecto de blur que solicitaste. */
+.modal-backdrop {
+  backdrop-filter: blur(8px); /* Aplica un desenfoque de 8px al fondo */
+  -webkit-backdrop-filter: blur(8px); /* Prefijo para compatibilidad con Safari */
+}
+
+/* Opcional: Si quieres un scrollbar más estilizado para el contenido del modal */
+.modal-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.modal-content::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.modal-content::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 10px;
+}
+
+.modal-content::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Para navegadores Firefox */
+.modal-content {
+  scrollbar-width: thin;
+  scrollbar-color: #888 #f1f1f1;
+}

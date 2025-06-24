@@ -1,1 +1,413 @@
-<p>about works!</p>
+<div class="min-h-screen
+            bg-light-bg-primary text-light-text-primary
+            dark:bg-dark-bg-primary dark:text-dark-text-primary
+            transition-colors duration-700 ease-in-out font-sans relative">
+
+  <div class="absolute inset-0 z-0
+              bg-gradient-to-br from-light-bg-secondary to-light-border
+              dark:from-dark-bg-primary dark:to-dark-bg-secondary
+              opacity-50 dark:opacity-70 transition-opacity duration-700 ease-in-out" aria-hidden="true"></div>
+
+  <section class="relative h-96 md:h-[480px] flex items-center justify-center text-center overflow-hidden
+                  bg-gradient-to-r from-primary-600 to-primary-800 dark:from-primary-800 dark:to-primary-950
+                  shadow-2xl rounded-b-3xl transform skew-y-[-1deg] origin-top-left pt-12 md:pt-20">
+    <div class="absolute inset-0 bg-cover bg-center opacity-20 dark:opacity-10" [style.background-image]="'url(' + imagePaths.hero + ')'"
+          aria-hidden="true" role="img" aria-label="Vista aérea del Parque Industrial San José"></div>
+    <div class="absolute inset-0 bg-primary-700 dark:bg-primary-900 opacity-60 transform skew-y-[1deg] origin-bottom-left" aria-hidden="true"></div>
+    <div class="relative z-10 p-6 max-w-4xl mx-auto transform skew-y-[1deg] origin-bottom-left animate-slide-in-from-top">
+      <h1 class="text-5xl md:text-7xl font-extrabold mb-4 leading-tight drop-shadow-lg
+                 text-transparent bg-clip-text bg-gradient-to-r from-black to-blue-300 dark:from-white to-secondary-400
+                 animate-text-reveal">
+        Conoce el Corazón de la Industria
+      </h1>
+      <p class="text-xl md:text-2xl from-black to-blue-300  dark:from-white to-secondary-400 opacity-95 drop-shadow-md mt-4 animate-fade-in-up">
+        Parque Industrial San José: Donde la Visión se Convierte en Progreso.
+      </p>
+    </div>
+  </section>
+      <!-- HERO SECTION Y CAROUSEL -->
+
+  <section class="py-16 mt-8 mx-4 md:mx-auto max-w-7xl relative z-10"
+           data-aos="fade-up" data-aos-delay="400" data-aos-duration="1000">
+    <div class="container mx-auto px-4">
+      <h2 class="text-4xl md:text-5xl font-extrabold text-center mb-12
+                 text-light-text-primary dark:text-dark-text-primary relative
+                 after:absolute after:w-24 after:h-1 after:bg-secondary-500 after:left-1/2 after:-translate-x-1/2 after:bottom-[-10px] after:rounded-full animate-fade-in">
+        <span class="text-light-text-primary bg-clip-text bg-gradient-to-r
+                     from-primary-700 to-primary-900 dark:from-primary-300 dark:to-primary-500">Nuestras</span> Modernas Instalaciones
+      </h2>
+      <div id="default-carousel" class="relative w-full max-w-6xl mx-auto shadow-2xl rounded-xl overflow-hidden group" data-carousel="static">
+        <div class="relative h-64 sm:h-80 md:h-[450px] overflow-hidden rounded-xl">
+          <div class="hidden duration-700 ease-in-out" data-carousel-item>
+            <img [src]="imagePaths.carousel1" class="absolute block w-full h-full object-cover top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transform transition-transform duration-500 group-hover:scale-105" alt="Vista aérea del parque">
+            <div class="absolute inset-x-0 bottom-0 p-6 bg-gradient-to-t from-gray/80 to-transparent
+                        text-light dark:text-light-text-primary text-xl md:text-2xl font-bold rounded-b-xl backdrop-brightness-75">
+              Vista interna del Parque Industrial San José
+            </div>
+          </div>
+          <div class="hidden duration-700 ease-in-out" data-carousel-item>
+            <img [src]="imagePaths.carousel2" class="absolute block w-full h-full object-cover top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transform transition-transform duration-500 group-hover:scale-105" alt="Bodegas modernas">
+            <div class="absolute inset-x-0 bottom-0 p-6 bg-gradient-to-t from-gray/80 to-transparent
+                        text-light-text-primary dark:text-dark-text-primary text-xl md:text-2xl font-bold rounded-b-xl backdrop-brightness-75">
+              Bodegas con muy buen tamaño!!!
+            </div>
+          </div>
+          <div class="hidden duration-700 ease-in-out" data-carousel-item>
+            <img [src]="imagePaths.carousel3" class="absolute block w-full h-full object-cover top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transform transition-transform duration-500 group-hover:scale-105" alt="Áreas verdes y zonas comunes">
+            <div class="absolute inset-x-0 bottom-0 p-6 bg-gradient-to-t from-gray/80 to-transparent
+                        text-light-text-primary dark:text-dark-text-primary text-xl md:text-2xl font-bold rounded-b-xl backdrop-brightness-75">
+              Amplias vías y zonas verdes
+            </div>
+          </div>
+        </div>
+        <div class="absolute z-30 flex -translate-x-1/2 bottom-5 left-1/2 space-x-3 rtl:space-x-reverse">
+          <button type="button" class="w-4 h-4 rounded-full
+                                       bg-primary-400 dark:bg-primary-600
+                                       hover:bg-primary-500 dark:hover:bg-primary-500
+                                       transition-colors duration-300 transform hover:scale-125
+                                       focus:outline-none focus:ring-2 focus:ring-primary-500" aria-current="true" aria-label="Slide 1" data-carousel-slide-to="0"></button>
+          <button type="button" class="w-4 h-4 rounded-full
+                                       bg-primary-400 dark:bg-primary-600
+                                       hover:bg-primary-500 dark:hover:bg-primary-500
+                                       transition-colors duration-300 transform hover:scale-125
+                                       focus:outline-none focus:ring-2 focus:ring-primary-500" aria-current="false" aria-label="Slide 2" data-carousel-slide-to="1"></button>
+          <button type="button" class="w-4 h-4 rounded-full
+                                       bg-primary-400 dark:bg-primary-600
+                                       hover:bg-primary-500 dark:hover:bg-primary-500
+                                       transition-colors duration-300 transform hover:scale-125
+                                       focus:outline-none focus:ring-2 focus:ring-primary-500" aria-current="false" aria-label="Slide 3" data-carousel-slide-to="2"></button>
+        </div>
+        <button type="button" class="absolute top-0 start-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-none" data-carousel-prev>
+          <span class="inline-flex items-center justify-center w-10 h-10 rounded-full
+                       bg-white/40 dark:bg-dark-bg-secondary/40
+                       group-hover:bg-white/60 dark:group-hover:bg-dark-bg-secondary/70
+                       focus:ring-4 focus:ring-white dark:focus:ring-dark-bg-secondary/70
+                       focus:outline-none transition-all duration-300">
+            <svg class="w-5 h-5 text-white dark:text-dark-text-primary rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
+              <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 1 1 5l4 4"/>
+            </svg>
+            <span class="sr-only">Anterior</span>
+          </span>
+        </button>
+        <button type="button" class="absolute top-0 end-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-none" data-carousel-next>
+          <span class="inline-flex items-center justify-center w-10 h-10 rounded-full
+                       bg-white/40 dark:bg-dark-bg-secondary/40
+                       group-hover:bg-white/60 dark:group-hover:bg-dark-bg-secondary/70
+                       focus:ring-4 focus:ring-white dark:focus:ring-dark-bg-secondary/70
+                       focus:outline-none transition-all duration-300">
+            <svg class="w-5 h-5 text-white dark:text-dark-text-primary rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
+              <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 9l4-4-4-4"/>
+            </svg>
+            <span class="sr-only">Siguiente</span>
+          </span>
+        </button>
+      </div>
+      <p class="text-center
+                text-light-text-secondary dark:text-dark-text-secondary
+                mt-12 text-xl md:text-2xl leading-relaxed max-w-4xl mx-auto animate-fade-in-up">
+        El Parque Industrial San José está diseñado para potenciar la productividad y el bienestar de las empresas y sus equipos, en un entorno de vanguardia, segurudiad y sostenibilidad.
+      </p>
+    </div>
+  </section>
+
+  <!-- espaciado -->
+<section class="py-10 md:py-16 flex items-center justify-center relative overflow-hidden ">
+  <div class="relative w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+    <div class="animated-gradient-line absolute inset-0 rounded-full"></div>
+  </div>
+</section>
+
+
+  <section class="py-16 mt-8 mx-4 md:mx-auto max-w-7xl relative z-10"
+           data-aos="fade-up" data-aos-duration="1000">
+    <div class="container mx-auto px-4 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+      <div class="animate-slide-in-left">
+        <h2 class="text-4xl md:text-5xl font-extrabold mb-8
+                   text-light-text-primary dark:text-dark-text-primary relative
+                   after:absolute after:w-24 after:h-1 after:bg-secondary-500 after:left-0 after:bottom-[-10px] after:rounded-full">
+          Nuestra <span class="text-light bg-clip-text bg-gradient-to-r
+                               from-secondary-500 to-secondary-700 dark:from-secondary-300 dark:to-secondary-500">Historia</span>
+        </h2>
+        <p class="text-lg md:text-xl leading-loose
+                  text-light-text-secondary dark:text-dark-text-secondary mb-6">
+          Fundado en 2010 con una visión clara de impulsar el desarrollo industrial en la Sabana de Occidente, el Parque Industrial San José nació de la necesidad de un espacio estratégico, moderno y con infraestructura de primer nivel. Ubicados en Funza, Cundinamarca, vía Siberia, nuestra historia es la de un crecimiento sostenido, siempre al lado de las empresas que han confiado en nosotros.
+        </p>
+        <p class="text-lg md:text-xl leading-loose
+                  text-light-text-secondary dark:text-dark-text-secondary">
+          Desde nuestros inicios, nos hemos dedicado a crear un ecosistema donde la innovación, la eficiencia y la sostenibilidad convergen, ofreciendo un hogar a compañías líderes en logística, manufactura, tecnología y servicios. Somos más que un conjunto de bodegas; somos una comunidad vibrante que construye futuro y contribuye activamente al desarrollo económico regional.
+        </p>
+      </div>
+      <div class="relative flex justify-center items-center group">
+        <img [src]="imagePaths.history" alt="Historia del Parque Industrial San José" class="rounded-xl shadow-2xl max-h-[450px] w-full object-cover transform group-hover:scale-102 transition-transform duration-500" data-aos="zoom-in" data-aos-delay="200" data-aos-duration="1000">
+        <div class="absolute inset-0 bg-primary-500/20 rounded-xl animate-pulse-slow opacity-0 group-hover:opacity-100 transition-opacity duration-500" aria-hidden="true"></div>
+      </div>
+    </div>
+  </section>
+  <!-- SECCION MISION Y VISION-->
+
+  <section class="py-16 mt-8 mx-4 md:mx-auto max-w-7xl relative z-10 overflow-hidden font-inter">
+    <div class="container mx-auto px-4">
+      <h2 class="text-5xl lg:text-6xl font-extrabold text-center text-gray-900 mb-16 relative z-10 leading-tight section-title">
+        Nuestra <span class="text-blue-600">Esencia</span>
+        <span class="block text-2xl font-light text-gray-500 mt-2">Valores que nos definen</span>
+      </h2>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-100 rounded-3xl shadow-xl p-8 border border-blue-200
+                    transform transition-all duration-500 hover:scale-[1.02] hover:shadow-2xl hover:border-blue-400
+                    flex flex-col items-center justify-start text-center h-full mission-card"
+             data-aos="fade-right" data-aos-duration="1000" data-aos-delay="200">
+          <div class="flex items-center justify-center mb-6 w-24 h-24 rounded-full bg-blue-100 text-blue-600 shadow-lg animate-pulse-light">
+            <svg class="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.01 12.01 0 002.944 12a12.01 12.01 0 003.04 8.618A11.955 11.955 0 0112 21.056a11.955 11.955 0 018.618-3.04A12.01 12.01 0 0021.056 12a12.01 12.01 0 00-3.04-8.618z"></path>
+            </svg>
+          </div>
+          <h3 class="text-4xl font-bold text-gray-800 mb-6 flex-grow">Nuestra Misión</h3>
+          <p class="text-gray-700 text-lg leading-relaxed">
+            Ser el epicentro del crecimiento industrial en la región, ofreciendo soluciones integrales y sostenibles para las empresas, impulsando la competitividad y generando valor compartido para nuestros socios y la comunidad. Nos comprometemos a proporcionar una infraestructura de vanguardia, servicios eficientes y un ambiente propicio para la innovación y el desarrollo empresarial, fomentando un impacto positivo en el entorno económico y social.
+          </p>
+        </div>
+
+        <div class="bg-gradient-to-br from-green-50 to-teal-100 rounded-3xl shadow-xl p-8 border border-green-200
+                    transform transition-all duration-500 hover:scale-[1.02] hover:shadow-2xl hover:border-green-400
+                    flex flex-col items-center justify-start text-center h-full vision-card"
+             data-aos="fade-left" data-aos-duration="1000" data-aos-delay="400">
+          <div class="flex items-center justify-center mb-6 w-24 h-24 rounded-full bg-green-100 text-green-600 shadow-lg animate-pulse-light">
+            <svg class="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.01 12.01 0 002.944 12a12.01 12.01 0 003.04 8.618A11.955 11.955 0 0112 21.056a11.955 11.955 0 018.618-3.04A12.01 12.01 0 0021.056 12a12.01 12.01 0 00-3.04-8.618z"></path>
+            </svg>
+          </div>
+          <h3 class="text-4xl font-bold text-gray-800 mb-6 flex-grow">Nuestra Visión</h3>
+          <p class="text-gray-700 text-lg leading-relaxed">
+            Ser reconocidos como el parque industrial líder a nivel nacional e internacional, referente en sostenibilidad, eficiencia y generación de oportunidades. Buscamos ser un modelo de gestión integral que impulse el desarrollo económico regional, promoviendo la innovación tecnológica, la responsabilidad social y ambiental, y consolidándonos como el destino preferido para la inversión industrial de alto valor.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <section class="py-16 mt-8 mx-4 md:mx-auto max-w-7xl relative z-10"
+           data-aos="fade-up" data-aos-duration="1000">
+    <div class="container mx-auto px-4">
+      <h2 class="text-4xl md:text-5xl font-extrabold text-center mb-12
+                 text-light-text-primary dark:text-dark-text-primary relative
+                 after:absolute after:w-24 after:h-1 after:bg-secondary-500 after:left-1/2 after:-translate-x-1/2 after:bottom-[-10px] after:rounded-full animate-fade-in">
+        Nuestro <span class="text-light-text-primary bg-clip-text bg-gradient-to-r
+                              from-secondary-500 to-secondary-700 dark:from-secondary-300 dark:to-secondary-500">Valor Agregado</span>
+      </h2>
+
+      <div class="mb-8 border-b
+                  border-light-border dark:border-dark-border">
+        <ul class="flex flex-wrap -mb-px text-sm md:text-base font-bold text-center justify-center" id="default-tab" data-tabs-toggle="#default-tab-content" role="tablist">
+          <li class="me-2" role="presentation">
+            <button class="inline-block p-4 border-b-4 border-transparent rounded-t-lg
+                           hover:text-light-accent hover:border-light-accent/40
+                           dark:hover:text-dark-accent dark:hover:border-dark-accent/60
+                           text-light-text-secondary dark:text-dark-text-secondary
+                           transition-all duration-300 ease-in-out
+                           focus:outline-none focus:ring-2 focus:ring-light-accent dark:focus:ring-dark-accent
+                           active:text-light-accent active:border-light-accent
+                           dark:active:text-dark-accent dark:active:border-dark-accent"
+                    id="profile-tab" data-tabs-target="#profile" type="button" role="tab" aria-controls="profile" aria-selected="false">
+              <i class="fas fa-headset mr-2"></i>Servicios Centralizados
+            </button>
+          </li>
+          <li class="me-2" role="presentation">
+            <button class="inline-block p-4 border-b-4 border-transparent rounded-t-lg
+                           hover:text-light-accent hover:border-light-accent/40
+                           dark:hover:text-dark-accent dark:hover:border-dark-accent/60
+                           text-light-text-secondary dark:text-dark-text-secondary
+                           transition-all duration-300 ease-in-out
+                           focus:outline-none focus:ring-2 focus:ring-light-accent dark:focus:ring-dark-accent
+                           active:text-light-accent active:border-light-accent
+                           dark:active:text-dark-accent dark:active:border-dark-accent"
+                    id="dashboard-tab" data-tabs-target="#dashboard" type="button" role="tab" aria-controls="dashboard" aria-selected="false">
+              <i class="fas fa-globe-americas mr-2"></i>Sostenibilidad
+            </button>
+          </li>
+          <li class="me-2" role="presentation">
+            <button class="inline-block p-4 border-b-4 border-transparent rounded-t-lg
+                           hover:text-light-accent hover:border-light-accent/40
+                           dark:hover:text-dark-accent dark:hover:border-dark-accent/60
+                           text-light-text-secondary dark:text-dark-text-secondary
+                           transition-all duration-300 ease-in-out
+                           focus:outline-none focus:ring-2 focus:ring-light-accent dark:focus:ring-dark-accent
+                           active:text-light-accent active:border-light-accent
+                           dark:active:text-dark-accent dark:active:border-dark-accent"
+                    id="settings-tab" data-tabs-target="#settings" type="button" role="tab" aria-controls="settings" aria-selected="false">
+              <i class="fas fa-microchip mr-2"></i>Tecnología e Innovación
+            </button>
+          </li>
+        </ul>
+      </div>
+      <div id="default-tab-content">
+        <div class="hidden p-8 rounded-xl shadow-xl backdrop-blur-sm
+                    bg-light-bg-secondary/70 dark:bg-dark-bg-secondary/70
+                    border border-light-border dark:border-dark-border
+                    animate-fade-in" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+          <h3 class="text-2xl md:text-3xl font-bold mb-4
+                     text-light-text-primary dark:text-dark-text-primary">Servicios Centralizados para tu <span class="text-light-accent dark:text-dark-accent">Comodidad</span></h3>
+          <p class="text-light-text-secondary dark:text-dark-text-secondary leading-relaxed text-lg md:text-xl">
+            Ofrecemos una gama de servicios administrativos y de apoyo centralizados para que tu empresa se enfoque en su core de negocio. Esto incluye gestión de seguridad unificada, mantenimiento de áreas comunes, asesoría en permisos y trámites, y una eficiente administración del parque. Tu operación es nuestra prioridad para que puedas concentrarte en lo que realmente importa: el crecimiento de tu negocio.
+          </p>
+        </div>
+        <div class="hidden p-8 rounded-xl shadow-xl backdrop-blur-sm
+                    bg-light-bg-secondary/70 dark:bg-dark-bg-secondary/70
+                    border border-light-border dark:border-dark-border
+                    animate-fade-in" id="dashboard" role="tabpanel" aria-labelledby="dashboard-tab">
+          <h3 class="text-2xl md:text-3xl font-bold mb-4
+                     text-light-text-primary dark:text-dark-text-primary">Un Compromiso Real con la <span class="text-light-accent dark:text-dark-accent">Sostenibilidad</span></h3>
+          <p class="text-light-text-secondary dark:text-dark-text-secondary leading-relaxed text-lg md:text-xl">
+            Impulsamos un modelo de desarrollo industrial responsable y respetuoso con el medio ambiente. Contamos con iniciativas de gestión de residuos, optimización del uso del agua, promoción de energías limpias y amplias zonas verdes que mejoran la calidad ambiental y la eficiencia operativa de todas las empresas en el parque, contribuyendo a un futuro más verde y consciente.
+          </p>
+        </div>
+        <div class="hidden p-8 rounded-xl shadow-xl backdrop-blur-sm
+                    bg-light-bg-secondary/70 dark:bg-dark-bg-secondary/70
+                    border border-light-border dark:border-dark-border
+                    animate-fade-in" id="settings" role="tabpanel" aria-labelledby="settings-tab">
+          <h3 class="text-2xl md:text-3xl font-bold mb-4
+                     text-light-text-primary dark:text-dark-text-primary">Conectando con el Futuro: <span class="text-light-accent dark:text-dark-accent">Tecnología e Innovación</span></h3>
+          <p class="text-light-text-secondary dark:text-dark-text-secondary leading-relaxed text-lg md:text-xl">
+            Nuestro parque está equipado con infraestructura de comunicaciones de fibra óptica de alta velocidad, una red eléctrica inteligente y la posibilidad de integrar soluciones de IoT para monitoreo y automatización. Fomentamos un ambiente que impulsa la adopción de tecnologías avanzadas para la máxima productividad y eficiencia de tu empresa.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+<section class="py-16 stats-section mt-8 mx-4 md:mx-auto max-w-7xl relative z-10">
+  <div class="container mx-auto px-4">
+    <h2 class="text-4xl md:text-5xl font-extrabold text-center mb-12
+                text-light-text-primary dark:text-dark-text-primary relative
+                after:absolute after:w-24 after:h-1 after:bg-secondary-500 after:left-1/2 after:-translate-x-1/2 after:bottom-[-10px] after:rounded-full animate-fade-in">
+      Parque Industrial San José en <span class="text-light-text-primary bg-clip-text bg-gradient-to-r
+                                                   from-secondary-500 to-secondary-700 dark:from-secondary-300 dark:to-secondary-500">Números</span>
+    </h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+      <div class="p-8 rounded-xl shadow-xl
+                  border border-light-border dark:border-dark-border
+                  transform hover:scale-105 transition-transform duration-300" data-aos="zoom-in" data-aos-delay="0" data-aos-duration="800">
+        <div class="text-light-accent dark:text-dark-accent text-7xl font-extrabold mb-4">
+          <span #empresasCount>0</span><span class="text-secondary-500"></span>
+        </div>
+        <p class="text-light-text-secondary dark:text-dark-text-secondary text-xl md:text-2xl font-semibold">Empresas Residentes</p>
+      </div>
+      <div class="p-8 rounded-xl shadow-xl
+                  border border-light-border dark:border-dark-border
+                  transform hover:scale-105 transition-transform duration-300" data-aos="zoom-in" data-aos-delay="200" data-aos-duration="800">
+        <div class="text-light-accent dark:text-dark-accent text-7xl font-extrabold mb-4">
+          <span #hectareasCount>0</span><span class="text-secondary-500"></span>
+        </div>
+        <p class="text-light-text-secondary dark:text-dark-text-secondary text-xl md:text-2xl font-semibold">Hectáreas de Desarrollo</p>
+      </div>
+      <div class="p-8 rounded-xl shadow-xl
+                  border border-light-border dark:border-dark-border
+                  transform hover:scale-105 transition-transform duration-300" data-aos="zoom-in" data-aos-delay="400" data-aos-duration="800">
+        <div class="text-light-accent dark:text-dark-accent text-7xl font-extrabold mb-4">
+          <span #empleosCount>0</span><span class="text-secondary-500"></span>
+        </div>
+        <p class="text-light-text-secondary dark:text-dark-text-secondary text-xl md:text-2xl font-semibold">Empleos Generados</p>
+      </div>
+    </div>
+  </div>
+</section>
+ <!-- Seccion Mapa comentada 
+  <section class="py-16 mt-8 mx-4 md:mx-auto max-w-7xl relative z-10"
+           id="map-section" data-aos="fade-up" data-aos-duration="1000">
+    <div class="container mx-auto px-4">
+      <h2 class="text-4xl md:text-5xl font-extrabold text-center mb-12
+                 text-light-text-primary dark:text-dark-text-primary relative
+                 after:absolute after:w-24 after:h-1 after:bg-secondary-500 after:left-1/2 after:-translate-x-1/2 after:bottom-[-10px] after:rounded-full animate-fade-in">
+        Nuestra <span class="text-light-text-primary bg-clip-text bg-gradient-to-r
+                             from-primary-700 to-primary-900 dark:from-primary-300 dark:to-primary-500">Ubicación Estratégica</span>
+      </h2>
+      <p class="text-center text-lg md:text-xl
+                text-light-text-secondary dark:text-dark-text-secondary
+                mb-8 max-w-4xl mx-auto leading-relaxed">
+        El Parque Industrial San José está convenientemente ubicado en Funza, Cundinamarca, vía Siberia, ofreciendo acceso rápido a las principales vías de transporte y centros urbanos, clave para la eficiencia y agilidad de tu cadena de suministro.
+      </p>
+      <div id="map" class="w-full h-[550px] rounded-xl shadow-2xl border-4
+                           border-light-accent dark:border-dark-accent
+                           transform hover:scale-[1.005] transition-transform duration-300"></div>
+    </div>
+  </section>
+-->
+
+<!-- espaciado -->
+<section class="py-10 md:py-16 flex items-center justify-center relative overflow-hidden ">
+  <div class="relative w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+    <div class="animated-gradient-line absolute inset-0 rounded-full"></div>
+  </div>
+</section>
+
+<!-- Section testimonios -->
+<section class="py-16 mt-8 mx-4 md:mx-auto max-w-7xl relative z-10 overflow-hidden">
+  <div class="container mx-auto px-4">
+    <h2 class="text-4xl md:text-5xl font-extrabold text-center mb-12 text-light-text-primary dark:text-dark-text-primary relative after:absolute after:w-24 after:h-1 after:bg-secondary-500 after:left-1/2 after:-translate-x-1/2 after:bottom-[-10px] after:rounded-full animate-fade-in">
+      Lo Que Dicen <span class="bg-clip-text bg-gradient-to-r from-secondary-500 to-secondary-700 dark:from-secondary-300 dark:to-secondary-500">Nuestros Clientes</span>
+    </h2>
+
+    <div id="testimonials-carousel" class="relative w-full max-w-5xl mx-auto overflow-hidden" data-carousel="slide">
+      <div class="relative min-h-[22rem] md:min-h-[20rem] lg:min-h-[18rem] h-auto rounded-xl shadow-2xl backdrop-blur-sm bg-light-bg-secondary/70 dark:bg-dark-bg-secondary/70 border border-light-border dark:border-dark-border p-6 sm:p-8 md:p-12 flex items-center justify-center transition-all duration-300">
+        
+        <!-- Carousel Item 1 -->
+        <div class="hidden duration-700 ease-in-out text-center flex flex-col justify-center items-center space-y-6 px-4" data-carousel-item>
+          <p class="text-xl md:text-2xl italic text-light-text-secondary dark:text-dark-text-secondary leading-relaxed line-clamp-4 animate-fade-in-up">
+            "Trasladar nuestra operación al Parque Industrial San José fue la <strong>mejor decisión</strong>. La infraestructura es impecable y la ubicación estratégica nos ha permitido <strong>optimizar enormemente nuestra logística</strong>. El soporte de la administración es excelente."
+          </p>
+          <p class="font-bold text-light-accent dark:text-dark-accent text-lg md:text-xl animate-fade-in-up">
+            – Gerente de Logística, <span class="text-secondary-600 dark:text-secondary-400">Coordinadora Mercantil S.A.</span>
+          </p>
+        </div>
+
+        <!-- Carousel Item 2 -->
+        <div class="hidden duration-700 ease-in-out text-center flex flex-col justify-center items-center space-y-6 px-4" data-carousel-item>
+          <p class="text-xl md:text-2xl italic text-light-text-secondary dark:text-dark-text-secondary leading-relaxed line-clamp-4 animate-fade-in-up">
+            "La calidad de las instalaciones en San José es de <strong>primer nivel</strong>. Nos permite mantener nuestros estándares de producción y contar con un ambiente <strong>seguro y eficiente</strong> para todo nuestro equipo. Estamos muy contentos con la elección."
+          </p>
+          <p class="font-bold text-light-accent dark:text-dark-accent text-lg md:text-xl animate-fade-in-up">
+            – Director de Operaciones, <span class="text-secondary-600 dark:text-secondary-400">Colmaiz S.A.</span>
+          </p>
+        </div>
+
+        <!-- Carousel Item 3 -->
+        <div class="hidden duration-700 ease-in-out text-center flex flex-col justify-center items-center space-y-6 px-4" data-carousel-item>
+          <p class="text-xl md:text-2xl italic text-light-text-secondary dark:text-dark-text-secondary leading-relaxed line-clamp-4 animate-fade-in-up">
+            "La cercanía a Bogotá y las facilidades tecnológicas del parque han sido <strong>cruciales para nuestro desarrollo</strong>. La comunidad empresarial en San José es vibrante y fomenta el networking, lo cual es muy valioso para Carvajal Tecnología y Servicios."
+          </p>
+          <p class="font-bold text-light-accent dark:text-dark-accent text-lg md:text-xl animate-fade-in-up">
+            – VP de Innovación, <span class="text-secondary-600 dark:text-secondary-400">Carvajal Tecnología y Servicios S.A.S.</span>
+          </p>
+        </div>
+      </div>
+
+      <!-- Indicadores -->
+      <div class="absolute z-30 flex inset-x-0 bottom-5 justify-center gap-3 px-4">
+        <button type="button" class="w-4 h-4 rounded-full bg-primary-400 dark:bg-primary-600 hover:bg-primary-500 dark:hover:bg-primary-500 transition-colors duration-300 transform hover:scale-125 focus:outline-none focus:ring-2 focus:ring-primary-500" aria-current="true" aria-label="Testimonio 1" data-carousel-slide-to="0"></button>
+        <button type="button" class="w-4 h-4 rounded-full bg-primary-400 dark:bg-primary-600 hover:bg-primary-500 dark:hover:bg-primary-500 transition-colors duration-300 transform hover:scale-125 focus:outline-none focus:ring-2 focus:ring-primary-500" aria-current="false" aria-label="Testimonio 2" data-carousel-slide-to="1"></button>
+        <button type="button" class="w-4 h-4 rounded-full bg-primary-400 dark:bg-primary-600 hover:bg-primary-500 dark:hover:bg-primary-500 transition-colors duration-300 transform hover:scale-125 focus:outline-none focus:ring-2 focus:ring-primary-500" aria-current="false" aria-label="Testimonio 3" data-carousel-slide-to="2"></button>
+      </div>
+
+      <!-- Flechas -->
+      <button type="button" class="absolute top-0 left-0 z-30 flex items-center justify-center h-full px-4 group focus:outline-none" data-carousel-prev>
+        <span class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-light-accent/30 dark:bg-dark-accent/30 group-hover:bg-light-accent/50 dark:group-hover:bg-dark-accent/60 focus:ring-4 focus:ring-light-accent dark:focus:ring-dark-accent transition-all duration-300">
+          <svg class="w-5 h-5 text-white dark:text-dark-text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 1 1 5l4 4"/></svg>
+          <span class="sr-only">Anterior</span>
+        </span>
+      </button>
+      <button type="button" class="absolute top-0 right-0 z-30 flex items-center justify-center h-full px-4 group focus:outline-none" data-carousel-next>
+        <span class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-light-accent/30 dark:bg-dark-accent/30 group-hover:bg-light-accent/50 dark:group-hover:bg-dark-accent/60 focus:ring-4 focus:ring-light-accent dark:focus:ring-dark-accent transition-all duration-300">
+          <svg class="w-5 h-5 text-white dark:text-dark-text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 9l4-4-4-4"/></svg>
+          <span class="sr-only">Siguiente</span>
+        </span>
+      </button>
+    </div>
+  </div>
+</section>
+
+
+
+
+</div>

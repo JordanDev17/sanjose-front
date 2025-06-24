@@ -21,3 +21,43 @@ button:focus {
   outline: none;
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5);
 }
+
+
+
+/* estilos Transicion */
+
+@keyframes pulse-build {
+  0% {
+    transform: translateX(-100%);
+    width: 0%;
+  }
+  30% {
+    transform: translateX(0%);
+    width: 60%; /* La línea crece */
+  }
+  70% {
+    transform: translateX(40%); /* La línea se mueve y se acorta un poco */
+    width: 60%;
+  }
+  100% {
+    transform: translateX(100%);
+    width: 0%; /* La línea desaparece por el otro lado */
+  }
+}
+
+.animated-gradient-line {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    #4a90e2 20%, /* Azul fuerte */
+    #7a32e8 50%, /* Púrpura intermedio */
+    #e2327a 80%, /* Rosa/Magenta fuerte */
+    transparent 100%
+  );
+  animation: pulse-build 4s linear infinite; /* 4 segundos de duración, lineal, se repite infinitamente */
+}
+
+/* Opcional: Ajustes para el modo oscuro si lo necesitas fuera de Tailwind */
+.dark .bg-white {
+    background-color: #1a202c; /* Puedes ajustar esto a tu color de fondo oscuro deseado */
+}

@@ -1,0 +1,78 @@
+/* src/app/web/pages/dashboard-warehouses/dashboard-warehouses.component.css */
+
+/* Animaciones para spinners y mensajes */
+.spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.spinner-sm {
+  border-width: 3px;
+  border-style: solid;
+  border-color: rgba(255, 255, 255, 0.3);
+  border-top-color: #ffffff; /* Color del spinner para botones */
+  border-radius: 50%;
+  width: 1.25rem; /* ~20px */
+  height: 1.25rem; /* ~20px */
+  animation: spin 1s linear infinite;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+/* Animación de entrada para el título */
+.animate-fade-in-down {
+  animation: fadeInDown 0.8s ease-out forwards;
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Estilos para el overlay y la tarjeta del formulario modal */
+.warehouse-form-overlay, .confirmation-dialog-overlay {
+  /* No se requieren estilos aquí ya que se manejan con Tailwind y GSAP en el TS */
+  /* backdrop-filter: blur(5px); Opcional para un blur en el fondo, si no lo pones en Tailwind*/
+}
+
+/* Scrollbar personalizado para el formulario modal si el contenido es largo */
+.warehouse-form-card::-webkit-scrollbar {
+  width: 8px;
+}
+
+.warehouse-form-card::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.warehouse-form-card::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 10px;
+}
+
+.warehouse-form-card::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Para navegadores Firefox */
+.warehouse-form-card {
+  scrollbar-width: thin;
+  scrollbar-color: #888 #f1f1f1;
+}
+
+/* Estilo para los select (para eliminar la flecha por defecto en algunos navegadores) */
+select.appearance-none {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}

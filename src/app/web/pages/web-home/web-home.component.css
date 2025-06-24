@@ -1,9 +1,13 @@
-.btn-hero {
-  @apply inline-block px-6 py-3 text-base font-semibold rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all;
-}
-/* Animaciones para la sección hero y otros elementos */
+/* --- INICIO DEL ARCHIVO CSS CORREGIDO --- */
 
+/*
+ * [ELIMINADO] La primera regla duplicada para .btn-hero que usaba @apply ha sido borrada para evitar conflictos.
+ * .btn-hero {
+ * @apply ...;
+ * }
+*/
 
+/* Animaciones para la sección hero y otros elementos (Se mantiene tu código) */
 @keyframes fadeInUp {
   from {
     opacity: 0;
@@ -32,85 +36,112 @@
   animation: fadeIn 0.8s ease-out forwards;
 }
 
-/* home.component.css o home.component.scss */
 
-/* Fuente Inter: Asegúrate de que esta fuente esté importada globalmente en tu proyecto
-   (por ejemplo, en index.html o styles.css).
-   Si no, puedes añadirla aquí con @import:
-   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&display=swap');
-*/
-
-/* Estilos base para los botones de la sección hero */
-.btn-hero {
-  /* @apply se usa para incluir directamente las clases de Tailwind CSS */
-  @apply inline-flex items-center justify-center px-8 py-3 
-         text-base font-medium rounded-full shadow-lg 
-         transition duration-300 ease-in-out 
-         focus:outline-none focus:ring-2 focus:ring-offset-2;
-  /* 'inline-flex': Permite usar flexbox para centrar el texto dentro del botón.
-     'items-center justify-center': Centra el contenido (texto) dentro del botón.
-     'px-8 py-3': Relleno horizontal y vertical generoso.
-     'text-base font-medium': Tamaño de fuente y grosor.
-     'rounded-full': Bordes completamente redondeados para un diseño moderno.
-     'shadow-lg': Sombra prominente para un efecto elevado.
-     'transition duration-300 ease-in-out': Transición suave para efectos hover y focus.
-     'focus:outline-none focus:ring-2 focus:ring-offset-2': Estilos de enfoque para accesibilidad, 
-                                                            sin el contorno predeterminado del navegador. */
-}
-
-/* Puedes añadir más estilos específicos si es necesario, por ejemplo, para un cursor parpadeante en el typewriter: */
-/*
-#typewriter-text::after {
+/* Estilos para el efecto de máquina de escribir (Se mantiene tu código) */
+#main-heading.has-cursor::after {
   content: '|';
   display: inline-block;
-  animation: blink-caret .75s infinite step-end;
+  margin-left: 0.15em;
+  font-weight: 300;
+  animation: blink 0.7s infinite;
 }
 
-@keyframes blink-caret {
-  from, to { opacity: 0; }
-  50% { opacity: 1; }
+/* * [CORREGIDO] Solo uno de los keyframes 'blink' es necesario.
+*/
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
 }
+
+/* * [CONSERVADO Y CORREGIDO] Esta es la ÚNICA regla para .btn-hero.
+ * Define la apariencia Y el estado inicial que GSAP necesita para la animación.
+*/
+.btn-hero {
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: all 0.3s ease;
+  transform: translateY(20px); /* GSAP necesita esto para empezar a animar */
+  opacity: 0;                /* GSAP necesita esto para empezar a animar */
+  outline: none;
+  box-shadow: 0 0 0 3px transparent; /* Base para el foco */
+}
+
+/*
+ * [ELIMINADO] Se borra la regla .btn-hero:focus-visible.
+ * Esto permite que las clases 'focus:ring-blue-500', 'focus:ring-white', etc.,
+ * de tu HTML funcionen sin interferencia.
+ *
+ * .btn-hero:focus-visible { ... } 
 */
 
-/* Estilo para asegurar que los elementos comiencen invisibles para que GSAP los anime. */
-/* Se utiliza 'initial-hidden-opacity' en el HTML. */
+
+/* El resto de tus estilos se mantienen intactos */
 .initial-hidden-opacity {
   opacity: 0;
 }
 
-/* Opcional: Estilos para el cursor parpadeante del Typewriter */
 .cursor {
   display: inline-block;
-  background-color: currentColor; /* Usa el color del texto actual */
+  background-color: currentColor;
   width: 2px;
-  height: 1.1em; /* Altura relativa al tamaño de la fuente */
+  height: 1.1em;
   margin-left: 2px;
-  animation: blink 0.8s infinite step-end; /* Animación de parpadeo */
+  animation: blink 0.8s infinite step-end;
 }
 
-@keyframes blink {
-  0% { opacity: 1; }
-  50% { opacity: 0; }
-  100% { opacity: 1; }
-}
-
-/* Estilos de sombra para las tarjetas (mejor que solo con Tailwind) */
 .service-card {
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Sombra inicial sutil */
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  opacity: 0;
+  transform: translateY(80px);
 }
 
-/* Ajustes para el modo oscuro (si está configurado en Tailwind) */
 .dark .service-card {
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3); /* Sombra más oscura para el dark mode */
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
 }
 
-/* --- NUEVAS REGLAS CSS PARA MANEJAR LAS TRANSICIONES DE FONDO CON GSAP --- */
-/* Asegura que la transición de color de fondo sea suave cuando GSAP agrega/quita clases */
-.service-card {
-  transition-property: background-color, transform, box-shadow; /* Agrega background-color */
-  transition-duration: 300ms;
-  transition-timing-function: ease-in-out;
+/* estilos Transicion */
+
+@keyframes pulse-build {
+  0% {
+    transform: translateX(-100%);
+    width: 0%;
+  }
+  30% {
+    transform: translateX(0%);
+    width: 60%; /* La línea crece */
+  }
+  70% {
+    transform: translateX(40%); /* La línea se mueve y se acorta un poco */
+    width: 60%;
+  }
+  100% {
+    transform: translateX(100%);
+    width: 0%; /* La línea desaparece por el otro lado */
+  }
+}
+
+.animated-gradient-line {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    #4a90e2 20%, /* Azul fuerte */
+    #7a32e8 50%, /* Púrpura intermedio */
+    #e2327a 80%, /* Rosa/Magenta fuerte */
+    transparent 100%
+  );
+  animation: pulse-build 4s linear infinite; /* 4 segundos de duración, lineal, se repite infinitamente */
+}
+
+/* Opcional: Ajustes para el modo oscuro si lo necesitas fuera de Tailwind */
+.dark .bg-white {
+    background-color: #1a202c; /* Puedes ajustar esto a tu color de fondo oscuro deseado */
 }
 
 
 
+
+
+/* --- FIN DEL ARCHIVO CSS  --- */

@@ -22,7 +22,7 @@ export interface ChatbotResponse {
 })
 export class ChatbotService {
   // URL del backend del chatbot
-  private apiUrl = `${environment.apiUrl}/api/chatbot`;
+  private apiUrl = `${environment.apiUrl}api/chatbot`;
 
   constructor(private http: HttpClient) { }
 

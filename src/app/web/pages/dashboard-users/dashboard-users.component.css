@@ -1,119 +1,37 @@
-.dashboard-users-container {
-  max-width: 1000px;
-  margin: auto;
-  padding: 2rem;
-  font-family: 'Segoe UI', sans-serif;
+/* src/app/web/pages/dashboard-users/dashboard-users.component.css */
+
+/* Animación del spinner de carga */
+.spinner {
+  border-color: currentColor; /* Usa el color del texto del padre */
+  border-right-color: transparent;
+  animation: spin 1s linear infinite;
 }
 
-.page-header {
-  text-align: center;
-  margin-bottom: 2rem;
+.spinner-sm {
+  width: 1.25rem; /* 20px */
+  height: 1.25rem; /* 20px */
+  border-width: 3px; /* Grosor para spinner pequeño */
 }
 
-.page-title {
-  font-size: 2rem;
-  margin-bottom: 0.5rem;
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
-.page-subtitle {
-  font-size: 1rem;
-  color: #6c757d;
-}
+/* Estilos para el select personalizado (flecha SVG) */
+/* La flecha se inserta como background-image en el HTML inline style,
+   por lo que no hay necesidad de CSS adicional aquí para eso. */
 
-.card {
-  background-color: #fff;
-  border: 1px solid #e2e3e5;
-  border-radius: 8px;
-  padding: 1.5rem;
-  margin-bottom: 2rem;
-  box-shadow: 0 0 8px rgba(0, 0, 0, 0.05);
-}
+/* Ajustes de responsividad específicos si Tailwind no cubre algún caso */
+@media (max-width: 639px) { /* Este es el breakpoint 'sm' de Tailwind */
+  .dashboard-container {
+    padding: 1rem; /* Reduce padding en pantallas muy pequeñas */
+  }
 
-.section-heading {
-  margin-bottom: 1rem;
-  font-size: 1.25rem;
-}
+  .users-table-wrapper table th,
+  .users-table-wrapper table td {
+    padding: 0.75rem 0.5rem; /* Celdas más compactas */
+  }
 
-.user-form .form-row {
-  display: flex;
-  gap: 1rem;
-  flex-wrap: wrap;
-}
-
-.user-form .form-group {
-  flex: 1;
-  min-width: 200px;
-  margin-bottom: 1rem;
-}
-
-.user-form .form-check {
-  margin-top: 2rem;
-}
-
-.form-actions {
-  display: flex;
-  gap: 1rem;
-  margin-top: 1rem;
-}
-
-.table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 1rem;
-}
-
-.table th,
-.table td {
-  border: 1px solid #dee2e6;
-  padding: 0.75rem;
-  text-align: left;
-}
-
-.badge {
-  padding: 0.4em 0.6em;
-  border-radius: 0.25rem;
-  font-size: 0.85em;
-  display: inline-block;
-  text-align: center;
-}
-
-.badge-success {
-  background-color: #28a745;
-  color: white;
-}
-
-.badge-danger {
-  background-color: #dc3545;
-  color: white;
-}
-
-.pagination-controls {
-  margin-top: 1rem;
-  display: flex;
-  justify-content: center;
-}
-
-.pagination .page-item {
-  margin: 0 0.25rem;
-}
-
-.pagination .page-link {
-  cursor: pointer;
-  padding: 0.5rem 0.75rem;
-  border: 1px solid #dee2e6;
-  border-radius: 0.25rem;
-  background-color: white;
-  color: #007bff;
-}
-
-.pagination .page-item.active .page-link {
-  background-color: #007bff;
-  color: white;
-  border-color: #007bff;
-}
-
-.pagination .page-item.disabled .page-link {
-  color: #6c757d;
-  pointer-events: none;
-  background-color: #f8f9fa;
+  /* Los botones de paginación y el formulario ya tienen clases flex-col/sm:flex-row para responsividad. */
 }

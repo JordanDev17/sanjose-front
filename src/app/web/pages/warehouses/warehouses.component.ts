@@ -1,4 +1,4 @@
-// warehouses.component.ts
+// src/app/web/pages/warehouses/warehouses.component.ts
 import {
   Component,
   OnInit,
@@ -10,123 +10,120 @@ import {
   Renderer2,
   HostBinding,
 } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { WarehouseService } from '../../services/warehouse.service';
-import { Warehouse } from '../../models/warehouse.model';
+import { Warehouse, WarehousePaginatedResponse } from '../../models/warehouse.model';
 import { ThemeService } from '../../../core/theme/theme.service';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { gsap } from 'gsap'; // Importar GSAP
-import { ScrollTrigger } from 'gsap/ScrollTrigger'; // Importar ScrollTrigger
-import 'aos/dist/aos.css'; // Importar los estilos CSS de AOS
-import AOS from 'aos'; // Importar AOS
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+// NOTA: Eliminamos AOS.init() y sus imports ya que GSAP + ScrollTrigger manejarán las animaciones de entrada.
+// import 'aos/dist/aos.css';
+// import AOS from 'aos';
+
+// Importa el componente de tarjeta
+import { WarehouseCardComponent } from '../../components/warehouse-card/warehouse-card.component';
+// Importa el componente modal
+import { WarehouseDetailComponent } from '../../pages/warehouse-detail/warehouse-detail.component';
+
 
 // Registrar los plugins de GSAP
 gsap.registerPlugin(ScrollTrigger);
 
 @Component({
   selector: 'app-warehouses',
-  standalone: false, // Mantener como false si es parte de un módulo existente
+  standalone: true,
+  imports: [
+    CommonModule,
+    WarehouseCardComponent,
+    WarehouseDetailComponent
+  ],
   templateUrl: './warehouses.component.html',
   styleUrls: ['./warehouses.component.css'],
 })
 export class WarehousesComponent implements OnInit, OnDestroy, AfterViewInit {
-  // Arreglo para almacenar las bodegas/empresas
   warehouses: Warehouse[] = [];
-  // Indicador de estado de carga
   isLoading = true;
-  // Mensaje de error si la carga falla
   error: string | null = null;
 
-  // Enlace a la clase 'dark' en el elemento host para el modo oscuro
   @HostBinding('class.dark')
   isDarkMode = false;
 
-  // Subject para desuscribirse de observables y prevenir fugas de memoria
   private destroy$ = new Subject<void>();
-  // Array para almacenar funciones de 'unlisten' del Renderer2
-  private listeners: (() => void)[] = [];
+  private listeners: (() => void)[] = []; // Para los listeners de hover
+  private cardEntryScrollTriggers: ScrollTrigger[] = []; // NUEVO: Para los ScrollTriggers de animación de entrada de tarjetas
 
-  // Estado actual del slide del carrusel
   currentSlide = 0;
-  // Intervalo para el autoplay del carrusel
   private carouselInterval: any;
 
-  // QueryList para acceder a todos los elementos con la referencia #warehouseCard
-  @ViewChildren('warehouseCard') warehouseCards!: QueryList<ElementRef>;
+  // Propiedades para el modal de detalle
+  showDetailModal: boolean = false;
+  selectedWarehouseForDetail: Warehouse | null = null;
+
+  // QueryList para acceder a los componentes de tarjeta (nativeElement para GSAP)
+  @ViewChildren(WarehouseCardComponent, { read: ElementRef }) warehouseCardRefs!: QueryList<ElementRef>;
+
 
   constructor(
-    private warehouseService: WarehouseService, // Servicio para obtener datos de bodegas
-    private themeService: ThemeService, // Servicio para gestionar el tema (modo oscuro/claro)
-    private el: ElementRef<HTMLElement>, // Referencia al elemento nativo del componente
-    private renderer: Renderer2, // Renderer para manipular el DOM de forma segura
+    private warehouseService: WarehouseService,
+    private themeService: ThemeService,
+    private el: ElementRef<HTMLElement>,
+    private renderer: Renderer2,
   ) {}
 
-  /**
-   * Ciclo de vida OnInit: Se ejecuta al inicializar el componente.
-   * Suscribe al tema, carga las bodegas y inicia el carrusel.
-   */
   ngOnInit(): void {
-    // Suscripción al servicio de tema para actualizar el estado de isDarkMode
     this.themeService.darkMode$.pipe(takeUntil(this.destroy$)).subscribe(isDark => {
       this.isDarkMode = isDark;
     });
 
-    this.loadWarehouses(); // Cargar los datos de las bodegas
-    this.startCarouselAutoPlay(); // Iniciar el carrusel automático
-    AOS.init({ // Inicializar AOS (Animate On Scroll)
-      once: true, // Las animaciones solo se ejecutan una vez al hacer scroll
-      duration: 800, // Duración por defecto de la animación
-    });
+    this.loadWarehouses();
+    this.startCarouselAutoPlay();
+    // NOTA: Eliminamos AOS.init() aquí
+    // AOS.init({
+    //   once: true,
+    //   duration: 800,
+    // });
   }
 
-  /**
-   * Ciclo de vida AfterViewInit: Se ejecuta después de que la vista del componente ha sido inicializada.
-   * Ideal para manipulaciones del DOM y animaciones que dependen de la renderización de elementos.
-   */
   ngAfterViewInit(): void {
-    // Inicializa las animaciones de la página principal (hero y carrusel)
     this.initPageAnimations();
 
-    // Suscribirse a cambios en warehouseCards. Esto es crucial porque la QueryList
-    // puede no estar populada inmediatamente si los datos se cargan asíncronamente.
-    // Una vez que los datos de las bodegas se cargan y el *ngFor renderiza las tarjetas,
-    // esta suscripción se activará.
-    this.warehouseCards.changes.pipe(takeUntil(this.destroy$)).subscribe(() => {
-      // Asegurarse de que haya tarjetas y que la carga haya terminado antes de animar
-      if (this.warehouseCards.length > 0 && !this.isLoading) {
-        this.setupCardHoverEffects(); // Configurar los efectos hover dinámicos
-        // Nota: Las animaciones de entrada de las tarjetas ahora se manejan con AOS
-        // directamente en el HTML con 'data-aos'.
+    // Suscribirse a cambios en warehouseCardRefs para configurar los efectos hover y la animación de entrada.
+    // Esto se dispara cuando las tarjetas se han renderizado en el DOM (ej. después de la carga de datos).
+    this.warehouseCardRefs.changes.pipe(takeUntil(this.destroy$)).subscribe(() => {
+      // Solo aplicar si hay tarjetas y no estamos en estado de carga (indica que los datos están listos)
+      if (this.warehouseCardRefs.length > 0 && !this.isLoading) {
+        this.setupCardHoverEffects();
+        this.applyCardEntryAnimations(); // NUEVO: Aplicar las animaciones de entrada
       }
     });
 
-    // En caso de que las tarjetas ya estén cargadas en la primera renderización
-    // (ej. desde caché o una API muy rápida), se configuran los efectos hover.
-    if (this.warehouseCards.length > 0 && !this.isLoading) {
-      this.setupCardHoverEffects();
+    // En caso de que las tarjetas ya estén cargadas en la primera renderización (ej. desde caché o carga muy rápida).
+    // Añadimos un pequeño retardo para asegurar que el DOM esté completamente listo antes de buscar los elementos.
+    if (this.warehouseCardRefs.length > 0 && !this.isLoading) {
+      setTimeout(() => {
+        this.setupCardHoverEffects();
+        this.applyCardEntryAnimations(); // NUEVO: Aplicar las animaciones de entrada
+      }, 50); // Pequeño retardo
     }
   }
 
-  /**
-   * Ciclo de vida OnDestroy: Se ejecuta antes de que el componente sea destruido.
-   * Realiza la limpieza de suscripciones, intervalos y listeners para prevenir fugas de memoria.
-   */
   ngOnDestroy(): void {
-    this.destroy$.next(); // Notifica a los observables que se desuscriban
-    this.destroy$.complete(); // Completa el Subject
-    clearInterval(this.carouselInterval); // Limpia el intervalo del carrusel
-    this.listeners.forEach(listener => listener()); // Limpia todos los listeners del DOM
-    // Asegurarse de limpiar los ScrollTriggers creados por GSAP para evitar fugas de memoria.
-    // Aunque AOS maneja gran parte de esto, es buena práctica si se usaran ScrollTriggers directos.
+    this.destroy$.next();
+    this.destroy$.complete();
+    clearInterval(this.carouselInterval);
+    this.listeners.forEach(listener => listener()); // Limpiar listeners de hover
+
+    // NUEVO: Limpiar los ScrollTriggers creados para la animación de entrada de tarjetas
+    this.cardEntryScrollTriggers.forEach(trigger => trigger.kill());
+    this.cardEntryScrollTriggers = []; // Limpiar el array de referencias
+
+    // Esto es una limpieza general por si acaso, pero con las limpiezas específicas es menos crítico.
     ScrollTrigger.getAll().forEach(trigger => trigger.kill());
   }
 
-  /**
-   * Inicializa las animaciones de entrada para la sección de héroe y el carrusel.
-   * Utiliza GSAP para crear efectos de fade-in y deslizamiento.
-   */
   private initPageAnimations(): void {
-    // Animación de la sección de introducción (hero)
     gsap.from(this.el.nativeElement.querySelector('.hero-intro-section'), {
       opacity: 0,
       y: 60,
@@ -135,7 +132,6 @@ export class WarehousesComponent implements OnInit, OnDestroy, AfterViewInit {
       delay: 0.2,
     });
 
-    // Animación de la sección del carrusel
     gsap.from(this.el.nativeElement.querySelector('.carousel-section'), {
       opacity: 0,
       y: 60,
@@ -145,55 +141,48 @@ export class WarehousesComponent implements OnInit, OnDestroy, AfterViewInit {
     });
   }
 
-  /**
-   * Configura los efectos de hover interactivos para cada tarjeta de bodega.
-   * Utiliza GSAP para animaciones 3D y el Renderer2 para gestionar los eventos del DOM
-   * y el efecto de "mouse-follow glow".
-   */
+  // NOTE: This setupCardHoverEffects assumes direct DOM manipulation via nativeElement.
+  // If the hover effects apply *inside* the WarehouseCardComponent, this logic should
+  // ideally be moved to WarehouseCardComponent itself for better encapsulation.
+  // However, for a quick fix based on your existing code, we keep it here and access nativeElement.
   private setupCardHoverEffects(): void {
-    // Limpiar listeners existentes para evitar duplicados si la función se llama varias veces
+    // Limpiamos los listeners existentes antes de añadir nuevos
     this.listeners.forEach(listener => listener());
-    this.listeners = []; // Resetear el array de listeners
+    this.listeners = [];
 
-    this.warehouseCards.forEach(cardRef => {
-      const card = cardRef.nativeElement;
+    this.warehouseCardRefs.forEach(cardRef => {
+      const card = cardRef.nativeElement; // Acceder al elemento nativo del componente de tarjeta
 
-      // Animación GSAP al entrar el ratón (hover in)
       const onMouseEnter = () => {
         gsap.to(card, {
           duration: 0.8,
-          scale: 1.05, // Escala ligeramente la tarjeta
-          rotateX: 4, // Rotación sutil en el eje X para efecto 3D
-          rotateY: -4, // Rotación sutil en el eje Y para efecto 3D
+          scale: 1.05,
+          rotateX: 4,
+          rotateY: -4,
           ease: 'power3.out',
-          boxShadow: 'var(--banner-hover-shadow)', // Cambia la sombra al hacer hover
+          boxShadow: 'var(--banner-hover-shadow)',
         });
       };
 
-      // Animación GSAP al salir el ratón (hover out)
       const onMouseLeave = () => {
         gsap.to(card, {
           duration: 1,
           scale: 1,
           rotateX: 0,
           rotateY: 0,
-          ease: 'elastic.out(1, 0.5)', // Efecto elástico para un retorno suave
-          boxShadow: 'var(--banner-shadow)', // Vuelve a la sombra original
+          ease: 'elastic.out(1, 0.5)',
+          boxShadow: 'var(--banner-shadow)',
         });
       };
 
-      // Efecto de iluminación que sigue al cursor
       const onMouseMove = (event: MouseEvent) => {
         const rect = card.getBoundingClientRect();
-        // Calcula la posición relativa del ratón dentro de la tarjeta
         const x = event.clientX - rect.left;
         const y = event.clientY - rect.top;
-        // Establece las variables CSS personalizadas para el efecto de luz
-        card.style.setProperty('--mouse-x', `${x}px`);
-        card.style.setProperty('--mouse-y', `${y}px`);
+        this.renderer.setStyle(card, '--mouse-x', `${x}px`);
+        this.renderer.setStyle(card, '--mouse-y', `${y}px`);
       };
 
-      // Adjuntar listeners de eventos y almacenarlos para su limpieza posterior
       this.listeners.push(this.renderer.listen(card, 'mousemove', onMouseMove));
       this.listeners.push(this.renderer.listen(card, 'mouseenter', onMouseEnter));
       this.listeners.push(this.renderer.listen(card, 'mouseleave', onMouseLeave));
@@ -201,24 +190,57 @@ export class WarehousesComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   /**
-   * Carga los datos de las bodegas desde el servicio.
-   * Muestra un spinner de carga y maneja posibles errores.
+   * NUEVO: Aplica animaciones de entrada escalonadas a las tarjetas de empresa cuando entran en la vista.
    */
+  private applyCardEntryAnimations(): void {
+    // Primero, mata cualquier ScrollTrigger de entrada de tarjeta existente para evitar duplicados
+    this.cardEntryScrollTriggers.forEach(trigger => trigger.kill());
+    this.cardEntryScrollTriggers = []; // Limpia el array
+
+    this.warehouseCardRefs.forEach((cardRef, index) => {
+      const card = cardRef.nativeElement;
+
+      // Define la animación GSAP
+      const animation = gsap.from(card, {
+        opacity: 0,       // Empieza invisible
+        y: 80,            // Empieza 80px por debajo de su posición final
+        scale: 0.8,       // Empieza al 80% de su tamaño
+        rotationZ: -5,    // Ligera rotación inicial para un efecto más dinámico
+        duration: 1.2,    // Duración de la animación
+        ease: "back.out(1.2)", // Efecto de rebote al final de la animación
+        delay: index * 0.15 // Efecto escalonado: cada tarjeta empieza 0.15s después de la anterior
+      });
+
+      // Crea un ScrollTrigger para cada tarjeta
+      const trigger = ScrollTrigger.create({
+        trigger: card,
+        start: "top 85%", // La animación se activa cuando la parte superior de la tarjeta entra al 85% de la altura del viewport
+        animation: animation, // Vincula la animación GSAP al trigger
+        toggleActions: "play none none none", // Reproduce la animación una vez al entrar
+        // markers: true // Descomentar para depurar y ver los marcadores del ScrollTrigger
+      });
+
+      this.cardEntryScrollTriggers.push(trigger); // Guarda el trigger para su limpieza posterior
+    });
+  }
+
+
   loadWarehouses(): void {
     this.isLoading = true;
-    this.error = null; // Reinicia el error
+    this.error = null;
 
     this.warehouseService
-      .getWarehouses(1, 100, 'activa') // Obtiene hasta 100 bodegas activas
-      .pipe(takeUntil(this.destroy$)) // Se desuscribe automáticamente al destruir el componente
+      .getWarehouses(1, 100, 'activa')
+      .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: response => {
-          this.warehouses = response; // Asigna los datos a la variable warehouses
-          this.isLoading = false; // Oculta el spinner de carga
-          // Después de cargar las bodegas, AOS detectará los nuevos elementos y aplicará las animaciones.
+        next: (response: WarehousePaginatedResponse) => {
+          this.warehouses = response.data;
+          this.isLoading = false;
+          // Después de cargar las bodegas y si no hay tarjetas en la lista, aplicar animaciones
+          // El ngAfterViewInit con el `changes` QueryList manejará la aplicación de animaciones
+          // cuando las tarjetas ya estén en el DOM.
         },
         error: err => {
-          // Manejo de errores
           this.error = 'No se pudieron cargar las empresas. Por favor, intenta de nuevo más tarde.';
           this.isLoading = false;
           console.error('Error loading warehouses:', err);
@@ -226,66 +248,67 @@ export class WarehousesComponent implements OnInit, OnDestroy, AfterViewInit {
       });
   }
 
-  /**
-   * Obtiene la URL de la imagen del logotipo de una bodega.
-   * Proporciona una imagen de placeholder si no hay logotipo.
-   * @param warehouse Objeto Warehouse.
-   * @returns URL de la imagen del logotipo o de un placeholder.
-   */
   getWarehouseImageUrl(warehouse: Warehouse): string {
-    return warehouse.logotipo_url || 'assets/web/media/img/logo-screen.png';
+    // Si el logotipo_url no existe o no es una URL válida, usa el placeholder
+    return warehouse.logotipo_url && warehouse.logotipo_url.startsWith('http')
+      ? warehouse.logotipo_url
+      : 'https://placehold.co/100x100/94a3b8/ffffff?text=Logo+N/A';
   }
 
-  /* -------------------------------------------------------------------------- */
-  /* Funciones del Carrusel                     */
-  /* -------------------------------------------------------------------------- */
-
-  /**
-   * Avanza al siguiente slide del carrusel.
-   * Reinicia el temporizador del autoplay.
-   */
   nextSlide(): void {
-    this.currentSlide = (this.currentSlide + 1) % 3; // Lógica para un carrusel de 3 slides
+    this.currentSlide = (this.currentSlide + 1) % 3;
     this.resetCarouselAutoPlay();
   }
 
-  /**
-   * Retrocede al slide anterior del carrusel.
-   * Reinicia el temporizador del autoplay.
-   */
   prevSlide(): void {
-    this.currentSlide = (this.currentSlide - 1 + 3) % 3; // Lógica para un carrusel de 3 slides
+    this.currentSlide = (this.currentSlide - 1 + 3) % 3;
     this.resetCarouselAutoPlay();
   }
 
-  /**
-   * Navega directamente a un slide específico del carrusel.
-   * Reinicia el temporizador del autoplay.
-   * @param index Índice del slide al que se desea ir.
-   */
   goToSlide(index: number): void {
     this.currentSlide = index;
     this.resetCarouselAutoPlay();
   }
 
-  /**
-   * Inicia el autoplay del carrusel.
-   * El carrusel avanza cada 5 segundos.
-   */
   private startCarouselAutoPlay(): void {
-    this.carouselInterval = setInterval(() => this.nextSlide(), 5000); // Cambia cada 5 segundos
+    this.carouselInterval = setInterval(() => this.nextSlide(), 5000);
   }
 
-  /**
-   * Reinicia el temporizador del autoplay del carrusel.
-   * Útil cuando el usuario interactúa manualmente con el carrusel.
-   */
   private resetCarouselAutoPlay(): void {
-    clearInterval(this.carouselInterval); // Detiene el intervalo actual
-    this.startCarouselAutoPlay(); // Inicia un nuevo intervalo
+    clearInterval(this.carouselInterval);
+    this.startCarouselAutoPlay();
   }
 
   onImageError(event: Event): void {
-    (event.target as HTMLImageElement).src = 'assets/web/media/img/logo-screen.png';
+    (event.target as HTMLImageElement).src = 'https://placehold.co/100x100/94a3b8/ffffff?text=Logo+N/A';
+  }
+
+  /**
+   * Abre el modal de detalle de la bodega.
+   * @param warehouse La bodega seleccionada para mostrar en el modal.
+   */
+  openWarehouseDetailModal(warehouse: Warehouse): void {
+    this.selectedWarehouseForDetail = warehouse;
+    this.showDetailModal = true;
+    // Opcional: Animar la aparición del modal con GSAP
+    gsap.fromTo('.detail-modal-overlay', { opacity: 0 }, { opacity: 1, duration: 0.3 });
+    gsap.fromTo('.detail-modal-card',
+      { opacity: 0, y: -50, scale: 0.9 },
+      { opacity: 1, y: 0, scale: 1, duration: 0.4, ease: 'back.out(1.7)' }
+    );
+  }
+
+  /**
+   * Cierra el modal de detalle de la bodega.
+   */
+  closeWarehouseDetailModal(): void {
+    // Opcional: Animar la desaparición del modal con GSAP
+    gsap.to('.detail-modal-overlay', {
+      opacity: 0, duration: 0.3, onComplete: () => {
+        this.showDetailModal = false;
+        this.selectedWarehouseForDetail = null; // Limpiar la bodega seleccionada al cerrar
+      }
+    });
+    gsap.to('.detail-modal-card', { opacity: 0, y: 50, scale: 0.9, duration: 0.3, ease: 'power2.in' });
   }
 }

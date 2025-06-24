@@ -2,11 +2,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
-// --- Importaciones de Componentes Existentes (mantienen sus rutas actuales si no las cambias) ---
-import { HomeComponent } from './components/home/home.component'; // ¿Todavía se usa?
-import { LoginComponent } from './components/login/login.component'; // ¿Todavía se usa?
-import { AdminPerfilComponent } from './components/admin-perfil/admin-perfil.component';
-import { AdminLoginComponent } from './components/admin-login/admin-login.component'; // ¿Se fusionará con WebLoginComponent?
 
 // Componentes sitio web público
 import { WebHomeComponent } from './web/pages/web-home/web-home.component';
@@ -82,30 +77,18 @@ const routes: Routes = [
     canActivate: [AuthGuard],
     data: { roles: ['admin'] } // Roles permitidos para esta ruta
   },
-
-  // === Rutas de módulos raíz / admin ===
-  // Evalúa si estos componentes siguen siendo necesarios o si se fusionan.
-  // Si 'AdminLoginComponent' se fusiona con 'WebLoginComponent', elimina esta ruta.
-  // Si 'LoginComponent' es redundante, elimínalo.
-  { path: 'home-cesar', component: HomeComponent },
-  { path: 'login', component: LoginComponent }, // Considera si esta ruta es necesaria o si WebLoginComponent la reemplaza
-  { path: 'perfil-login', component: AdminLoginComponent }, // Considera si esta ruta es necesaria o si WebLoginComponent la reemplaza
-
-  {
-    path: 'perfil-admin',
-    component: AdminPerfilComponent,
-    // canActivate: [AuthGuard],
-    // data: { roles: ['admin'] } // Esta ruta podría ser solo para el rol 'admin'
-  },
-
-
   // === Ruta comodín para manejar cualquier ruta no definida (404) ===
   // Siempre debe ser la ÚLTIMA ruta en la configuración.
   { path: '**', component: NotFoundComponent }
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes)],
+    imports: [
+    RouterModule.forRoot(routes, {
+      // Configuración añadida:
+      scrollPositionRestoration: 'top' // Desplaza la ventana al inicio al navegar a una nueva ruta
+    })
+  ],
   exports: [RouterModule]
 })
 export class AppRoutingModule {}

@@ -27,6 +27,54 @@ module.exports = {
   ],
   theme: {
     extend: {
+       colors: {
+        // Colores personalizados para el tema claro
+        light: {
+          'text-primary': '#1A202C', // Texto principal oscuro
+          'text-secondary': '#4A5568', // Texto secundario un poco más claro
+          'bg-primary': '#FFFFFF', // Fondo principal blanco
+          'bg-secondary': '#F7FAFC', // Fondo secundario muy claro
+          'accent': '#3182CE', // Azul para acentos
+          'border': '#E2E8F0', // Borde claro
+        },
+        // Colores personalizados para el tema oscuro
+        dark: {
+          'text-primary': '#EDF2F7', // Texto principal claro
+          'text-secondary': '#A0AEC0', // Texto secundario un poco más oscuro
+          'bg-primary': '#1A202C', // Fondo principal oscuro
+          'bg-secondary': '#2D3748', // Fondo secundario más oscuro
+          'accent': '#63B3ED', // Azul claro para acentos
+          'border': '#4A5568', // Borde oscuro
+        },
+        // Colores para tus primarios y secundarios si no quieres usar los personalizados directamente
+        // Asegúrate de que estos coexistan o se reemplacen con tus 'light'/'dark' definidos
+        primary: { // Podrías mapear estos a tus colores 'accent' o mantenerlos como una paleta aparte
+          50: '#eef2ff',
+          100: '#e0e7ff',
+          200: '#c7d2fe',
+          300: '#a5b4fc',
+          400: '#818cf8',
+          500: '#6366f1',
+          600: '#4f46e5', // Ejemplo, ajusta según tu branding
+          700: '#4338ca',
+          800: '#3730a3',
+          900: '#312e81',
+          950: '#1e1b4b',
+        },
+        secondary: { // Ejemplo de colores secundarios
+          50: '#f0fdf4',
+          100: '#dcfce7',
+          200: '#bbf7d0',
+          300: '#86efac',
+          400: '#4ade80',
+          500: '#22c55e', // Ejemplo, ajusta según tu branding
+          600: '#16a34a',
+          700: '#15803d',
+          800: '#166534',
+          900: '#14532d',
+          950: '#0f3d22',
+        },
+      },
       // Definición de keyframes personalizados para animaciones
       keyframes: {
         fadeInUp: {
@@ -76,7 +124,20 @@ module.exports = {
         'button-glow': {
           '0%, 100%': { boxShadow: '0 0 5px rgba(0, 128, 255, 0.4)' },
           '50%': { boxShadow: '0 0 20px rgba(0, 128, 255, 0.8)' },
-        }
+        },
+        // Nuevas animaciones para el componente About
+        'text-reveal': {
+          '0%': { transform: 'translateY(100%)', opacity: '0' },
+          '100%': { transform: 'translateY(0)', opacity: '1' },
+        },
+        'slide-in-left': {
+          '0%': { transform: 'translateX(-100%)', opacity: '0' },
+          '100%': { transform: 'translateX(0)', opacity: '1' },
+        },
+        'pulse-slow': {
+          '0%, 100%': { opacity: '0.5' },
+          '50%': { opacity: '1' },
+        },
       },
       // Mapea los keyframes a utilidades de animación
       animation: {
@@ -91,10 +152,15 @@ module.exports = {
         'theme-transition-overlay': 'fadeOutOverlay 0.6s forwards',
         'slide-in-from-top': 'slideInFromTop 0.7s ease-out forwards', // Aplica la nueva animación
         'button-glow': 'button-glow 1.5s infinite alternate', // Animación de brillo
+                // Nuevas animaciones para el componente About
+        'text-reveal': 'text-reveal 1s ease-out forwards',
+        'slide-in-left': 'slide-in-left 0.8s ease-out forwards',
+        'pulse-slow': 'pulse-slow 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
       },
     },
   },
   plugins: [
+    require('@tailwindcss/line-clamp'),
     require('flowbite/plugin') // Habilita el plugin de Flowbite
   ],
 };

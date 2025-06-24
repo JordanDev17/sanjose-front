@@ -1,115 +1,101 @@
-<section class="relative h-screen bg-gray-900 overflow-hidden">
+<!-- Sección principal (Hero) -->
+<!-- CRÍTICO: Asegúrate de que 'overflow-hidden' NO ESTÉ AQUÍ. -->
+<!-- 'h-screen' está bien si quieres que ocupe la pantalla completa, pero el scroll general debe estar habilitado. -->
+<section class="relative w-full h-screen font-inter">
+  <img id="hero-background-image" 
+        src="assets/web/media/img/fachada_parque.jpg" 
+        alt="Vista panorámica del Parque Industrial San José"
+        class="absolute top-0 left-0 w-full h-full object-cover z-0 opacity-0">
 
-  <div class="absolute inset-0 z-10 flex flex-col items-center justify-center text-white p-4 pointer-events-none">
-    <div class="text-center max-w-3xl">
-      <h1 #tourTitle id="tour-title" class="text-5xl md:text-6xl font-extrabold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-600 opacity-0 -translate-y-10">
-        Explora Nuestro Parque Industrial en 360°
+  <div class="absolute inset-0 z-10 flex flex-col items-center justify-center p-4 text-center 
+               bg-black/60 dark:bg-black/70 transition-colors duration-300">
+    
+    <div class="max-w-4xl mx-auto">
+      <h1 id="main-heading" 
+          class="text-4xl md:text-6xl lg:text-7xl font-extrabold text-white mb-6 leading-tight drop-shadow-lg min-h-[140px] md:min-h-[180px]">
       </h1>
-      <p #tourSubtitle id="tour-subtitle" class="text-xl md:text-2xl text-gray-200 mb-8 opacity-0 translate-y-10">
-        Te damos la bienvenida al corazón de nuestras instalaciones.
+
+      <p id="subtitle-text" 
+          class="text-lg md:text-xl text-gray-200 dark:text-gray-300 mb-8 drop-shadow-md opacity-0">
+          Ofrecemos instalaciones de vanguardia, logística eficiente y un entorno seguro para su negocio.
       </p>
-      <button #tourCta id="tour-cta" type="button" class="px-8 py-4 bg-gradient-to-r from-blue-500 to-purple-700 text-white font-semibold rounded-lg shadow-xl hover:shadow-2xl transition-all duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-300 opacity-0 scale-90 pointer-events-auto">
-        Iniciar Recorrido Virtual
-      </button>
-    </div>
-  </div>
-
-  <div #tourContainer id="tour-container" class="absolute inset-0 z-0 opacity-0 scale-95 blur-sm">
-    <app-virtual-tour></app-virtual-tour>
-  </div>
-
-</section>
-
-
-
-<div class="relative w-full h-screen overflow-hidden font-inter">
-  <video autoplay muted loop playsinline
-         class="absolute top-0 left-0 w-full h-full object-cover z-10">
-    <source src="assets/web/media/vds/videoHome.mp" type="video/mp4">
-    Tu navegador no soporta la etiqueta de video.
-  </video>
-
-  <div class="absolute inset-0 flex flex-col items-center justify-center p-4 text-center
-              bg-black bg-opacity-80 backdrop-blur-sm z-10 rounded-lg">
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-      <h1 id="main-heading"
-          class="text-4xl md:text-6xl lg:text-7xl font-extrabold text-white mb-6 leading-tight opacity-0 drop-shadow-lg">
-        ¡Bienvenido al Parque Industrial San José!
-      </h1>
-
-      <p id="typewriter-text"
-         class="text-lg md:text-xl text-white mb-8 opacity-0 drop-shadow-md">
-        </p>
 
       <div class="flex flex-wrap justify-center gap-4 mt-8">
-        <a href="/servicios"
-           class="btn-hero opacity-0 transform translate-y-4 bg-blue-600 hover:bg-blue-700 focus:ring-blue-500">
+        <a href="/servicios" class="btn-hero bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500">
           Nuestros Servicios
         </a>
-
-        <a href="/contacto"
-           class="btn-hero opacity-0 transform translate-y-4 bg-transparent border-2 border-white text-white hover:bg-white hover:text-blue-600 focus:ring-white">
+        <a href="/contacto" class="btn-hero bg-transparent border-2 border-white text-white hover:bg-white hover:text-blue-600 focus:ring-white">
           Contáctanos
         </a>
-
-        <a href="/galeria"
-           class="btn-hero opacity-0 transform translate-y-4 bg-white text-blue-600 hover:bg-gray-100 focus:ring-white">
+        <a href="/galeria" class="btn-hero bg-white text-blue-600 hover:bg-gray-200 focus:ring-white">
           Galería
         </a>
       </div>
     </div>
   </div>
-</div>
+</section>
 
-<!-- espaciado -->
-<section class="py-10">
-  <div id="image-carousel" class="relative w-full h-[200px]">
-    <!-- Imágenes se insertan dinámicamente con Angular -->
+<!-- espaciado - No necesita h-screen ni overflow-hidden para ser un divisor -->
+<section class="py-10 md:py-16 flex items-center justify-center relative">
+  <div class="relative w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+    <div class="animated-gradient-line absolute inset-0 rounded-full"></div>
   </div>
 </section>
 
 
-
-<!-- SECCIONES DE INFORMACIÓN -->
-<section class="py-20 bg-gray-100 dark:bg-gray-900 transition-colors duration-300">
-  <div class="container mx-auto text-center px-4 sm:px-6 lg:px-8 relative z-10">
-    <h2 id="services-title" class="text-4xl md:text-5xl font-extrabold text-blue-600 dark:text-blue-400 mb-6 leading-tight">
-      Nuestros Servicios Integrales
-    </h2>
-    <p id="services-description" class="mt-4 text-lg md:text-xl text-gray-700 dark:text-gray-300 max-w-3xl mx-auto">
-      Impulsamos tu crecimiento con infraestructura de primer nivel y soluciones a medida, diseñadas para el éxito de tu empresa.
-    </p>
-  </div>
-
-  <div class="container mx-auto mt-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 px-4 sm:px-6 lg:px-8 relative z-10">
-
-    <div #serviceCard id="serviceCard"
-         *ngFor="let service of services; let i = index"
-         [ngClass]="[service.bgColorLight, service.bgColorDark]"
-         class="service-card rounded-xl shadow-lg p-8 transform transition-all duration-300 ease-in-out border border-gray-200 dark:border-gray-700 relative overflow-hidden group">
-      <div class="absolute inset-0"
-           [ngClass]="[service.gradientFrom, service.gradientTo, 'opacity-10 group-hover:opacity-20 transition-opacity duration-300']"></div>
-      <div class="icon-container relative z-10">
-        <div class="service-icon mb-4" [ngClass]="['text-' + service.iconColor + '-500', 'dark:text-' + service.iconColor + '-400']">
-          <svg class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" [attr.d]="service.iconPath"></path>
-          </svg>
-        </div>
-        <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-3">{{ service.title }}</h3>
-        <p class="text-gray-600 dark:text-gray-400 leading-relaxed">{{ service.description }}</p>
-        <ul class="list-disc list-inside mt-6 text-sm opacity-80"
-            [ngClass]="['text-' + service.iconColor + '-600', 'dark:text-' + service.iconColor + '-400']">
-          <li *ngFor="let feature of service.features">{{ feature }}</li>
-        </ul>
+<<!-- SECCIÓN DEL TOUR VIRTUAL Y SU TEXTO DE INTRODUCCIÓN -->
+<!-- Ajuste: Elimina 'bg-gray-900' para que el fondo sea transparente y se adapte al tema global -->
+<section class="py-10 md:py-24 relative z-10" #tourSection> 
+  <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+    <!-- Contenedor del texto de superposición. Sus animaciones GSAP lo ocultarán. -->
+    <!-- Ajuste de colores para dark mode en el texto de superposición -->
+    <div #tourOverlayText id="tour-overlay-text"
+         class="relative z-30 flex flex-col items-center justify-center text-gray-800 dark:text-gray-200 p-4">
+      <div class="text-center max-w-3xl">
+        <!-- Las opacidades iniciales y transformaciones para animación serán aplicadas por GSAP al cargar esta sección -->
+        <h1 #tourTitle id="tour-title" class="text-5xl md:text-6xl font-extrabold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-600 opacity-0 -translate-y-10">
+          Explora Nuestro Parque Industrial en 360°
+        </h1>
+        <p #tourSubtitle id="tour-subtitle" class="text-xl md:text-2xl mb-8 opacity-0 translate-y-10">
+          Te damos la bienvenida al corazón de nuestras instalaciones.
+        </p>
+        <button #tourCta id="tour-cta" type="button" 
+                class="px-8 py-4 bg-gradient-to-r from-blue-500 to-purple-700 text-white font-semibold rounded-lg shadow-xl hover:shadow-2xl transition-all duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-300 opacity-0 scale-90"
+                (click)="startVirtualTour()">
+          Iniciar Recorrido Virtual
+        </button>
       </div>
     </div>
   </div>
+
+  <!-- Contenedor del tour Marzipano -->
+  <!-- 'bg-black' se eliminó aquí ya que no queremos que Marzipano tenga un fondo sólido propio. -->
+  <div #tourContainer id="tour-container"
+       class="relative z-0 opacity-0 scale-95 blur-sm rounded-lg shadow-2xl mt-12"
+       style="height: 700px; width: 100%;"> 
+    <app-virtual-tour></app-virtual-tour>
+  </div>
 </section>
 
+<!-- Botón para cerrar el tour. Visible solo si el tour está activo (en modo overlay). -->
+<button *ngIf="isTourActive" (click)="closeVirtualTour()"
+        class="fixed top-4 right-4 z-50 p-2 bg-black bg-opacity-60 text-white rounded-full hover:bg-opacity-80 transition-opacity duration-300">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+    </svg>
+</button>
 
-<!-- SECCIÓN DE SERVICIOS CON CARRUSEL 
 
-<section class="py-16 md:py-24 bg-gray-50 dark:bg-gray-900 overflow-hidden">
+<!-- espaciado -->
+<section class="py-10 md:py-16 flex items-center justify-center relative overflow-hidden ">
+  <div class="relative w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+    <div class="animated-gradient-line absolute inset-0 rounded-full"></div>
+  </div>
+</section>
+
+<!-- Tus otras secciones aquí. ASEGÚRATE DE QUE NO TENGAN h-screen ni overflow-hidden
+     a menos que sean secciones muy específicas que deban ocupar toda la pantalla y no ser scrolleables. -->
+<section class="py-16 md:py-24 overflow-hidden">
   <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
     <h2 id="services-title" class="text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
       Nuestros Servicios
@@ -119,21 +105,21 @@
     </p>
 
     <div id="horizontal-scroll-section" class="mt-12 overflow-hidden w-full relative">
-      <div id="service-carousel-container" class="flex flex-nowrap w-max gap-8 px-4 sm:px-6 lg:px-8 pb-8">
+      <div id="service-carousel-container" class="mt-12 flex flex-nowrap w-max gap-8 px-4 sm:px-6 lg:px-8 pb-8">
         <div *ngFor="let service of services; let i = index"
-             #serviceCard
-             class="service-card flex-none w-80 min-h-80 md:w-96 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700
-                    transition-colors duration-300 ease-in-out cursor-pointer group
-                    {{ service.bgColorLight }} {{ service.bgColorDark }}">
+              #serviceCard
+              class="service-card flex-none w-80 min-h-80 md:w-96 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700
+                      transition-colors duration-300 ease-in-out cursor-pointer group
+                      {{ service.bgColorLight }} {{ service.bgColorDark }}">
 
           <div class="flex-shrink-0 mb-4">
             <svg class="h-16 w-16 {{ service.iconColor === 'blue' ? 'text-blue-500 group-hover:text-blue-700' : '' }}
-                                {{ service.iconColor === 'green' ? 'text-green-500 group-hover:text-green-700' : '' }}
-                                {{ service.iconColor === 'yellow' ? 'text-yellow-500 group-hover:text-yellow-700' : '' }}
-                                {{ service.iconColor === 'red' ? 'text-red-500 group-hover:text-red-700' : '' }}
-                                {{ service.iconColor === 'teal' ? 'text-teal-500 group-hover:text-teal-700' : '' }}
-                                {{ service.iconColor === 'purple' ? 'text-purple-500 group-hover:text-purple-700' : '' }}
-                                transition-colors duration-300 service-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="[http://www.w3.org/2000/svg](http://www.w3.org/2000/svg)">
+                      {{ service.iconColor === 'green' ? 'text-green-500 group-hover:text-green-700' : '' }}
+                      {{ service.iconColor === 'yellow' ? 'text-yellow-500 group-hover:text-yellow-700' : '' }}
+                      {{ service.iconColor === 'red' ? 'text-red-500 group-hover:text-red-700' : '' }}
+                      {{ service.iconColor === 'teal' ? 'text-teal-500 group-hover:text-teal-700' : '' }}
+                      {{ service.iconColor === 'purple' ? 'text-purple-500 group-hover:text-purple-700' : '' }}
+                      transition-colors duration-300 service-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" [attr.d]="service.iconPath"></path>
             </svg>
           </div>
@@ -161,17 +147,15 @@
   </div>
 </section>
 
-CIERRE COMENTARIO CARRUSEL-->
-
-<!-- CARRUSEL DE IMÁGENES -->
-<section class="py-10">
-  <div id="image-carousel" class="relative w-full h-[200px]">
-    <!-- Imágenes se insertan dinámicamente con Angular -->
+<!-- espaciado -->
+<section class="py-10 md:py-16 flex items-center justify-center relative overflow-hidden ">
+  <div class="relative w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+    <div class="animated-gradient-line absolute inset-0 rounded-full"></div>
   </div>
 </section>
 
 <!-- SECCIÓN DE NOTICIAS -->
-<section class="py-16 md:py-20 bg-gray-100 dark:bg-gray-900">
+<section class="py-16 md:py-20 overflow-hidden">
   <div class="container mx-auto text-center px-4 md:px-8">
     <h2 class="text-4xl md:text-5xl font-extrabold text-blue-600 dark:text-blue-400 mb-12 animate-fade-in-down">
       Últimas Noticias <ion-icon name="newspaper-outline" class="ml-2 text-blue-500"></ion-icon>
@@ -186,13 +170,14 @@ CIERRE COMENTARIO CARRUSEL-->
             fill="currentColor" />
           <path
             d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7231 75.2124 7.41289C69.5422 4.10259 63.4002 1.95452 56.8378 1.05118C51.7656 0.367541 46.6976 0.446843 41.7345 1.27873C36.7713 2.11063 31.8797 3.61463 27.2639 5.90323C22.6482 8.19183 18.2743 11.4116 14.4042 15.1192C10.5341 18.8269 7.22379 23.2343 4.59042 28.0773C1.95705 32.9203 0.380324 38.2175 0.00977 43.627C-0.36075 49.0364 0.772548 54.3758 3.06124 59.389C5.34993 64.3948 8.61851 68.9669 12.5916 72.8687C16.5647 76.7695 21.2198 80.0883 26.3761 82.5966C31.5323 85.1049 37.064 86.6006 42.6072 87.6001C48.1494 88.5994 53.7441 88.9463 59.2909 88.2486C64.8377 87.5509 70.3017 85.9723 75.3051 83.567C79.3879 81.3429 83.1362 78.3148 86.4446 74.6331C89.753 70.9513 92.4965 66.8617 94.4944 62.4754Z"
-            fill="currentFill" />
+            fill="currentColor" />
         </svg>
         <p class="mt-4 text-gray-700 dark:text-gray-300 text-lg font-medium">Cargando noticias...</p>
       </div>
     </div>
 
-    <div *ngIf="errorMessage" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg relative mt-8 mx-auto max-w-lg"
+    <div *ngIf="errorMessage"
+      class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg relative mt-8 mx-auto max-w-lg"
       role="alert">
       <strong class="font-bold">¡Error!</strong>
       <span class="block sm:inline"> {{ errorMessage }}</span>
@@ -201,7 +186,11 @@ CIERRE COMENTARIO CARRUSEL-->
 
     <div *ngIf="newsList.length > 0 && !loading"
       class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 xl:gap-10 mt-8">
-      <app-news-card *ngFor="let news of newsList; trackBy: trackById" [news]="news"></app-news-card>
+      <app-news-card
+        *ngFor="let news of newsList; trackBy: trackById"
+        [news]="news"
+        (cardClicked)="onCardClick($event)"
+      ></app-news-card>
     </div>
 
     <div *ngIf="!loading && newsList.length === 0 && !errorMessage"
@@ -213,24 +202,24 @@ CIERRE COMENTARIO CARRUSEL-->
   </div>
 </section>
 
-<!-- CHATBOT -->
-
-<div class="chatbot-wrapper">
-
-</div>
-
-
+<!-- El modal de detalle de noticias se renderiza fuera de la sección,
+      posicionándose de forma fija sobre todo el contenido de la página -->
+<app-news-detail
+  *ngIf="isModalOpen"
+  [newsItem]="selectedNews"
+  (closeModal)="onCloseModal()"
+></app-news-detail>
 
 <!-- MAPA INTERACTIVO -->
-<section class="py-20 bg-white dark:bg-gray-800">
+<section class="py-20 ">
   <div class="container mx-auto">
     <h2 class="text-3xl font-bold text-blue-500 text-center mb-8">Ubicación y Puntos de Interés</h2>
     <app-location-map></app-location-map> </div>
 </section>
 
 <!-- espaciado -->
-<section class="py-10">
-  <div id="image-carousel" class="relative w-full h-[200px]">
-    <!-- Imágenes se insertan dinámicamente con Angular -->
+<section class="py-10 md:py-16 flex items-center justify-center relative overflow-hidden ">
+  <div class="relative w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+    <div class="animated-gradient-line absolute inset-0 rounded-full"></div>
   </div>
 </section>
