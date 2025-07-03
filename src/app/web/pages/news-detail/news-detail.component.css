@@ -4,8 +4,10 @@
    backdrop-filter es una propiedad CSS que procesa el área detrás de un elemento.
    Esto crea el efecto de blur que solicitaste. */
 .modal-backdrop {
-  backdrop-filter: blur(8px); /* Aplica un desenfoque de 8px al fondo */
+  backdrop-filter: blur(40px); /* Aplica un desenfoque de 8px al fondo */
   -webkit-backdrop-filter: blur(8px); /* Prefijo para compatibilidad con Safari */
+  padding-top: 20px;
+  padding-bottom: 0;
 }
 
 /* Opcional: Si quieres un scrollbar más estilizado para el contenido del modal */

@@ -1,17 +1,17 @@
 <!-- src/app/web/pages/news-detail/news-detail.component.html -->
 <!-- Verifica que haya una noticia (newsItem) para mostrar; de lo contrario, no renderiza el modal -->
-<ng-container *ngIf="newsItem">
+<ng-container *ngIf="newsItem" >
   <!-- Fondo del modal con efecto de blur y opacidad controlada por GSAP -->
   <div #modalBackdrop
-       class="fixed inset-0 z-50 bg-black bg-opacity-75 dark:bg-opacity-90 flex justify-center items-center overflow-auto
+       class="fixed pt-12 inset-0 z-50 bg-black bg-opacity-75 dark:bg-opacity-90 flex justify-center items-center overflow-auto
               modal-backdrop"
        (click)="onClose()"> <!-- Cierra el modal al hacer clic fuera del contenido -->
 
     <!-- Contenido del modal, con un tamaño máximo para escritorio y scroll en caso de desbordamiento -->
     <div #modalContent
          (click)="$event.stopPropagation()" 
-         class="relative bg-white dark:bg-gray-900 rounded-xl shadow-2xl p-6 md:p-8 lg:p-10
-                max-w-md md:max-w-2xl lg:max-w-4xl w-11/12 max-h-[90vh] overflow-y-auto
+         class="relative bg-white dark:bg-gray-900 rounded-xl shadow-2xl mt-12 p-6 md:p-8 lg:p-10
+                max-w-md md:max-w-2xl lg:max-w-4xl w-11/12 max-h-[80vh] overflow-y-auto
                 transform transition-all duration-300 ease-out flex flex-col">
 
       <!-- Botón de cerrar el modal -->
@@ -53,17 +53,7 @@
         <!-- Si el contenido es texto plano, simplemente usa {{ newsItem.contenido }} -->
       </div>
 
-      <!-- Opcional: Funcionalidades extra (compartir, favoritos) -->
-      <div class="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700 flex justify-end space-x-4">
-        <button class="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors duration-200">
-          <ion-icon name="share-social-outline" class="mr-2"></ion-icon>
-          Compartir
-        </button>
-        <button class="flex items-center px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 transition-colors duration-200">
-          <ion-icon name="heart-outline" class="mr-2"></ion-icon>
-          Favorito
-        </button>
-      </div>
+
 
     </div>
     </div>

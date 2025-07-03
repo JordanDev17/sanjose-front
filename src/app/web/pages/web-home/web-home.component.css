@@ -141,7 +141,34 @@
 }
 
 
+/* Clase para ocultar el texto de superposición */
+.hidden-when-tour-active {
+  /* GSAP manejará la opacidad y transformación.
+     Aquí solo aseguramos que no ocupe espacio ni bloquee clics cuando esté "oculto". */
+  /* display: none; */ /* GSAP lo establecerá al final de la animación de salida */
+  /* pointer-events: none; */ /* GSAP lo establecerá al final de la animación de salida */
+}
 
+/* Clase para el contenedor del tour cuando está activo (pantalla completa) */
+#tour-container.tour-active {
+  /* Estas propiedades se establecen y animan con GSAP en startVirtualTour() */
+  /* Se repiten aquí como referencia de los estilos finales deseados */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 40; /* Asegúrate de que sea lo suficientemente alto */
+  border-radius: 0; /* Eliminar bordes redondeados en pantalla completa */
+  box-shadow: none; /* Eliminar sombra en pantalla completa */
+  margin-top: 0; /* Eliminar el margen superior */
+}
+
+/* Opcional: Estilo para el body cuando el tour está activo, si necesitas un control más directo */
+/* Esto se maneja directamente en el TS con document.body.style.overflow */
+/* body.no-scroll {
+  overflow: hidden;
+} */
 
 
 /* --- FIN DEL ARCHIVO CSS  --- */

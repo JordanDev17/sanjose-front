@@ -1,4 +1,4 @@
-/* chatbot.component.css */
+/* chatbot.component.css - Mejorado para una experiencia de usuario premium con toques modernos */
 
 /* --- Contenedor Principal del Chatbot --- */
 .chatbot-container {
@@ -7,99 +7,154 @@
     right: 20px;
     width: 60px;
     height: 60px;
-    background-color: #3B82F6; /* Tailwind blue-500 */
+    background-color: #3B82F6; /* Tailwind blue-500 - Para el estado cerrado */
     border-radius: 9999px; /* Tailwind rounded-full */
-    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3), 0 5px 15px rgba(0, 0, 0, 0.2);
     cursor: pointer;
-    overflow: hidden; 
+    overflow: hidden;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    transition: all 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+    transition: all 0.5s cubic-bezier(0.42, 0, 0.58, 1.2);
     z-index: 1000;
+    transform: translateY(0);
+}
+
+.chatbot-container:not(.open):hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 8px 20px rgba(0, 0, 0, 0.25);
 }
 
 /* Estado "open" del contenedor */
 .chatbot-container.open {
     width: 380px;
     height: 550px;
-    border-radius: 12px;
-    box-shadow: 0 20px 25px rgba(0, 0, 0, 0.3);
+    border-radius: 18px;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4), 0 10px 30px rgba(0, 0, 0, 0.25);
+    transform: translateY(0);
+    animation: fadeInScale 0.4s ease-out forwards;
+}
+
+@keyframes fadeInScale {
+    from {
+        opacity: 0.5;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
 }
 
 /* Responsividad para pantallas pequeñas */
 @media (max-width: 640px) {
+    .chatbot-container {
+        bottom: 15px;
+        right: 15px;
+    }
     .chatbot-container.open {
-        width: 95vw;
-        height: 85vh;
-        bottom: 2.5vw;
-        right: 2.5vw;
-        border-radius: 12px;
+        width: 96vw;
+        height: 90vh;
+        bottom: 2vw;
+        right: 2vw;
+        border-radius: 16px;
     }
 }
 
 /* --- Encabezado del Chatbot --- */
 .chatbot-header {
     width: 100%;
-    padding: 12px 16px;
+    padding: 14px 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-top-left-radius: 12px;
-    border-top-right-radius: 12px;
-    font-size: 1.125rem;
-    transition: background-color 0.3s ease-in-out, border-radius 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+    border-top-left-radius: 18px;
+    border-top-right-radius: 18px;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: white;
+    transition: background-color 0.4s ease-in-out, border-radius 0.5s cubic-bezier(0.42, 0, 0.58, 1.2);
     flex-shrink: 0;
-    color: white; /* Asegura que el texto y el icono sean blancos */
+    background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%); /* blue-500 a blue-700 */
+    position: relative;
+    overflow: hidden;
 }
 
-/* Estilos para el encabezado cuando el chat está cerrado (botón) */
+/* Efecto de brillo en el header al pasar el ratón (estado cerrado) */
+.chatbot-container:not(.open) .chatbot-header:hover::after {
+    left: 100%;
+}
+
+.chatbot-header::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -200%;
+    width: 200%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.15); /* Brillo sutil */
+    transform: skewX(-20deg);
+    transition: all 0.7s ease-in-out;
+}
+
+.dark-mode .chatbot-header {
+    background: linear-gradient(135deg, #4A5568 0%, #2D3748 100%); /* gray-600 a gray-800 */
+}
+
+/* Estilos para el encabezado cuando el chat está cerrado (botón circular) */
 .chatbot-container:not(.open) .chatbot-header {
     border-radius: 9999px;
     justify-content: center;
     height: 100%;
     padding: 0;
+    font-size: 0;
 }
 
+/* Animación para el texto del header (Asistente Virtual) */
 .chatbot-header span {
     opacity: 0;
-    transition: opacity 0.2s ease-in-out;
+    transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
     pointer-events: none;
+    transform: translateX(-10px);
 }
 
 .chatbot-container.open .chatbot-header span {
     opacity: 1;
     pointer-events: auto;
-    transition-delay: 0.2s;
+    transition-delay: 0.15s;
+    transform: translateX(0);
 }
 
+/* Iconos del encabezado */
 .chatbot-header ion-icon {
-    font-size: 1.5rem;
-    transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+    font-size: 1.8rem;
+    transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55), opacity 0.3s ease-in-out;
 }
 
 /* Animación para el icono de chatbox cuando el chat se abre */
 .chatbot-container.open .chatbot-header ion-icon[name="chatbox-ellipses-outline"] {
-    transform: scale(0.5);
+    transform: scale(0.6) rotate(90deg);
     opacity: 0;
 }
 
-/* Animación para el icono de cierre cuando el chat se cierra */
+/* Animación para el icono de cierre cuando el chat se cierra (el que se muestra al inicio) */
 .chatbot-container:not(.open) .chatbot-header ion-icon[name="close-outline"] {
-    transform: scale(0.5);
+    transform: scale(0.6) rotate(-90deg);
     opacity: 0;
 }
 
 /* Asegurar que el icono correcto esté visible y animado */
 .chatbot-container.open .chatbot-header ion-icon[name="close-outline"] {
-    transform: scale(1);
+    transform: scale(1) rotate(0deg);
     opacity: 1;
+    transition-delay: 0.1s;
 }
 
 .chatbot-container:not(.open) .chatbot-header ion-icon[name="chatbox-ellipses-outline"] {
-    transform: scale(1);
+    transform: scale(1) rotate(0deg);
     opacity: 1;
+    transition-delay: 0.1s;
 }
 
 /* --- Cuerpo del Chatbot (mensajes y entrada) --- */
@@ -107,14 +162,19 @@
     flex-grow: 1;
     display: flex;
     flex-direction: column;
-    padding: 16px; /* p-4 */
-    border-bottom-left-radius: 12px;
-    border-bottom-right-radius: 12px;
+    padding: 16px;
+    border-bottom-left-radius: 18px;
+    border-bottom-right-radius: 18px;
     transition: background-color 0.3s ease-in-out;
     position: relative;
-    /* CAMBIO CLAVE: min-height asegura que el body tenga siempre un tamaño,
-       incluso si chat-messages está vacío. */
-    min-height: 0; /* Permite que el flex item se encoja correctamente */
+    min-height: 0;
+    background-color: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.dark-mode .chatbot-body {
+    background-color: rgba(55, 65, 81, 0.85);
 }
 
 /* Ocultar el body cuando el chat está cerrado */
@@ -124,15 +184,15 @@
 
 /* --- Área de Mensajes --- */
 .chat-messages {
-    flex-grow: 1; /* Permite que los mensajes tomen todo el espacio disponible */
-    overflow-y: auto; /* Habilita el scroll vertical cuando el contenido excede el alto */
-    padding-right: 8px; /* Espacio para la barra de scroll */
-    /* REMOVIDO: margin-bottom aquí, se manejará con gap en el flex container o padding en el body */
+    flex-grow: 1;
+    overflow-y: auto;
+    padding-right: 12px;
+    padding-bottom: 10px;
     scrollbar-width: thin;
     scrollbar-color: #A0AEC0 #CBD5E0;
-    /* CAMBIO CLAVE: Establece una altura base para que el scroll funcione correctamente
-       cuando hay mucho contenido. min-height: 0 es crucial para flexbox. */
-    min-height: 0; 
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
 }
 
 /* Estilos para la barra de scroll (Webkit) */
@@ -141,46 +201,54 @@
 }
 
 .chat-messages::-webkit-scrollbar-track {
-    background: #E2E8F0;
+    background: transparent;
     border-radius: 10px;
 }
 
 .chat-messages::-webkit-scrollbar-thumb {
-    background-color: #94A3B8;
+    background-color: #9CA3AF;
     border-radius: 10px;
-    border: 2px solid #E2E8F0;
+    border: 2px solid transparent;
 }
 
 /* Estilos para la barra de scroll en Dark Mode */
 .dark-mode .chat-messages::-webkit-scrollbar-track {
-    background: #4A5568;
+    background: transparent;
 }
 
 .dark-mode .chat-messages::-webkit-scrollbar-thumb {
-    background-color: #64748B;
-    border: 2px solid #4A5568;
+    background-color: #6B7280;
+    border: 2px solid transparent;
 }
 
 /* --- Mensajes Individuales --- */
 .user-message,
 .bot-message {
-    max-width: 85%;
-    padding: 10px 14px;
-    border-radius: 18px;
-    margin-bottom: 8px;
-    line-height: 1.4;
+    max-width: 80%;
+    padding: 12px 16px;
+    border-radius: 20px;
+    margin-bottom: 12px;
+    line-height: 1.5;
     position: relative;
     word-wrap: break-word;
-    animation: messageFadeIn 0.3s ease-out forwards;
+    /* La animación de entrada de mensaje es clave para la fluidez */
+    animation: messagePopIn 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards;
     transform-origin: bottom;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
+    /* Transición sutil para el fondo y la sombra */
+    transition: background-color 0.2s ease, box-shadow 0.2s ease; 
 }
 
-@keyframes messageFadeIn {
-    from {
+@keyframes messagePopIn {
+    0% {
         opacity: 0;
-        transform: scale(0.9) translateY(10px);
+        transform: scale(0.8) translateY(20px);
     }
-    to {
+    70% {
+        opacity: 1;
+        transform: scale(1.02) translateY(-5px); /* Un rebote más sutil */
+    }
+    100% {
         opacity: 1;
         transform: scale(1) translateY(0);
     }
@@ -188,82 +256,93 @@
 
 .user-message {
     margin-left: auto;
-    background-color: #DBEAFE;
-    color: #1E40AF;
-    border-bottom-right-radius: 4px;
+    background-color: #DBEAFE; /* blue-100 */
+    color: #1E40AF; /* blue-800 */
+    border-bottom-right-radius: 8px;
+    border-top-right-radius: 20px;
+    border-bottom-left-radius: 20px;
 }
 
 .dark-mode .user-message {
-    background-color: #1E3A8A;
-    color: #DBEAFE;
+    background-color: #1D4ED8; /* blue-700 */
+    color: #DBEAFE; /* blue-100 */
 }
 
 .bot-message {
     margin-right: auto;
-    background-color: #E2E8F0;
-    color: #1A202C;
-    border-bottom-left-radius: 4px;
+    background-color: #E2E8F0; /* gray-200 */
+    color: #1A202C; /* gray-900 */
+    border-bottom-left-radius: 8px;
+    border-top-left-radius: 20px;
+    border-bottom-right-radius: 20px;
 }
 
 .dark-mode .bot-message {
-    background-color: #4A5568;
-    color: #F7FAFC;
+    background-color: #4B5563; /* gray-600 */
+    color: #F3F4F6; /* gray-100 */
 }
 
 .message-timestamp {
     display: block;
-    font-size: 0.75rem;
-    margin-top: 4px;
+    font-size: 0.7rem;
+    margin-top: 6px;
     text-align: right;
-    opacity: 0.8;
+    opacity: 0.7;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .user-message .message-timestamp {
-    color: #2563EB;
+    color: #2563EB; /* blue-700 */
 }
 
 .dark-mode .user-message .message-timestamp {
-    color: #93C5FD;
+    color: #93C5FD; /* blue-300 */
 }
 
 .bot-message .message-timestamp {
-    color: #718096;
+    color: #718096; /* gray-500 */
+    text-align: left;
 }
 
 .dark-mode .bot-message .message-timestamp {
-    color: #A0AEC0;
+    color: #A0AEC0; /* gray-400 */
 }
 
 /* --- Indicador de Escritura (Typing Indicator) --- */
 .typing-indicator {
     display: flex;
     align-items: center;
-    padding: 10px 14px;
-    border-radius: 18px;
+    padding: 12px 16px;
+    border-radius: 20px;
     width: fit-content;
     margin-right: auto;
     background-color: #E2E8F0;
-    animation: messageFadeIn 0.3s ease-out forwards;
-    flex-shrink: 0; /* Asegura que no se encoja */
-    margin-bottom: 8px; /* Añade un pequeño margen inferior */
+    animation: messagePopIn 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards;
+    flex-shrink: 0;
+    margin-bottom: 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
 }
 
 .dark-mode .typing-indicator {
-    background-color: #4A5568;
+    background-color: #4B5563;
 }
 
 .typing-dots {
     display: flex;
-    gap: 4px;
-    margin-right: 8px;
+    gap: 6px;
+    margin-right: 10px;
+    position: relative;
+    top: 2px;
 }
 
 .typing-dots .dot {
-    width: 8px;
-    height: 8px;
+    width: 10px;
+    height: 10px;
     border-radius: 50%;
     background-color: #4A5568;
-    animation: bounce 1.4s infinite ease-in-out;
+    animation: bounce 1.2s infinite ease-in-out;
 }
 
 .dark-mode .typing-dots .dot {
@@ -271,15 +350,15 @@
 }
 
 .typing-dots .dot:nth-child(2) {
-    animation-delay: 0.2s;
+    animation-delay: 0.15s;
 }
 
 .typing-dots .dot:nth-child(3) {
-    animation-delay: 0.4s;
+    animation-delay: 0.3s;
 }
 
 .typing-text {
-    font-size: 0.875rem;
+    font-size: 0.9rem;
     color: #4A5568;
 }
 
@@ -289,19 +368,20 @@
 
 @keyframes bounce {
     0%, 80%, 100% { transform: translateY(0); }
-    40% { transform: translateY(-7px); }
+    40% { transform: translateY(-8px); }
 }
 
 /* --- Opciones del Bot (Botones) --- */
 .bot-options {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px; /* Espacio entre los botones */
-    margin-top: auto; /* Empuja las opciones al final del cuerpo */
-    padding-top: 16px;
+    gap: 10px;
+    margin-top: auto;
+    padding-top: 20px;
     border-top: 1px solid #E2E8F0;
     transition: border-color 0.3s ease-in-out;
-    flex-shrink: 0; /* CAMBIO CLAVE: Asegura que las opciones no se encojan */
+    flex-shrink: 0;
+    justify-content: center;
 }
 
 .dark-mode .bot-options {
@@ -310,42 +390,112 @@
 
 .option-button {
     flex-grow: 1;
-    min-width: 120px;
-    max-width: calc(50% - 4px);
+    min-width: 140px;
+    max-width: calc(50% - 5px);
     text-align: center;
     border: none;
     cursor: pointer;
     white-space: normal;
     word-wrap: break-word;
-    line-height: 1.3;
-    font-size: 0.9rem;
-    transition: background-color 0.2s ease-in-out, transform 0.1s ease-out, opacity 0.2s ease-in-out;
-    padding: 8px 16px;
-    border-radius: 8px;
-    font-weight: 500;
+    line-height: 1.4;
+    font-size: 0.95rem;
+    font-weight: 600;
+    padding: 10px 18px;
+    border-radius: 12px;
     outline: none;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    /* Sombra base del botón */
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15), 0 2px 4px rgba(0,0,0,0.08);
+    
+    /* Importante para el borde neón: Transición en box-shadow para el glow */
+    transition: all 0.25s ease-in-out, box-shadow 0.3s ease-in-out; 
+    position: relative;
+    overflow: hidden;
+    /* Añadir pseudo-elemento para el efecto de brillo interno o overlay */
+    /* Este pseudo-elemento puede ser una capa sutil de brillo en el centro */
+    &::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0%;
+        height: 0%;
+        background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 70%);
+        transform: translate(-50%, -50%);
+        border-radius: 50%;
+        transition: width 0.3s ease, height 0.3s ease, opacity 0.3s ease;
+        opacity: 0;
+        pointer-events: none;
+        z-index: 0;
+    }
 }
 
-.option-button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+/* Efecto hover y active para botones */
+.option-button:not([disabled]):hover {
+    transform: translateY(-3px) scale(1.02);
+    /* Sombra más pronunciada al hover */
+    box-shadow: 
+        0 8px 16px rgba(0,0,0,0.2), 
+        0 4px 8px rgba(0,0,0,0.1),
+        0 0 15px 3px rgba(59, 130, 246, 0.7); /* Borde neón azul para hover */
+    z-index: 1; /* Asegura que la sombra se vea sobre otros botones */
 }
 
-.option-button:active {
-    transform: translateY(0);
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+.dark-mode .option-button:not([disabled]):hover {
+    box-shadow: 
+        0 8px 16px rgba(0,0,0,0.2), 
+        0 4px 8px rgba(0,0,0,0.1),
+        0 0 15px 3px rgba(74, 85, 104, 0.7); /* Borde neón gris para dark mode */
+}
+
+.option-button:not([disabled]):hover::before {
+    width: 200%;
+    height: 200%;
+    opacity: 1;
+}
+
+
+.option-button:not([disabled]):active {
+    transform: translateY(0) scale(0.98);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .option-button[disabled] {
     cursor: not-allowed;
-    opacity: 0.6;
+    opacity: 0.5;
     transform: none;
     box-shadow: none;
 }
 
 .option-button:focus-visible {
-    box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.5);
+    box-shadow: 0 0 0 4px rgba(66, 153, 225, 0.6);
+}
+
+/* Colores de botones en modo claro */
+.option-button.bg-blue-500 {
+    background-color: #3B82F6;
+    color: white;
+}
+
+.option-button.bg-blue-500:not([disabled]):hover {
+    background-color: #2563EB; /* blue-700 */
+}
+
+.option-button.bg-blue-500:not([disabled]):focus-visible {
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.6);
+}
+
+/* Colores de botones en modo oscuro */
+.dark-mode .option-button.bg-gray-600 {
+    background-color: #4A5568;
+    color: white;
+}
+
+.dark-mode .option-button.bg-gray-600:not([disabled]):hover {
+    background-color: #2D3748; /* gray-800 */
+}
+
+.dark-mode .option-button.bg-gray-600:not([disabled]):focus-visible {
+    box-shadow: 0 0 0 4px rgba(74, 85, 104, 0.6);
 }
 
 /* --- Estado Vacío (sin mensajes) --- */
@@ -355,17 +505,18 @@
     left: 50%;
     transform: translate(-50%, -50%);
     text-align: center;
-    font-size: 0.9rem;
-    line-height: 1.5;
-    animation: fadeIn 0.5s ease-out forwards;
-    /* CAMBIO CLAVE: Asegura que ocupe todo el espacio disponible */
-    width: calc(100% - 32px); /* Ancho del body menos el padding */
-    max-height: 100%; /* Limita la altura */
-    overflow-y: auto; /* Permite scroll si el contenido es demasiado grande */
-    display: flex; /* Para centrar el contenido del empty-state */
+    font-size: 1rem;
+    line-height: 1.6;
+    animation: fadeIn 0.6s ease-out forwards;
+    width: calc(100% - 32px);
+    max-height: calc(100% - 32px);
+    overflow-y: auto;
+    display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    padding: 20px;
+    border-radius: 12px;
 }
 
 @keyframes fadeIn {
@@ -374,9 +525,16 @@
 }
 
 .empty-state ion-icon {
-    font-size: 3rem;
-    margin-bottom: 0.5rem;
+    font-size: 4.5rem;
+    margin-bottom: 1rem;
     color: #9CA3AF;
+    opacity: 0.6;
+    animation: iconBounce 1.5s infinite ease-in-out;
+}
+
+@keyframes iconBounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
 }
 
 .dark-mode .empty-state ion-icon {
@@ -385,4 +543,9 @@
 
 .empty-state p {
     font-weight: 500;
+    color: #6B7280;
+}
+
+.dark-mode .empty-state p {
+    color: #A0AEC0;
 }

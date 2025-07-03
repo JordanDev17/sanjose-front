@@ -17,6 +17,9 @@ export class JwtInterceptor implements HttpInterceptor {
   constructor(private authService: AuthService, private router: Router) {}
 
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+    if (request.url.includes('api.openweathermap.org')) {
+      return next.handle(request); // Simplemente deja pasar la petición sin interceptar errores 401/403
+    }
     // Obtener el token de autenticación del AuthService
     const token = this.authService.getToken();
 

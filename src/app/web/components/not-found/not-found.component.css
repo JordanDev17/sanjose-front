@@ -1,0 +1,194 @@
+/* src/app/web/pages/not-found/not-found.component.css */
+
+/* --- Contenedor Principal --- */
+.not-found-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  overflow: hidden;
+  position: relative;
+  /* Fondo completamente transparente para que el fondo de la página padre sea visible */
+  background-color: transparent;
+  transition: background-color 0.3s ease-in-out;
+}
+
+/* Dark Mode para el contenedor principal (permanece transparente) */
+html.dark .not-found-container {
+  background-color: transparent;
+}
+
+/* --- Contenedor de Contenido (Texto y Botón) --- */
+.content-wrapper {
+  position: relative;
+  z-index: 10;
+  text-align: center;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+  /* Fondo semitransparente del wrapper, ajustado para mayor visibilidad */
+  background-color: transparent; /* Más opaco para mejor contraste */
+  border-radius: 1.5rem;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.4); /* Borde un poco más visible */
+  transition: background-color 0.3s ease-in-out, border-color 0.3s ease-in-out;
+}
+
+html.dark .content-wrapper {
+  /* En modo oscuro, haz el fondo más sólido o un poco menos transparente para la legibilidad */
+  background-color: rgba(26, 32, 44, 0.85); /* gray-900 con buena opacidad */
+  border: 1px solid rgba(74, 85, 104, 0.5); /* gray-600 con más opacidad */
+}
+
+/* --- Número de Error (404) --- */
+.error-code {
+  font-size: 10rem;
+  font-weight: 900;
+  line-height: 1;
+  margin-bottom: 1rem;
+  background-image: linear-gradient(45deg, #3B82F6, #6366F1);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent; /* Permanece transparente para el efecto de gradiente */
+  text-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
+  transition: text-shadow 0.3s ease-in-out;
+}
+
+html.dark .error-code {
+  background-image: linear-gradient(45deg, #63B3ED, #818CF8);
+  text-shadow: 0 0 15px rgba(99, 179, 237, 0.5);
+}
+
+/* Responsividad para el número de error */
+@media (max-width: 768px) {
+  .error-code {
+    font-size: 8rem;
+  }
+}
+@media (max-width: 480px) {
+  .error-code {
+    font-size: 6rem;
+  }
+}
+
+/* --- Mensaje Principal --- */
+.main-message {
+  font-size: 2.5rem;
+  font-weight: 700;
+  /* Color ajustado para mejor visibilidad en fondos claros y oscuros */
+  color: #1a202c; /* Originalmente gray-900 */
+  margin-bottom: 1rem;
+  transition: color 0.3s ease-in-out;
+}
+
+html.dark .main-message {
+  /* Color para modo oscuro, un blanco más fuerte */
+  color: #e2e8f0; /* Tailwind gray-200, mejor que gray-50 para visibilidad */
+}
+
+/* Responsividad para el mensaje principal */
+@media (max-width: 768px) {
+  .main-message {
+    font-size: 2rem;
+  }
+}
+@media (max-width: 480px) {
+  .main-message {
+    font-size: 1.75rem;
+  }
+}
+
+/* --- Mensaje Secundario --- */
+.sub-message {
+  font-size: 1.125rem;
+  /* Color ajustado para mejor visibilidad */
+  color: #4a5568; /* Originalmente gray-700 */
+  margin-bottom: 2.5rem;
+  line-height: 1.6;
+  transition: color 0.3s ease-in-out;
+}
+
+html.dark .sub-message {
+  /* Color para modo oscuro, un gris más claro y visible */
+  color: #a0aec0; /* Tailwind gray-400, mejor que gray-300 para visibilidad */
+}
+
+/* Resaltar el nombre del parque */
+.sub-message strong {
+  color: #2563eb;
+}
+
+html.dark .sub-message strong {
+  color: #60a5fa;
+}
+
+/* --- Botón Volver al Inicio --- */
+.home-button {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.75rem 2rem;
+  /* Colores más contrastantes para el botón */
+  background-color: #3B82F6; /* Tailwind blue-500, un color fuerte */
+  color: white; /* Color de texto blanco para asegurar contraste */
+  font-weight: 600;
+  border-radius: 0.75rem;
+  text-decoration: none;
+  transition: all 0.3s ease-in-out;
+  box-shadow: 0 5px 15px rgba(59, 130, 246, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.home-button:hover {
+  background-color: #2563EB;
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
+}
+
+.home-button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 5px rgba(59, 130, 246, 0.2);
+}
+
+html.dark .home-button {
+  /* En modo oscuro, un color de botón que resalte */
+  background-color: #4C51BF; /* Tailwind indigo-600 o similar, más visible */
+  box-shadow: 0 5px 15px rgba(76, 81, 191, 0.3);
+  color: white; /* Asegurar texto blanco en modo oscuro también */
+}
+
+html.dark .home-button:hover {
+  background-color: #3730A3; /* Indigo-800 */
+  box-shadow: 0 8px 20px rgba(76, 81, 191, 0.4);
+}
+
+/* Efecto de brillo en el botón al pasar el ratón */
+.home-button::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.2);
+  transform: skewX(-20deg);
+  transition: all 0.5s ease-in-out;
+}
+
+.home-button:hover::after {
+  left: 100%;
+}
+
+/* *** SOLUCIÓN PRINCIPAL PARA EL FOUC Y OPTIMIZACIÓN *** */
+.error-code,
+.main-message,
+.sub-message,
+.home-button {
+  opacity: 0;
+  visibility: hidden;
+  will-change: opacity, transform;
+}

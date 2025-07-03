@@ -1,4 +1,5 @@
 // src/app/web/components/location-map/location-map.component.ts
+
 import { Component, AfterViewInit, OnDestroy } from '@angular/core';
 import * as L from 'leaflet';
 import { gsap } from 'gsap';
@@ -62,6 +63,21 @@ export class LocationMapComponent implements AfterViewInit, OnDestroy {
     }
     gsap.killTweensOf('#map-container');
     gsap.killTweensOf('#poi-list-container');
+
+    // **CAMBIO AQUÍ: Añadir verificación de `element` antes de llamar a `gsap.killTweensOf()`**
+    this.markers.forEach(marker => {
+      const element = marker.getElement();
+      if (element) { // Si el elemento existe, entonces matar sus tweens
+        gsap.killTweensOf(element);
+      }
+    });
+
+    if (this.parkMarker) {
+      const parkElement = this.parkMarker.getElement();
+      if (parkElement) { // Si el elemento existe, entonces matar sus tweens
+        gsap.killTweensOf(parkElement);
+      }
+    }
   }
 
   private initMap(): void {
@@ -72,7 +88,7 @@ export class LocationMapComponent implements AfterViewInit, OnDestroy {
 
       this.map = L.map(mapElement, {
         zoomControl: false
-      }).setView(this.parkLocation, 12);
+      }).setView(this.parkLocation, 15);
 
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
@@ -96,7 +112,7 @@ export class LocationMapComponent implements AfterViewInit, OnDestroy {
 
   private addParkMarker(): void {
     const parkIcon = L.icon({
-      iconUrl: 'assets/web/media/img/logo-screen.png',
+      iconUrl: 'assets/web/media/img/logo-screen.png', // Asegúrate de que esta ruta sea correcta
       iconSize: [45, 45],
       iconAnchor: [22, 45],
       popupAnchor: [0, -40]
@@ -106,23 +122,22 @@ export class LocationMapComponent implements AfterViewInit, OnDestroy {
       .bindPopup(`
         <div class="font-bold text-lg mb-1 text-blue-700 dark:text-blue-300">Parque Industrial San José</div>
         <div class="text-gray-700 dark:text-gray-300">Mosquera, Cundinamarca, Colombia</div>
-        <div class="text-gray-600 dark:text-gray-400 mt-1">Tu destino de negocios e innovación.</div>
+        <div class="text-600 dark:text-gray-400 mt-1">Tu destino de negocios e innovación.</div>
       `);
   }
 
   private addPointsOfInterestMarkers(): void {
     this.pointsOfInterest.forEach(poi => {
       const poiIcon = L.divIcon({
-        className: `custom-poi-icon-wrapper`,
+        className: `custom-marker custom-marker-${poi.color}`,
         html: `
-          <div class="custom-poi-icon bg-${poi.color}-500 shadow-md">
-            <i class="fas ${poi.faIcon} text-white text-lg"></i>
+          <div class="custom-marker-circle">
+            <i class="fas ${poi.faIcon} text-indigo-500 text-lg"></i>
           </div>
-          <div class="custom-marker-tip" style="border-top-color: ${this.getMarkerColorCss(poi.color)};"></div>
         `,
-        iconSize: [30, 42], // Ancho del círculo (30px), Altura total (42px)
-        iconAnchor: [15, 42], // Centro X (15) y altura total (42) para que la punta ancle en la coordenada
-        popupAnchor: [0, -38] // Ajusta el popup para que se vea bien sobre el icono
+        iconSize: [30, 40],
+        iconAnchor: [15, 40],
+        popupAnchor: [0, -35]
       });
 
       const poiMarker = L.marker(poi.coords, { icon: poiIcon }).addTo(this.map)
@@ -149,14 +164,20 @@ export class LocationMapComponent implements AfterViewInit, OnDestroy {
 
         const iconElement = targetMarker.getElement();
         if (iconElement) {
-          // Asegúrate de aplicar la clase de animación al elemento correcto
-          const iconCircle = iconElement.querySelector('.custom-poi-icon');
-          if (iconCircle) {
-            iconCircle.classList.add('bounce-animation');
-            setTimeout(() => {
-              iconCircle.classList.remove('bounce-animation');
-            }, 1000);
-          }
+          gsap.fromTo(iconElement,
+            { y: 0, scale: 1 },
+            {
+              y: -15,
+              scale: 1.2,
+              duration: 0.3,
+              ease: 'power1.out',
+              yoyo: true,
+              repeat: 1,
+              onComplete: () => {
+                gsap.set(iconElement, { y: 0, scale: 1 });
+              }
+            }
+          );
         }
       }
     }
@@ -173,10 +194,10 @@ export class LocationMapComponent implements AfterViewInit, OnDestroy {
         this.parkMarker.openPopup();
         const iconElement = this.parkMarker.getElement();
         if (iconElement) {
-            gsap.fromTo(iconElement,
-                { scale: 1 },
-                { scale: 1.2, yoyo: true, repeat: 1, duration: 0.5, ease: 'back.out(2)' }
-            );
+          gsap.fromTo(iconElement,
+            { scale: 1 },
+            { scale: 1.2, yoyo: true, repeat: 1, duration: 0.5, ease: 'back.out(2)' }
+          );
         }
       }
     }
@@ -200,7 +221,7 @@ export class LocationMapComponent implements AfterViewInit, OnDestroy {
 
   getPoiClass(color: string): string {
     const baseClasses = 'bg-white dark:bg-gray-700';
-    const hoverClasses = `hover:bg-${color}-200 dark:hover:bg-${color}-800`;
+    const hoverClasses = `hover:bg-${color}-100 dark:hover:bg-${color}-800`;
     const borderClasses = `border-l-4 border-${color}-500`;
     return `${baseClasses} ${hoverClasses} ${borderClasses}`;
   }

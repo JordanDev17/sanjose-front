@@ -28,24 +28,24 @@ export class FooterComponent implements OnInit, AfterViewInit {
       title: 'Compañía',
       links: [
         { name: 'Acerca de Nosotros', url: '/about' },
-        { name: 'Nuestros Servicios', url: '/services' },
+        { name: 'Nuestros Servicios', url: '/web-home' },
         { name: 'Contacto', url: '/contact' }
       ]
     },
-    {
+    /*{
       title: 'Legal',
       links: [
         { name: 'Política de Privacidad', url: '/privacy-policy' },
         { name: 'Términos y Condiciones', url: '/terms' },
         { name: 'Política de Cookies', url: '/cookies' }
       ]
-    },
+    },*/
     {
       title: 'Recursos',
       links: [
-        { name: 'Blog', url: '/blog' },
-        { name: 'Soporte', url: '/support' },
-        { name: 'Preguntas Frecuentes', url: '/faq' }
+        { name: 'Prediccion del clima', url: '/contact' },
+        { name: 'Asistente Virtual', url: '/contact' },
+        { name: 'Dudas y Reclamos', url: '/contact' }
       ]
     }
   ];

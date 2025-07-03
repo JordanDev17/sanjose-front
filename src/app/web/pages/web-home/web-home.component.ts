@@ -6,6 +6,8 @@ import { TextPlugin } from 'gsap/TextPlugin'; // Importa el plugin TextPlugin pa
 import { ScrollTrigger } from 'gsap/ScrollTrigger'; // Importa ScrollTrigger para animaciones basadas en el scroll
 import { Subscription, interval } from 'rxjs'; // Importa Subscription para manejar las suscripciones de forma segura
 import { Renderer2 } from '@angular/core'; // Importa Renderer2 para manipulación segura del DOM
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 // IMPORTANTE: Registra los plugins de GSAP AQUÍ, FUERA DE LA CLASE DEL COMPONENTE.
 // Esto asegura que los plugins estén disponibles globalmente para todas las animaciones de GSAP
@@ -170,6 +172,13 @@ export class WebHomeComponent implements OnInit, AfterViewInit, OnDestroy {
   isModalOpen: boolean = false;
   currentIndex: number = 0;
   isTourActive: boolean = false; // Controla si el tour está en modo pantalla completa
+  // --- PROPIEDADES DE PAGINACIÓN ---
+  currentPage: number = 1;
+  itemsPerPage: number = 6; // Cantidad de noticias a mostrar por página
+  totalNewsCount: number = 0; // Total de noticias disponibles (obtenido del servicio)
+  totalPages: number = 0; // Calculado
+
+  private destroy$ = new Subject<void>();
 
   private typewriterTimeline!: gsap.core.Timeline;
   private subscriptions: Subscription[] = [];
@@ -177,6 +186,7 @@ export class WebHomeComponent implements OnInit, AfterViewInit, OnDestroy {
   private masterTimeline?: gsap.core.Timeline;
   private intervalSubscription!: Subscription;
   private readonly INTERVAL_TIME = 5000;
+
 
   constructor(private newsService: NewsService, private renderer: Renderer2) { }
 
@@ -206,17 +216,24 @@ export class WebHomeComponent implements OnInit, AfterViewInit, OnDestroy {
       this.setupServiceCardAnimationsTwo(); // Para los hovers
     }
 
-    // Inicializar la animación de la sección del tour cuando sea visible en el viewport
-    // Verificamos que todas las referencias existan antes de crear el ScrollTrigger
-    if (this.tourSection && this.tourTitle && this.tourSubtitle && this.tourCta && this.tourContainer && this.tourOverlayText) {
+if (this.tourSection && ScrollTrigger) {
       ScrollTrigger.create({
         trigger: this.tourSection.nativeElement,
-        start: "top center", // Cuando la parte superior de la sección entra en el centro de la ventana
-        onEnter: () => this.animateTourSection(),
-        once: true // Para que la animación solo se ejecute una vez
+        start: "top center", // Cuando la parte superior de la sección llega al centro del viewport
+        onEnter: () => {
+          // Solo anima si el tour no está activo (es decir, si estamos en el estado de inicio)
+          if (!this.isTourActive) {
+            this.animateTourSection();
+          }
+        },
+        // onLeaveBack: () => {
+        //   // Opcional: Si quieres revertir la animación al salir del viewport hacia arriba
+        //   if (!this.isTourActive) {
+        //     this.resetTourSectionAnimations();
+        //   }
+        // },
+        once: true // Para que la animación solo se ejecute una vez al entrar
       });
-    } else {
-      console.warn('Algunos elementos de la sección del tour no están disponibles en ngAfterViewInit para ScrollTrigger. Asegúrate de que las referencias # están en el HTML.');
     }
   }
 
@@ -267,13 +284,35 @@ export class WebHomeComponent implements OnInit, AfterViewInit, OnDestroy {
     this.subscriptions.forEach(sub => sub.unsubscribe());
 
     ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+
+    // Limpiar animaciones GSAP para prevenir fugas de memoria
+    gsap.killTweensOf([
+      this.tourTitle.nativeElement,
+      this.tourSubtitle.nativeElement,
+      this.tourCta.nativeElement,
+      this.tourContainer.nativeElement
+    ]);
+
+
+    // Limpiar ScrollTrigger si se creó
+    ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
-  /**
+ /**
    * Anima la entrada del texto de la sección del tour y del contenedor del tour.
    * Se ejecuta una vez cuando la sección entra en el viewport.
    */
   private animateTourSection(): void {
+    // Asegurarse de que los elementos estén en su estado inicial antes de animar
+    // Estos GSAP.set() reflejan las clases iniciales en el HTML (opacity-0, -translate-y-10, etc.)
+    gsap.set(this.tourTitle.nativeElement, { opacity: 0, y: -40 });
+    gsap.set(this.tourSubtitle.nativeElement, { opacity: 0, y: 40 });
+    gsap.set(this.tourCta.nativeElement, { opacity: 0, scale: 0.9 });
+    gsap.set(this.tourContainer.nativeElement, { opacity: 0, scale: 0.95, filter: "blur(5px)" });
+
     const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
 
     // Animación para el título
@@ -307,140 +346,118 @@ export class WebHomeComponent implements OnInit, AfterViewInit, OnDestroy {
     }, "-=1.2");
   }
 
-  /**
+
+    /**
    * Inicia el tour virtual.
-   * Oculta el texto de superposición y activa el modo de pantalla completa para el tour.
+   * Desplaza la vista suavemente hacia el contenedor del tour con un offset superior.
    */
   startVirtualTour(): void {
-    if (this.isTourActive) {
-      return; // Ya está activo, no hagas nada
+    if (this.tourContainer && this.tourContainer.nativeElement) {
+      const tourElement = this.tourContainer.nativeElement;
+      const offset = 100; // <--- AJUSTA ESTE VALOR: Pixeles más arriba del elemento.
+                         // Un valor positivo sube, negativo baja.
+
+      // Obtiene la posición del elemento relativa al viewport
+      const rect = tourElement.getBoundingClientRect();
+
+      // Calcula la posición de scroll absoluta en el documento
+      // window.scrollY es el scroll actual del documento desde la parte superior
+      // rect.top es la distancia del elemento al borde superior del viewport
+      const scrollPosition = window.scrollY + rect.top - offset;
+
+      // Realiza el scroll suave a la posición calculada
+      window.scrollTo({
+        top: scrollPosition,
+        behavior: 'smooth'
+      });
     }
-
-    const tl = gsap.timeline({ defaults: { ease: "power2.inOut" } });
-
-    // 1. Animar la salida del texto de superposición
-    tl.to(this.tourOverlayText.nativeElement, {
-      y: '100%', // Desliza hacia abajo
-      opacity: 0,
-      duration: 0.8,
-      onComplete: () => {
-        // Asegúrate de que el texto no interfiera con los clics del tour
-        gsap.set(this.tourOverlayText.nativeElement, { display: 'none', pointerEvents: 'none' });
-      }
-    });
-
-    // 2. Transicionar la sección completa del tour a modo de "pantalla completa"
-    // Esto es si quieres que el tour ocupe toda la ventana del navegador.
-    // Cambia la posición a 'fixed' y ajusta el tamaño y z-index.
-    tl.to(this.tourContainer.nativeElement, {
-      position: 'fixed', // Cambiar a posición fija
-      top: 0,
-      left: 0,
-      width: '100vw',    // Ancho total del viewport
-      height: '100vh',   // Altura total del viewport
-      zIndex: 40,        // Asegúrate de que esto sea más alto que cualquier otro elemento que quieras que esté debajo
-      duration: 0.01     // Prácticamente instantáneo para el cambio de posición
-    }, "<"); // Empieza al mismo tiempo que la animación anterior.
-
-    // Deshabilita el scroll del cuerpo para la experiencia inmersiva
-    document.body.style.overflow = 'hidden';
-    this.isTourActive = true; // Activa el estado del tour
   }
+
+
 
   /**
-   * Cierra el tour virtual y restaura la visualización normal de la página.
+   * Carga las noticias usando el servicio de noticias.
+   * El servicio ya maneja la paginación del lado del cliente.
    */
-  closeVirtualTour(): void {
-    if (!this.isTourActive) {
-      return; // No hay tour activo para cerrar
+  loadNews(): void {
+    this.loading = true;
+    this.errorMessage = null;
+    this.newsList = []; // Limpiar la lista antes de cargar nuevas noticias
+
+    // Llama al servicio, que ya está configurado para la paginación del lado del cliente
+    this.newsService.getNews(this.currentPage, this.itemsPerPage)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (response) => {
+          this.newsList = response.data; // Las noticias de la página actual
+          this.totalNewsCount = response.totalItems; // Total de todas las noticias
+          this.totalPages = response.totalPages; // Total de páginas calculado por el servicio
+          this.loading = false;
+        },
+        error: (err) => {
+          console.error('Error al cargar noticias:', err);
+          this.errorMessage = 'No se pudieron cargar las noticias. Por favor, inténtalo de nuevo más tarde.';
+          this.loading = false;
+          this.newsList = [];
+        }
+      });
+  }
+
+  // --- MÉTODOS DE PAGINACIÓN ---
+
+  goToPage(page: number): void {
+    if (page >= 1 && page <= this.totalPages && page !== this.currentPage) {
+      this.currentPage = page;
+      this.loadNews(); // Recargar noticias para la nueva página
+      // Opcional: Desplazarse al inicio de la sección de noticias al cambiar de página
+      // window.scrollTo({ top: 0, behavior: 'smooth' }); // Podrías querer un scrollIntoView de un elemento específico
+    }
+  }
+
+  nextPage(): void {
+    if (this.currentPage < this.totalPages) {
+      this.goToPage(this.currentPage + 1);
+    }
+  }
+
+  prevPage(): void {
+    if (this.currentPage > 1) {
+      this.goToPage(this.currentPage - 1);
+    }
+  }
+
+  get pageNumbers(): number[] {
+    // Genera un array de números de página para mostrar en la paginación
+    const pages: number[] = [];
+    const maxPagesToShow = 5; // Cuántos números de página quieres mostrar (ej. 1 2 3 4 5)
+
+    let startPage = Math.max(1, this.currentPage - Math.floor(maxPagesToShow / 2));
+    let endPage = Math.min(this.totalPages, startPage + maxPagesToShow - 1);
+
+    // Ajustar si estamos cerca del final para que siempre se muestre el `maxPagesToShow`
+    if (endPage - startPage + 1 < maxPagesToShow) {
+      startPage = Math.max(1, endPage - maxPagesToShow + 1);
     }
 
-    const tl = gsap.timeline({ defaults: { ease: "power2.inOut" } });
-
-    // 1. Restaurar la posición y tamaño del tour a su estado en el flujo normal de la página
-    // Asegúrate de que estos valores coincidan con los estilos CSS iniciales en el HTML
-    tl.to(this.tourContainer.nativeElement, {
-      position: 'relative', // Vuelve a posición relativa
-      top: 'auto',          // Elimina top/left/bottom/right para que vuelva al flujo normal
-      left: 'auto',
-      width: '100%',        // Ancho normal de la sección
-      height: '700px',      // Altura normal de la sección (ajusta si es necesario)
-      zIndex: 0,            // Vuelve a su z-index original
-      duration: 0.01        // Prácticamente instantáneo
-    });
-
-
-    // 2. Animar la entrada del texto de superposición (restaurarlo)
-    tl.to(this.tourOverlayText.nativeElement, {
-      y: '0%', // Vuelve a su posición original
-      opacity: 1,
-      duration: 0.8,
-      onStart: () => {
-        // Haz que sea visible y recupere los eventos de puntero antes de que la animación empiece
-        gsap.set(this.tourOverlayText.nativeElement, { display: 'flex', pointerEvents: 'auto' });
-      }
-    }, ">-0.5"); // Empieza un poco antes de que termine la anterior para superponer
-
-    // Habilita el scroll del cuerpo nuevamente
-    document.body.style.overflow = '';
-    this.isTourActive = false; // Desactiva el estado del tour
+    for (let i = startPage; i <= endPage; i++) {
+      pages.push(i);
+    }
+    return pages;
   }
 
-   /**
-   * loadNews: Función para cargar las noticias usando el NewsService.
-   * Se suscribe al observable para manejar la respuesta exitosa o los errores.
-   */
-  private loadNews(): void {
-    this.loading = true; // Activa el indicador de carga
-    this.errorMessage = ''; // Limpia cualquier mensaje de error anterior
-
-    const newsSub = this.newsService.getNews(1, 6, 'publicado').subscribe({ // Ajusta el límite de noticias si lo deseas
-      next: (response: NewsPaginatedResponse) => {
-        console.log('Noticias recibidas:', response.data);
-        this.newsList = response.data;
-        this.loading = false;
-      },
-      error: (error: any) => {
-        console.error('Error al cargar noticias:', error);
-        this.errorMessage = 'No se pudieron cargar las noticias. Inténtalo más tarde.';
-        this.loading = false;
-      }
-    });
-    this.subscriptions.push(newsSub); // Añade la suscripción al array para limpiarla
-  }
-
-  /**
-   * onCardClick: Maneja el evento cuando una tarjeta de noticia es clicada.
-   * Abre el modal y establece la noticia seleccionada.
-   * @param news La noticia que fue clicada.
-   */
+  // --- MÉTODOS PARA EL MODAL (EXISTENTES) ---
   onCardClick(news: News): void {
-    this.selectedNews = news; // Establece la noticia seleccionada
-    this.isModalOpen = true; // Abre el modal
-    // Deshabilita el scroll del cuerpo de la página cuando el modal está abierto
-    document.body.style.overflow = 'hidden';
+    this.selectedNews = news;
+    this.isModalOpen = true;
   }
 
-  /**
-   * onCloseModal: Maneja el evento cuando el modal de detalle de noticias solicita ser cerrado.
-   * Limpia la noticia seleccionada y cierra el modal.
-   */
   onCloseModal(): void {
-    this.selectedNews = null; // Limpia la noticia seleccionada
-    this.isModalOpen = false; // Cierra el modal
-    // Restaura el scroll del cuerpo de la página
-    document.body.style.overflow = 'auto';
+    this.isModalOpen = false;
+    this.selectedNews = null;
   }
 
-  /**
-   * Función `trackBy` para el `*ngFor` de `newsList`.
-   * Es crucial para el rendimiento en Angular al re-renderizar listas.
-   * @param index El índice del elemento.
-   * @param news El objeto de la noticia.
-   * @returns El ID único de la noticia.
-   */
   trackById(index: number, news: News): number {
-    return news.id; // Asume que cada noticia tiene una propiedad `id` única.
+    return news.id; // Asume que cada noticia tiene una propiedad 'id'
   }
 
 

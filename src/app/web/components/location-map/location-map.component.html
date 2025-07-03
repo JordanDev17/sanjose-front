@@ -1,6 +1,6 @@
 <div class="flex flex-col lg:flex-row gap-8">
   <div id="map-container" class="w-full lg:w-3/4 h-[500px] rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
-    </div>
+  </div>
 
   <div class="w-full lg:w-1/4 bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-y-auto max-h-[500px]"
        id="poi-list-container">
@@ -9,8 +9,9 @@
       <li (click)="zoomToParkLocation()"
           class="flex items-center p-3 rounded-lg cursor-pointer transition-all duration-300 transform hover:scale-105
                  bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-900 border-l-4 border-gray-500">
-        <div class="w-8 h-8 rounded-full flex items-center justify-center mr-3 bg-gray-500">
-             <i class="fas fa-industry text-white text-lg"></i> </div>
+        <div class="w-8 h-8 rounded-full flex items-center justify-center mr-3 bg-blue-600 dark:bg-blue-400">
+          <i class="fas fa-industry text-gray-900 dark:text-white text-lg"></i>
+        </div>
         <div>
           <h4 class="font-semibold text-gray-800 dark:text-white">Parque Industrial San José</h4>
           <p class="text-sm text-gray-600 dark:text-gray-400">Volver a la ubicación principal.</p>
@@ -21,10 +22,9 @@
           (click)="zoomToPoi(poi.coords)"
           class="flex items-center p-3 rounded-lg cursor-pointer transition-all duration-300 transform hover:scale-105"
           [ngClass]="getPoiClass(poi.color)">
-
         <div class="w-8 h-8 rounded-full flex items-center justify-center mr-3"
              [ngClass]="['bg-' + poi.color + '-500']">
-             <i class="fas {{ poi.faIcon }} text-white text-lg"></i>
+          <i class="fas {{ poi.faIcon }} text-gray-900 dark:text-white text-lg"></i>
         </div>
         <div>
           <h4 class="font-semibold text-gray-800 dark:text-white">{{ poi.name }}</h4>

@@ -1,26 +1,120 @@
-/* src/app/web/pages/contact/contact.component.css */
+/* src/app/web/components/contact/contact.component.css */
 
-:host {
-  display: block;
+/* Variables CSS para acceder a los colores de Tailwind para animaciones SVG y otros */
+:root {
+  /* Colores claros basados en tus custom colors de Tailwind para el tema 'light' */
+  --accent-color-light: #3182CE; /* light.accent */
+  --accent-color-light-rgb: 49, 130, 206; /* RGB de #3182CE */
+  --bg-page-color-light: #1A202C; /* light.bg-page */
+  --bg-page-color-light-rgb: 26, 32, 44;
+
+  /* Colores oscuros basados en tus custom colors de Tailwind para el tema 'dark' */
+  --accent-color-dark: #63B3ED; /* dark.accent */
+  --accent-color-dark-rgb: 99, 179, 237; /* RGB de #63B3ED */
+  --bg-page-color-dark: #1a202c; /* dark.bg-page */
+  --bg-page-color-dark-rgb: 26, 32, 44;
+}
+
+/* Modo oscuro específico: redefinimos las variables para que las animaciones usen los colores oscuros */
+html.dark { /* Usar html.dark para que funcione con el darkMode: 'class' de Tailwind */
+  --accent-rgb: var(--accent-color-dark-rgb);
+}
+
+/* Modo claro: las animaciones usarán los colores claros por defecto */
+html:not(.dark) {
+  --accent-rgb: var(--accent-color-light-rgb);
+}
+
+/* Clase para el brillo del input al enfocar */
+input.animate-input-glow:focus,
+textarea.animate-input-glow:focus {
+  outline: none; /* Elimina el outline por defecto del navegador */
+  /* La animación input-glow ya está definida en tailwind.config.js */
+}
+
+/* Estilos para el efecto hover del botón (la capa de brillo) */
+button .group-hover\:opacity-100 {
+  transition: opacity 0.3s ease-out;
+}
+
+/*
+  Asegúrate de que las animaciones de Angular estén correctamente enlazadas.
+  Las definiciones de @keyframes para animate-fade-in-up, animate-slide-in-left, etc.
+  deberían estar en tu tailwind.config.js.
+
+  A continuación, definimos las nuevas keyframes para los efectos de los iconos.
+  Si ya tienes estos en tu tailwind.config.js, puedes omitirlos aquí.
+*/
+
+/* Animación de rebote para iconos (usado en dirección) */
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+.animate-bounce {
+  animation: bounce 0.6s ease-in-out infinite;
+}
+
+/* Animación de "wiggle" (movimiento lateral) para iconos (usado en teléfono) */
+@keyframes wiggle {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(5deg);
+  }
+  75% {
+    transform: rotate(-5deg);
+  }
+}
+.animate-wiggle {
+  animation: wiggle 0.3s ease-in-out infinite;
+}
+
+/* Animación de pulso para iconos (usado en email) */
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.8;
+  }
+}
+.animate-pulse {
+  animation: pulse 1s ease-in-out infinite;
+}
+
+/* Estilos para el mapa de Leaflet */
+#map {
+  /* Asegura que el mapa tenga un tamaño definido para que Leaflet pueda inicializarse */
   width: 100%;
+  height: 400px; /* Altura fija, puedes ajustarla o hacerla responsiva con Tailwind */
+  border-radius: 0.75rem; /* rounded-lg de Tailwind */
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* shadow-md de Tailwind */
+
+  filter: invert(1) hue-rotate(180deg) brightness(0.9); /* Esto lo hará oscuro */
+
 }
 
-form input,
-form textarea {
-  border: 1px solid #ccc;
-  transition: border 0.3s ease;
+/* Estilos para asegurar que los iconos de Leaflet se muestren correctamente */
+.leaflet-default-icon-path {
+  background-image: url('https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png');
+}
+.leaflet-default-icon-path.leaflet-marker-shadow {
+  background-image: url('https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png');
 }
 
-form input:focus,
-form textarea:focus {
-  border-color: #3b82f6; /* azul Tailwind */
-  outline: none;
-}
+/* Opcional: Ajustes para el chatbot si es necesario, aunque su posición fija lo maneja */
+/* .fixed.bottom-6.right-6 {
+  z-index: 1000;
+} */
 
-button:focus {
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5);
-}
 
 
 
@@ -55,9 +149,4 @@ button:focus {
     transparent 100%
   );
   animation: pulse-build 4s linear infinite; /* 4 segundos de duración, lineal, se repite infinitamente */
-}
-
-/* Opcional: Ajustes para el modo oscuro si lo necesitas fuera de Tailwind */
-.dark .bg-white {
-    background-color: #1a202c; /* Puedes ajustar esto a tu color de fondo oscuro deseado */
 }

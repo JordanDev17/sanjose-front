@@ -1,5 +1,5 @@
 // src/app/web/pages/dashboard-warehouses/dashboard-warehouses.component.ts
-import { Component, OnInit, OnDestroy, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit, ViewChild, ElementRef, Renderer2 } from '@angular/core'; // Importar Renderer2
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule, NgForm, ReactiveFormsModule } from '@angular/forms';
 import { Subject, takeUntil, Observable } from 'rxjs';
@@ -16,10 +16,10 @@ import { ThemeService } from '../../../core/theme/theme.service';
   selector: 'app-dashboard-warehouses',
   standalone: true, // Componente Standalone
   imports: [
-    CommonModule,         // Para *ngIf, *ngFor, [ngClass]
-    FormsModule,          // Para [(ngModel)] y NgForm
+    CommonModule,        // Para *ngIf, *ngFor, [ngClass]
+    FormsModule,         // Para [(ngModel)] y NgForm
     ReactiveFormsModule,  // Si decides usar formularios reactivos en el futuro
-    DatePipe              // Para formatear fechas en el template
+    DatePipe             // Para formatear fechas en el template
   ],
   templateUrl: './dashboard-warehouses.component.html',
   styleUrls: ['./dashboard-warehouses.component.css']
@@ -27,7 +27,7 @@ import { ThemeService } from '../../../core/theme/theme.service';
 export class DashboardWarehousesComponent implements OnInit, OnDestroy, AfterViewInit {
   // --- Propiedades del Componente ---
   warehouses: Warehouse[] = []; // Lista de bodegas
-  isLoading: boolean = false;   // Indicador de carga
+  isLoading: boolean = false;    // Indicador de carga
   errorMessage: string | null = null; // Mensaje de error general
   successMessage: string | null = null; // Mensaje de éxito general
   formErrorMessage: string | null = null; // Mensaje de error del formulario
@@ -41,7 +41,7 @@ export class DashboardWarehousesComponent implements OnInit, OnDestroy, AfterVie
   private destroy$ = new Subject<void>(); // Para gestionar la desuscripción de observables
 
   showWarehouseForm: boolean = false; // Controla la visibilidad del formulario modal
-  isEditing: boolean = false;         // Indica si el formulario está en modo edición
+  isEditing: boolean = false;          // Indica si el formulario está en modo edición
   selectedWarehouse: Warehouse | null = null; // Bodega seleccionada para edición
 
   // DTO para la creación/edición de una bodega
@@ -71,15 +71,22 @@ export class DashboardWarehousesComponent implements OnInit, OnDestroy, AfterVie
   darkMode$: Observable<boolean>; // Observable para el modo oscuro/claro
 
   // Referencias a elementos del DOM para animaciones y manejo de formularios
-  @ViewChild('warehouseForm') warehouseFormRef!: NgForm;
+  @ViewChild('warehouseNgForm') warehouseNgFormRef!: NgForm; // Renombrado a warehouseNgFormRef
   @ViewChild('successMessageDiv') successMessageDiv!: ElementRef;
   @ViewChild('errorMessageDiv') errorMessageDiv!: ElementRef;
   @ViewChild('formErrorMessageDiv') formErrorMessageDiv!: ElementRef;
 
+  // Referencias a los elementos del modal para GSAP
+  @ViewChild('warehouseFormOverlay') warehouseFormOverlayRef!: ElementRef;
+  @ViewChild('warehouseFormCard') warehouseFormCardRef!: ElementRef;
+  @ViewChild('confirmationDialogOverlay') confirmationDialogOverlayRef!: ElementRef;
+  @ViewChild('confirmationDialogCard') confirmationDialogCardRef!: ElementRef;
+
 
   constructor(
     private warehouseService: WarehouseService,
-    public themeService: ThemeService // Inyecta el servicio de tema
+    public themeService: ThemeService, // Inyecta el servicio de tema
+    private renderer: Renderer2 // Inyectar Renderer2 para manipular el DOM
   ) {
     this.darkMode$ = this.themeService.darkMode$;
   }
@@ -95,12 +102,31 @@ export class DashboardWarehousesComponent implements OnInit, OnDestroy, AfterVie
       { x: 20, autoAlpha: 0 },
       { duration: 0.8, x: 0, autoAlpha: 1, ease: 'power3.out', delay: 0.3 }
     );
+
+    // Inicializar los overlays como ocultos para GSAP, aunque hidden ya los oculta
+    // Esto asegura que GSAP los "conozca" en un estado inicial
+    gsap.set(this.warehouseFormOverlayRef.nativeElement, { autoAlpha: 0 });
+    gsap.set(this.confirmationDialogOverlayRef.nativeElement, { autoAlpha: 0 });
   }
 
   ngOnDestroy(): void {
     // Asegura que todas las suscripciones sean canceladas al destruir el componente
     this.destroy$.next();
     this.destroy$.complete();
+    // Asegurarse de limpiar el overflow del body si el componente se destruye con un modal abierto
+    this.renderer.removeStyle(document.body, 'overflow');
+  }
+
+  /**
+   * Controla el overflow del body para evitar el scroll cuando un modal está abierto.
+   * @param hidden Si el overflow debe estar oculto (true) o restaurado (false).
+   */
+  private toggleBodyScroll(hidden: boolean): void {
+    if (hidden) {
+      this.renderer.setStyle(document.body, 'overflow', 'hidden');
+    } else {
+      this.renderer.removeStyle(document.body, 'overflow');
+    }
   }
 
   // --- Métodos de UI / Mensajes ---
@@ -280,21 +306,25 @@ export class DashboardWarehousesComponent implements OnInit, OnDestroy, AfterVie
     };
     this.selectedFile = null;
     this.imagePreviewUrl = null;
-    this.showWarehouseForm = true;
     this.formErrorMessage = null;
 
     // Si el formulario ya existe en el DOM, lo resetea por completo
-    if (this.warehouseFormRef) {
+    if (this.warehouseNgFormRef) {
       setTimeout(() => {
-        this.warehouseFormRef.resetForm(this.newWarehouse);
+        this.warehouseNgFormRef.resetForm(this.newWarehouse);
       }, 0);
     }
 
     // Animaciones GSAP para la apertura del formulario
-    gsap.fromTo('.warehouse-form-overlay', { opacity: 0 }, { opacity: 1, duration: 0.3 });
-    gsap.fromTo('.warehouse-form-card',
-      { opacity: 0, y: 50, scale: 0.8 },
-      { opacity: 1, y: 0, scale: 1, duration: 0.4, ease: 'back.out(1.7)' }
+    this.showWarehouseForm = true; // Primero muestra el elemento (hidden=false)
+    this.toggleBodyScroll(true); // Oculta el scroll del body
+    gsap.fromTo(this.warehouseFormOverlayRef.nativeElement,
+      { autoAlpha: 0 },
+      { autoAlpha: 1, duration: 0.3 }
+    );
+    gsap.fromTo(this.warehouseFormCardRef.nativeElement,
+      { opacity: 0, scale: 0.8, y: 50 }, // Añadimos un ligero movimiento en Y para la entrada
+      { opacity: 1, scale: 1, y: 0, duration: 0.4, ease: 'back.out(1.7)' }
     );
   }
 
@@ -321,21 +351,25 @@ export class DashboardWarehousesComponent implements OnInit, OnDestroy, AfterVie
     };
     this.selectedFile = null; // No hay archivo seleccionado al editar inicialmente
     this.imagePreviewUrl = item.logotipo_url || null; // Muestra la URL existente como previsualización
-    this.showWarehouseForm = true;
     this.formErrorMessage = null;
 
     // Si el formulario ya existe en el DOM, lo resetea y rellena con los nuevos datos
-    if (this.warehouseFormRef) {
+    if (this.warehouseNgFormRef) {
       setTimeout(() => {
-        this.warehouseFormRef.resetForm(this.newWarehouse);
+        this.warehouseNgFormRef.resetForm(this.newWarehouse);
       }, 0);
     }
 
     // Animaciones GSAP para la apertura del formulario
-    gsap.fromTo('.warehouse-form-overlay', { opacity: 0 }, { opacity: 1, duration: 0.3 });
-    gsap.fromTo('.warehouse-form-card',
-      { opacity: 0, y: 50, scale: 0.8 },
-      { opacity: 1, y: 0, scale: 1, duration: 0.4, ease: 'back.out(1.7)' }
+    this.showWarehouseForm = true; // Primero muestra el elemento (hidden=false)
+    this.toggleBodyScroll(true); // Oculta el scroll del body
+    gsap.fromTo(this.warehouseFormOverlayRef.nativeElement,
+      { autoAlpha: 0 },
+      { autoAlpha: 1, duration: 0.3 }
+    );
+    gsap.fromTo(this.warehouseFormCardRef.nativeElement,
+      { opacity: 0, scale: 0.8, y: 50 }, // Añadimos un ligero movimiento en Y para la entrada
+      { opacity: 1, scale: 1, y: 0, duration: 0.4, ease: 'back.out(1.7)' }
     );
   }
 
@@ -344,16 +378,19 @@ export class DashboardWarehousesComponent implements OnInit, OnDestroy, AfterVie
    * Limpia los estados y activa las animaciones de cierre.
    */
   closeWarehouseForm(): void {
-    gsap.to('.warehouse-form-overlay', {
-      opacity: 0, duration: 0.3, onComplete: () => {
-        this.showWarehouseForm = false;
+    gsap.to(this.warehouseFormOverlayRef.nativeElement, {
+      autoAlpha: 0, duration: 0.3, onComplete: () => {
+        this.showWarehouseForm = false; // Oculta el elemento al finalizar la animación
         this.selectedWarehouse = null;
         this.formErrorMessage = null;
-        this.selectedFile = null;     // Limpia el archivo seleccionado
+        this.selectedFile = null;    // Limpia el archivo seleccionado
         this.imagePreviewUrl = null;  // Limpia la previsualización
+        this.toggleBodyScroll(false); // Restaura el scroll del body
       }
     });
-    gsap.to('.warehouse-form-card', { opacity: 0, y: -50, scale: 0.8, duration: 0.3, ease: 'power2.in' });
+    gsap.to(this.warehouseFormCardRef.nativeElement, {
+      opacity: 0, scale: 0.8, y: -50, duration: 0.3, ease: 'power2.in' // Añadimos un ligero movimiento en Y para la salida
+    });
   }
 
   /**
@@ -362,15 +399,15 @@ export class DashboardWarehousesComponent implements OnInit, OnDestroy, AfterVie
    */
   async saveWarehouse(): Promise<void> {
     // Marca todos los controles del formulario como 'touched' para mostrar validaciones
-    if (this.warehouseFormRef) {
-      Object.keys(this.warehouseFormRef.controls).forEach(key => {
-        this.warehouseFormRef.controls[key].markAsTouched();
-        this.warehouseFormRef.controls[key].updateValueAndValidity();
+    if (this.warehouseNgFormRef) {
+      Object.keys(this.warehouseNgFormRef.controls).forEach(key => {
+        this.warehouseNgFormRef.controls[key].markAsTouched();
+        this.warehouseNgFormRef.controls[key].updateValueAndValidity();
       });
     }
 
     // Valida el formulario antes de proceder
-    if (this.warehouseFormRef && this.warehouseFormRef.invalid) {
+    if (this.warehouseNgFormRef && this.warehouseNgFormRef.invalid) {
       this.showError('Por favor, corrige los errores en el formulario antes de guardar.', 'form');
       return;
     }
@@ -474,13 +511,17 @@ export class DashboardWarehousesComponent implements OnInit, OnDestroy, AfterVie
     this.confirmDialogTitle = 'Confirmar Eliminación';
     this.confirmDialogMessage = `¿Estás seguro de que quieres eliminar la bodega "${nombre}"? Esta acción no se puede deshacer.`;
     this.confirmActionCallback = () => this.executeDeleteWarehouse(id); // Asigna la función a ejecutar
-    this.showConfirmationDialog = true;
 
     // Animaciones GSAP para el diálogo de confirmación
-    gsap.fromTo('.confirmation-dialog-overlay', { opacity: 0 }, { opacity: 1, duration: 0.3 });
-    gsap.fromTo('.confirmation-dialog-card',
-      { opacity: 0, y: -50, scale: 0.8 },
-      { opacity: 1, y: 0, scale: 1, duration: 0.4, ease: 'back.out(1.7)' }
+    this.showConfirmationDialog = true; // Primero muestra el elemento (hidden=false)
+    this.toggleBodyScroll(true); // Oculta el scroll del body
+    gsap.fromTo(this.confirmationDialogOverlayRef.nativeElement,
+      { autoAlpha: 0 },
+      { autoAlpha: 1, duration: 0.3 }
+    );
+    gsap.fromTo(this.confirmationDialogCardRef.nativeElement,
+      { opacity: 0, scale: 0.8, y: 50 }, // Añadimos un ligero movimiento en Y para la entrada
+      { opacity: 1, scale: 1, y: 0, duration: 0.4, ease: 'back.out(1.7)' }
     );
   }
 
@@ -489,16 +530,19 @@ export class DashboardWarehousesComponent implements OnInit, OnDestroy, AfterVie
    * @param confirmed Booleano que indica si el usuario confirmó la acción.
    */
   closeConfirmationDialog(confirmed: boolean): void {
-    gsap.to('.confirmation-dialog-overlay', {
-        opacity: 0, duration: 0.3, onComplete: () => {
-            this.showConfirmationDialog = false;
+    gsap.to(this.confirmationDialogOverlayRef.nativeElement, {
+        autoAlpha: 0, duration: 0.3, onComplete: () => {
+            this.showConfirmationDialog = false; // Oculta el elemento al finalizar la animación
             if (confirmed && this.confirmActionCallback) {
                 this.confirmActionCallback(); // Ejecuta la acción confirmada
             }
             this.confirmActionCallback = null; // Limpia el callback
+            this.toggleBodyScroll(false); // Restaura el scroll del body
         }
     });
-    gsap.to('.confirmation-dialog-card', { opacity: 0, y: 50, scale: 0.8, duration: 0.3, ease: 'power2.in' });
+    gsap.to(this.confirmationDialogCardRef.nativeElement, {
+      opacity: 0, scale: 0.8, y: -50, duration: 0.3, ease: 'power2.in' // Añadimos un ligero movimiento en Y para la salida
+    });
   }
 
   /**

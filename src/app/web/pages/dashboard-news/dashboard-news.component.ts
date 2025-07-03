@@ -1,5 +1,5 @@
 // src/app/web/pages/dashboard-news/dashboard-news.component.ts
-import { Component, OnInit, OnDestroy, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit, ViewChild, ElementRef, Renderer2 } from '@angular/core'; // Importar Renderer2
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule, NgForm, ReactiveFormsModule } from '@angular/forms';
 import { Subject, takeUntil, Observable } from 'rxjs';
@@ -66,15 +66,23 @@ export class DashboardNewsComponent implements OnInit, OnDestroy, AfterViewInit 
 
   darkMode$: Observable<boolean>;
 
-  @ViewChild('newsForm') newsFormRef!: NgForm;
+  // Referencias a elementos del DOM para animaciones y manejo de formularios
+  @ViewChild('newsNgForm') newsNgFormRef!: NgForm; // Renombrado para consistencia
   @ViewChild('successMessageDiv') successMessageDiv!: ElementRef;
-  @ViewChild('errorMessageDiv') errorMessageDiv!: ElementRef;
+  @ViewChild('VerrorMessageDiv') errorMessageDiv!: ElementRef; // Asegúrate de que esta referencia sea correcta en tu HTML
   @ViewChild('formErrorMessageDiv') formErrorMessageDiv!: ElementRef;
+
+  // NUEVAS: Referencias a los elementos del modal para GSAP
+  @ViewChild('newsFormOverlay') newsFormOverlayRef!: ElementRef;
+  @ViewChild('newsFormCard') newsFormCardRef!: ElementRef;
+  @ViewChild('confirmationDialogOverlay') confirmationDialogOverlayRef!: ElementRef;
+  @ViewChild('confirmationDialogCard') confirmationDialogCardRef!: ElementRef;
 
 
   constructor(
     private newsService: NewsService,
-    public themeService: ThemeService
+    public themeService: ThemeService,
+    private renderer: Renderer2 // Inyectar Renderer2
   ) {
     this.darkMode$ = this.themeService.darkMode$;
   }
@@ -89,11 +97,29 @@ export class DashboardNewsComponent implements OnInit, OnDestroy, AfterViewInit 
       { x: 20, autoAlpha: 0 },
       { duration: 0.8, x: 0, autoAlpha: 1, ease: 'power3.out', delay: 0.3 }
     );
+
+    // Inicializar los overlays como ocultos para GSAP
+    gsap.set(this.newsFormOverlayRef.nativeElement, { autoAlpha: 0 });
+    gsap.set(this.confirmationDialogOverlayRef.nativeElement, { autoAlpha: 0 });
   }
 
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+    // Asegurarse de limpiar el overflow del body si el componente se destruye con un modal abierto
+    this.renderer.removeStyle(document.body, 'overflow');
+  }
+
+  /**
+   * Controla el overflow del body para evitar el scroll cuando un modal está abierto.
+   * @param hidden Si el overflow debe estar oculto (true) o restaurado (false).
+   */
+  private toggleBodyScroll(hidden: boolean): void {
+    if (hidden) {
+      this.renderer.setStyle(document.body, 'overflow', 'hidden');
+    } else {
+      this.renderer.removeStyle(document.body, 'overflow');
+    }
   }
 
   private showSuccess(message: string): void {
@@ -181,7 +207,7 @@ export class DashboardNewsComponent implements OnInit, OnDestroy, AfterViewInit 
     return item.id;
   }
 
-    // En dashboard-news.component.ts
+  // En dashboard-news.component.ts
   onImageError(event: Event) {
     (event.target as HTMLImageElement).src = 'https://placehold.co/100x100/94a3b8/ffffff?text=Error'; // O tu imagen de placeholder preferida
   }
@@ -239,19 +265,24 @@ export class DashboardNewsComponent implements OnInit, OnDestroy, AfterViewInit 
     };
     this.selectedFile = null; // <-- IMPORTANTE: Resetea el archivo seleccionado
     this.imagePreviewUrl = null; // <-- IMPORTANTE: Resetea la previsualización
-    this.showNewsForm = true;
     this.formErrorMessage = null;
 
-    if (this.newsFormRef) {
+    if (this.newsNgFormRef) { // Usar la nueva referencia
       setTimeout(() => {
-        this.newsFormRef.resetForm(this.newUser);
+        this.newsNgFormRef.resetForm(this.newUser);
       }, 0);
     }
 
-    gsap.fromTo('.news-form-overlay', { opacity: 0 }, { opacity: 1, duration: 0.3 });
-    gsap.fromTo('.news-form-card',
-      { opacity: 0, y: 50, scale: 0.8 },
-      { opacity: 1, y: 0, scale: 1, duration: 0.4, ease: 'back.out(1.7)' }
+    // Animaciones GSAP para la apertura del formulario
+    this.showNewsForm = true; // Primero muestra el elemento (hidden=false)
+    this.toggleBodyScroll(true); // Oculta el scroll del body
+    gsap.fromTo(this.newsFormOverlayRef.nativeElement,
+      { autoAlpha: 0 },
+      { autoAlpha: 1, duration: 0.3 }
+    );
+    gsap.fromTo(this.newsFormCardRef.nativeElement,
+      { opacity: 0, scale: 0.8, y: 50 }, // Añadimos un ligero movimiento en Y para la entrada
+      { opacity: 1, scale: 1, y: 0, duration: 0.4, ease: 'back.out(1.7)' }
     );
   }
 
@@ -272,44 +303,52 @@ export class DashboardNewsComponent implements OnInit, OnDestroy, AfterViewInit 
     };
     this.selectedFile = null; // No hay archivo seleccionado al editar inicialmente
     this.imagePreviewUrl = item.imagen_destacada || null; // Muestra la URL existente como previsualización
-    this.showNewsForm = true;
     this.formErrorMessage = null;
 
-    if (this.newsFormRef) {
+    if (this.newsNgFormRef) { // Usar la nueva referencia
       setTimeout(() => {
-        this.newsFormRef.resetForm(this.newUser);
+        this.newsNgFormRef.resetForm(this.newUser);
       }, 0);
     }
 
-    gsap.fromTo('.news-form-overlay', { opacity: 0 }, { opacity: 1, duration: 0.3 });
-    gsap.fromTo('.news-form-card',
-      { opacity: 0, y: 50, scale: 0.8 },
-      { opacity: 1, y: 0, scale: 1, duration: 0.4, ease: 'back.out(1.7)' }
+    // Animaciones GSAP para la apertura del formulario
+    this.showNewsForm = true; // Primero muestra el elemento (hidden=false)
+    this.toggleBodyScroll(true); // Oculta el scroll del body
+    gsap.fromTo(this.newsFormOverlayRef.nativeElement,
+      { autoAlpha: 0 },
+      { autoAlpha: 1, duration: 0.3 }
+    );
+    gsap.fromTo(this.newsFormCardRef.nativeElement,
+      { opacity: 0, scale: 0.8, y: 50 }, // Añadimos un ligero movimiento en Y para la entrada
+      { opacity: 1, scale: 1, y: 0, duration: 0.4, ease: 'back.out(1.7)' }
     );
   }
 
   closeNewsForm(): void {
-    gsap.to('.news-form-overlay', {
-      opacity: 0, duration: 0.3, onComplete: () => {
-        this.showNewsForm = false;
+    gsap.to(this.newsFormOverlayRef.nativeElement, {
+      autoAlpha: 0, duration: 0.3, onComplete: () => {
+        this.showNewsForm = false; // Oculta el elemento al finalizar la animación
         this.selectedNews = null;
         this.formErrorMessage = null;
         this.selectedFile = null; // También limpia el archivo seleccionado al cerrar el formulario
         this.imagePreviewUrl = null; // Y la previsualización
+        this.toggleBodyScroll(false); // Restaura el scroll del body
       }
     });
-    gsap.to('.news-form-card', { opacity: 0, y: -50, scale: 0.8, duration: 0.3, ease: 'power2.in' });
+    gsap.to(this.newsFormCardRef.nativeElement, {
+      opacity: 0, scale: 0.8, y: -50, duration: 0.3, ease: 'power2.in' // Añadimos un ligero movimiento en Y para la salida
+    });
   }
 
   async saveNews(): Promise<void> { // Ahora es una función asíncrona
-    if (this.newsFormRef) {
-      Object.keys(this.newsFormRef.controls).forEach(key => {
-        this.newsFormRef.controls[key].markAsTouched();
-        this.newsFormRef.controls[key].updateValueAndValidity();
+    if (this.newsNgFormRef) { // Usar la nueva referencia
+      Object.keys(this.newsNgFormRef.controls).forEach(key => {
+        this.newsNgFormRef.controls[key].markAsTouched();
+        this.newsNgFormRef.controls[key].updateValueAndValidity();
       });
     }
 
-    if (this.newsFormRef && this.newsFormRef.invalid) {
+    if (this.newsNgFormRef && this.newsNgFormRef.invalid) { // Usar la nueva referencia
       this.showError('Por favor, corrige los errores en el formulario antes de guardar.', 'form');
       return;
     }
@@ -328,7 +367,7 @@ export class DashboardNewsComponent implements OnInit, OnDestroy, AfterViewInit 
 
     let finalImageUrl = this.newUser.imagen_destacada; // Usa la URL existente por defecto o vacía
 
-    // ---  Lógica de subida de imagen ---
+    // ---  Lógica de subida de imagen ---
     if (this.selectedFile) { // Si hay un archivo seleccionado, intenta subirlo
       try {
         // Llama al servicio para subir la imagen.
@@ -356,7 +395,6 @@ export class DashboardNewsComponent implements OnInit, OnDestroy, AfterViewInit 
       // Si el usuario borró la URL existente Y no subió un archivo Y la noticia original NO tenía imagen, entonces se queda sin imagen.
       // Aquí puedes decidir si quieres que sea obligatorio tener una imagen en edición o no.
       // Por ahora, si se elimina la URL y no se sube un archivo, se queda sin imagen.
-      // Si quieres que siempre tenga una imagen, podrías poner una validación aquí.
     }
 
 
@@ -412,26 +450,34 @@ export class DashboardNewsComponent implements OnInit, OnDestroy, AfterViewInit 
     this.confirmDialogTitle = 'Confirmar Eliminación';
     this.confirmDialogMessage = `¿Estás seguro de que quieres eliminar la noticia "${title}"? Esta acción no se puede deshacer.`;
     this.confirmActionCallback = () => this.executeDeleteNews(id);
-    this.showConfirmationDialog = true;
-
-    gsap.fromTo('.confirmation-dialog-overlay', { opacity: 0 }, { opacity: 1, duration: 0.3 });
-    gsap.fromTo('.confirmation-dialog-card',
-      { opacity: 0, y: -50, scale: 0.8 },
-      { opacity: 1, y: 0, scale: 1, duration: 0.4, ease: 'back.out(1.7)' }
+    
+    // Animaciones GSAP para el diálogo de confirmación
+    this.showConfirmationDialog = true; // Primero muestra el elemento (hidden=false)
+    this.toggleBodyScroll(true); // Oculta el scroll del body
+    gsap.fromTo(this.confirmationDialogOverlayRef.nativeElement,
+      { autoAlpha: 0 },
+      { autoAlpha: 1, duration: 0.3 }
+    );
+    gsap.fromTo(this.confirmationDialogCardRef.nativeElement,
+      { opacity: 0, scale: 0.8, y: 50 }, // Añadimos un ligero movimiento en Y para la entrada
+      { opacity: 1, scale: 1, y: 0, duration: 0.4, ease: 'back.out(1.7)' }
     );
   }
 
   closeConfirmationDialog(confirmed: boolean): void {
-    gsap.to('.confirmation-dialog-overlay', {
-        opacity: 0, duration: 0.3, onComplete: () => {
-            this.showConfirmationDialog = false;
+    gsap.to(this.confirmationDialogOverlayRef.nativeElement, {
+        autoAlpha: 0, duration: 0.3, onComplete: () => {
+            this.showConfirmationDialog = false; // Oculta el elemento al finalizar la animación
             if (confirmed && this.confirmActionCallback) {
                 this.confirmActionCallback();
             }
             this.confirmActionCallback = null;
+            this.toggleBodyScroll(false); // Restaura el scroll del body
         }
     });
-    gsap.to('.confirmation-dialog-card', { opacity: 0, y: 50, scale: 0.8, duration: 0.3, ease: 'power2.in' });
+    gsap.to(this.confirmationDialogCardRef.nativeElement, {
+      opacity: 0, scale: 0.8, y: -50, duration: 0.3, ease: 'power2.in' // Añadimos un ligero movimiento en Y para la salida
+    });
   }
 
   executeDeleteNews(id: number): void {

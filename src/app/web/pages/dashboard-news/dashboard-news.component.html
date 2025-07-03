@@ -1,8 +1,9 @@
+<!-- src/app/web/pages/dashboard-news/dashboard-news.component.html -->
 <div class="dashboard-container min-h-screen p-4 sm:p-6 lg:p-8 pt-20 transition-colors duration-300"
      [ngClass]="(darkMode$ | async) ? 'text-gray-100' : 'text-gray-900'">
 
   <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
-    <h1 class="text-4xl font-extrabold text-blue-600 dark:text-purple-400 drop-shadow-lg transition-colors duration-300 flex items-center">
+    <h1 class="text-4xl font-extrabold text-blue-600 dark:text-purple-400 drop-shadow-lg transition-colors duration-300 flex items-center animate-fade-in-down">
       <i class="fas fa-newspaper text-4xl mr-3"></i>
       Gestión de Noticias
     </h1>
@@ -87,7 +88,7 @@
               </button>
             </td>
           </tr>
-        </tbody>  
+        </tbody> 
       </table>
     </div>
 
@@ -115,8 +116,10 @@
     <p class="mt-2 text-sm">Haz clic en "Añadir Noticia" para empezar.</p>
   </div>
 
-  <div *ngIf="showNewsForm" class="news-form-overlay fixed inset-0 bg-black bg-opacity-50 dark:bg-opacity-75 flex items-center justify-center p-4 z-[9999]">
-    <div class="news-form-card bg-white dark:bg-gray-800 rounded-lg shadow-2xl p-6 sm:p-8 w-full max-w-lg relative transition-all duration-300 max-h-[95vh] overflow-y-auto my-auto mt-[64px]">
+  <!-- Formulario modal de creación/edición de noticias -->
+  <!-- Usamos [hidden] en lugar de *ngIf para permitir las animaciones de GSAP al estar siempre en el DOM -->
+  <div #newsFormOverlay [hidden]="!showNewsForm" class="news-form-overlay fixed inset-0 bg-black bg-opacity-50 dark:bg-opacity-75 flex items-center justify-center p-4 pt-[64px] pb-4 z-[9999]">
+    <div #newsFormCard class="news-form-card bg-white dark:bg-gray-800 rounded-lg shadow-2xl p-6 sm:p-8 w-full max-w-lg relative transition-all duration-300 max-h-[90vh] overflow-y-auto">
       <button (click)="closeNewsForm()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 transition-colors duration-200 text-2xl">
         <i class="fas fa-times"></i>
       </button>
@@ -132,7 +135,7 @@
         </button>
       </div>
 
-      <form (ngSubmit)="saveNews()" #newsForm="ngForm" class="grid grid-cols-1 gap-6">
+      <form (ngSubmit)="saveNews()" #newsNgForm="ngForm" class="grid grid-cols-1 gap-6">
         <div class="form-group">
           <label for="titulo" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Título:</label>
           <input id="titulo" type="text" [(ngModel)]="newUser.titulo" name="titulo" required maxlength="100"
@@ -229,7 +232,7 @@
                          file:text-sm file:font-semibold
                          file:bg-blue-50 file:text-blue-700
                          hover:file:bg-blue-100 dark:file:bg-blue-900 dark:file:text-blue-200 dark:hover:file:bg-blue-800">
-          <div *ngIf="(!selectedFile && !newUser.imagen_destacada) && newsForm.submitted && !isEditing" class="text-red-500 text-xs mt-1">
+          <div *ngIf="(!selectedFile && !newUser.imagen_destacada) && newsNgForm.submitted && !isEditing" class="text-red-500 text-xs mt-1">
             Debes seleccionar una imagen o proporcionar una URL.
           </div>
 
@@ -259,7 +262,7 @@
                   class="bg-gray-300 hover:bg-gray-400 dark:bg-gray-600 dark:hover:bg-gray-500 text-gray-800 dark:text-white rounded-lg px-6 py-3 transition-all duration-300 transform hover:scale-105 shadow-md">
             Cancelar
           </button>
-          <button type="submit" [disabled]="isLoading || newsForm.invalid"
+          <button type="submit" [disabled]="isLoading || newsNgForm.invalid"
                   class="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white rounded-lg px-6 py-3 transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center justify-center">
             <span *ngIf="isLoading" class="spinner-sm mr-2"></span>
             {{ isEditing ? 'Guardar Cambios' : 'Crear Noticia' }}
@@ -268,8 +271,10 @@
       </form>
     </div>
   </div>
-  <div *ngIf="showConfirmationDialog" class="confirmation-dialog-overlay fixed inset-0 bg-black bg-opacity-50 dark:bg-opacity-75 flex items-center justify-center p-4 z-[9999]">
-    <div class="confirmation-dialog-card bg-white dark:bg-gray-800 rounded-lg shadow-2xl p-6 sm:p-8 w-full max-w-sm text-center relative transition-all duration-300">
+  <!-- Diálogo de Confirmación (eliminar) -->
+  <!-- Usamos [hidden] en lugar de *ngIf para permitir las animaciones de GSAP al estar siempre en el DOM -->
+  <div #confirmationDialogOverlay [hidden]="!showConfirmationDialog" class="confirmation-dialog-overlay fixed inset-0 bg-black bg-opacity-50 dark:bg-opacity-75 flex items-center justify-center p-4 z-[9999]">
+    <div #confirmationDialogCard class="confirmation-dialog-card bg-white dark:bg-gray-800 rounded-lg shadow-2xl p-6 sm:p-8 w-full max-w-sm text-center relative transition-all duration-300">
       <h2 class="text-2xl font-bold mb-4 text-red-600 dark:text-red-400">{{ confirmDialogTitle }}</h2>
       <p class="mb-6 text-gray-700 dark:text-gray-300">{{ confirmDialogMessage }}</p>
       <div class="flex justify-center gap-4">

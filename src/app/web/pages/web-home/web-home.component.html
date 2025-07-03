@@ -21,13 +21,13 @@
       </p>
 
       <div class="flex flex-wrap justify-center gap-4 mt-8">
-        <a href="/servicios" class="btn-hero bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500">
-          Nuestros Servicios
+        <a href="/warehouses" class="btn-hero bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500">
+          Nuestras Empresas
         </a>
-        <a href="/contacto" class="btn-hero bg-transparent border-2 border-white text-white hover:bg-white hover:text-blue-600 focus:ring-white">
+        <a href="/contact" class="btn-hero bg-transparent border-2 border-white text-white hover:bg-white hover:text-blue-600 focus:ring-white">
           Contáctanos
         </a>
-        <a href="/galeria" class="btn-hero bg-white text-blue-600 hover:bg-gray-200 focus:ring-white">
+        <a href="/about" class="btn-hero bg-white text-blue-600 hover:bg-gray-200 focus:ring-white">
           Galería
         </a>
       </div>
@@ -43,23 +43,20 @@
 </section>
 
 
-<<!-- SECCIÓN DEL TOUR VIRTUAL Y SU TEXTO DE INTRODUCCIÓN -->
+<!-- SECCIÓN DEL TOUR VIRTUAL Y SU TEXTO DE INTRODUCCIÓN -->
 <!-- Ajuste: Elimina 'bg-gray-900' para que el fondo sea transparente y se adapte al tema global -->
-<section class="py-10 md:py-24 relative z-10" #tourSection> 
+<section class="py-10 md:py-24 relative z-10" #tourSection>
   <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
-    <!-- Contenedor del texto de superposición. Sus animaciones GSAP lo ocultarán. -->
-    <!-- Ajuste de colores para dark mode en el texto de superposición -->
     <div #tourOverlayText id="tour-overlay-text"
          class="relative z-30 flex flex-col items-center justify-center text-gray-800 dark:text-gray-200 p-4">
       <div class="text-center max-w-3xl">
-        <!-- Las opacidades iniciales y transformaciones para animación serán aplicadas por GSAP al cargar esta sección -->
         <h1 #tourTitle id="tour-title" class="text-5xl md:text-6xl font-extrabold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-600 opacity-0 -translate-y-10">
           Explora Nuestro Parque Industrial en 360°
         </h1>
         <p #tourSubtitle id="tour-subtitle" class="text-xl md:text-2xl mb-8 opacity-0 translate-y-10">
           Te damos la bienvenida al corazón de nuestras instalaciones.
         </p>
-        <button #tourCta id="tour-cta" type="button" 
+        <button #tourCta id="tour-cta" type="button"
                 class="px-8 py-4 bg-gradient-to-r from-blue-500 to-purple-700 text-white font-semibold rounded-lg shadow-xl hover:shadow-2xl transition-all duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-300 opacity-0 scale-90"
                 (click)="startVirtualTour()">
           Iniciar Recorrido Virtual
@@ -68,22 +65,15 @@
     </div>
   </div>
 
-  <!-- Contenedor del tour Marzipano -->
-  <!-- 'bg-black' se eliminó aquí ya que no queremos que Marzipano tenga un fondo sólido propio. -->
   <div #tourContainer id="tour-container"
        class="relative z-0 opacity-0 scale-95 blur-sm rounded-lg shadow-2xl mt-12"
-       style="height: 700px; width: 100%;"> 
+       style="height: 700px; width: 100%;">
     <app-virtual-tour></app-virtual-tour>
   </div>
-</section>
 
-<!-- Botón para cerrar el tour. Visible solo si el tour está activo (en modo overlay). -->
-<button *ngIf="isTourActive" (click)="closeVirtualTour()"
-        class="fixed top-4 right-4 z-50 p-2 bg-black bg-opacity-60 text-white rounded-full hover:bg-opacity-80 transition-opacity duration-300">
-    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-    </svg>
-</button>
+  </section>
+
+
 
 
 <!-- espaciado -->
@@ -199,11 +189,41 @@
       <p class="text-xl font-medium">No hay noticias disponibles en este momento.</p>
       <p class="text-md mt-2">Vuelve a intentarlo más tarde o explora otras secciones.</p>
     </div>
+
+    <div *ngIf="totalPages > 1 && !loading" class="flex justify-center items-center space-x-2 mt-12">
+      <button
+        (click)="prevPage()"
+        [disabled]="currentPage === 1"
+        class="px-4 py-2 rounded-lg transition-colors duration-200
+               bg-blue-500 text-white hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed
+               dark:bg-blue-700 dark:hover:bg-blue-800 dark:disabled:opacity-50">
+        Anterior
+      </button>
+
+      <ng-container *ngFor="let page of pageNumbers">
+        <button
+          (click)="goToPage(page)"
+          [ngClass]="{
+            'bg-blue-600 text-white dark:bg-blue-500': page === currentPage,
+            'bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600': page !== currentPage
+          }"
+          class="px-4 py-2 rounded-lg transition-colors duration-200 font-semibold">
+          {{ page }}
+        </button>
+      </ng-container>
+
+      <button
+        (click)="nextPage()"
+        [disabled]="currentPage === totalPages"
+        class="px-4 py-2 rounded-lg transition-colors duration-200
+               bg-blue-500 text-white hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed
+               dark:bg-blue-700 dark:hover:bg-blue-800 dark:disabled:opacity-50">
+        Siguiente
+      </button>
+    </div>
   </div>
 </section>
 
-<!-- El modal de detalle de noticias se renderiza fuera de la sección,
-      posicionándose de forma fija sobre todo el contenido de la página -->
 <app-news-detail
   *ngIf="isModalOpen"
   [newsItem]="selectedNews"

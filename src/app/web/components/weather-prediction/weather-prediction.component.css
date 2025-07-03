@@ -1,0 +1,77 @@
+/* weather-prediction.component.css */
+
+/* Importación de Font Awesome */
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css');
+
+/* Transición global para el cambio de fondo del body (manejo del tema) */
+body {
+  transition: background-color 0.5s ease;
+}
+
+/* Estilos de la barra de desplazamiento personalizada para la lista de sugerencias */
+/* Usamos colores directos de Tailwind, sin depender de 'theme()' ni tus colores personalizados para estas reglas CSS */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  /* Fondo del track: light mode (blanco), dark mode (gris oscuro) */
+  background-color: #F7FAFC; /* Puedes usar un gris claro como #f0f4f8 si prefieres */
+  border-radius: 10px;
+}
+
+html.dark .custom-scrollbar::-webkit-scrollbar-track {
+  background-color: #2D3748; /* O un gris más oscuro como #374151 (gray-800) */
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  /* Color del "pulgar": azul de Tailwind */
+  background-color: #3B82F6; /* blue-500 */
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: #2563EB; /* blue-600 */
+}
+
+html.dark .custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #60A5FA; /* blue-400 */
+}
+
+html.dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: #3B82F6; /* blue-500 */
+}
+
+/* Animación de esqueleto (se mantiene aquí para el control de colores por modo) */
+/* Usamos clases de Tailwind directamente o sus valores directos */
+@keyframes pulse-skeleton {
+  0%, 100% {
+    opacity: 1;
+    background-color: #D1D5DB; /* gray-300 */
+  }
+  50% {
+    opacity: 0.6;
+    background-color: #9CA3AF; /* gray-400 */
+  }
+}
+
+html.dark .animate-pulse-slow {
+  animation: pulse-skeleton-dark 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse-skeleton-dark {
+  0%, 100% {
+    opacity: 1;
+    background-color: #374151; /* gray-700 */
+  }
+  50% {
+    opacity: 0.6;
+    background-color: #4B5563; /* gray-600 */
+  }
+}
+
+.animate-pulse-slow {
+  animation: pulse-skeleton 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* No hay otras reglas CSS aquí; todo lo demás se maneja con clases de Tailwind en el HTML. */

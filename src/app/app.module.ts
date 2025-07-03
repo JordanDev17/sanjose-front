@@ -7,7 +7,8 @@ import { AppComponent } from './app.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { RouterModule } from '@angular/router'; // Asegúrate de que esté aquí
+import { RouterModule } from '@angular/router'; 
+import { MatSnackBarModule } from '@angular/material/snack-bar'; 
 
 
 
@@ -38,6 +39,7 @@ import { LocationMapComponent } from './web/components/location-map/location-map
 import { AnimatedLinesBackgroundService } from './core/background/animated-lines-background.service';
 import { ChatbotComponent } from './web/components/chatbot/chatbot.component';
 import { VirtualTourComponent } from './web/components/virtual-tour/virtual-tour.component';
+import { WeatherPredictionComponent } from './web/components/weather-prediction/weather-prediction.component';
 
 @NgModule({
   declarations: [
@@ -61,6 +63,7 @@ import { VirtualTourComponent } from './web/components/virtual-tour/virtual-tour
     LocationMapComponent,
     ChatbotComponent,
     VirtualTourComponent,
+    WeatherPredictionComponent,
 
   ],
   imports: [
@@ -71,6 +74,7 @@ import { VirtualTourComponent } from './web/components/virtual-tour/virtual-tour
     HttpClientModule,
     CommonModule,
     BrowserAnimationsModule,
+    MatSnackBarModule,
     RouterModule, // <-- Necesario para el enrutamiento
     WebHeaderComponent, // <-- Componente STANDALONE IMPORTADO AQUÍ
     FooterComponent, // <-- Componente STANDALONE IMPORTADO AQUÍ (si es standalone)

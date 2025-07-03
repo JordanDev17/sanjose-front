@@ -49,7 +49,7 @@ export class NewsDetailComponent implements OnChanges {
       ease: 'power2.out' // Función de suavizado
     })
     .to(this.modalContentRef.nativeElement, {
-      scale: 1, // El contenido del modal se escala a su tamaño normal
+      scale: 0.9, // El contenido del modal se escala a su tamaño normal
       opacity: 1, // Se vuelve visible
       y: 0, // Vuelve a su posición original (desde donde estaba desplazado)
       duration: 0.4, // Duración de la animación del contenido

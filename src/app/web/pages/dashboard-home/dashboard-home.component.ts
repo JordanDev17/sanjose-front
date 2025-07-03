@@ -22,9 +22,9 @@ export class DashboardHomeComponent implements OnInit, AfterViewInit, OnDestroy 
   currentYear: number = new Date().getFullYear();
 
   // Aquí podrías obtener estos datos de tu backend
-  newsCount: number = 2450;
-  warehousesCount: number = 185;
-  usersCount: number = 52;
+  newsCount: number = 7;
+  warehousesCount: number =7;
+  usersCount: number = 2;
 
   // ¡CAMBIO EN EL CONSTRUCTOR!
   constructor(
@@ -99,7 +99,7 @@ export class DashboardHomeComponent implements OnInit, AfterViewInit, OnDestroy 
     const newsCountEl = document.getElementById('newsCount');
     if (newsCountEl) {
       const newsCountUp = new CountUp('newsCount', this.newsCount, {
-        duration: 2.5,
+        duration: 6.5,
       });
       if (!newsCountUp.error) {
         newsCountUp.start();
@@ -111,7 +111,7 @@ export class DashboardHomeComponent implements OnInit, AfterViewInit, OnDestroy 
     const warehousesCountEl = document.getElementById('warehousesCount');
     if (warehousesCountEl) {
       const warehousesCountUp = new CountUp('warehousesCount', this.warehousesCount, {
-        duration: 2.5
+        duration: 6.5
       });
       if (!warehousesCountUp.error) {
         warehousesCountUp.start();

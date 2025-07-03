@@ -1,38 +1,248 @@
-<!-- src/app/web/pages/contact/contact.component.html -->
+<!-- La sección principal del componente de contacto, con un padding superior para dejar espacio a la barra de navegación y transiciones de color para el modo oscuro. -->
+<section class="min-h-screen pt-24 px-6 md:px-20 transition-colors duration-300">
 
-<section class="min-h-screen pt-24 px-6 md:px-20 bg-white dark:bg-gray-900 transition-colors duration-300">
-  <!-- Título -->
-  <div class="mb-12 text-center">
-    <h1 class="text-4xl md:text-5xl font-extrabold text-gray-800 dark:text-white">
-      Contáctanos
+  <!-- Sección 1: Cabecera Impresionante e Invitación -->
+  <!-- Esta sección introduce el propósito de la página con un título animado y un mensaje de bienvenida. -->
+  <!-- data-aos removido de aquí para que GSAP maneje las animaciones de los hijos sin conflicto. -->
+  <div class="hero-section mb-16 text-center">
+    <!-- Título principal. El texto será dividido en palabras y animado por GSAP en el TypeScript. -->
+    <!-- Agregada referencia local #mainTitle -->
+    <h1 #mainTitle class="main-title text-4xl md:text-6xl font-extrabold text-gray-900 dark:text-gray-50 mb-4">
+      Conéctate con Nosotros
     </h1>
-    <p class="mt-4 text-lg text-gray-600 dark:text-gray-300">
-      ¿Tienes alguna duda o necesitas asistencia? Estamos para ayudarte.
+    <!-- Descripción general que invita a la interacción. Animada por GSAP. -->
+    <!-- Agregada referencia local #heroParagraph al primer párrafo para que el ViewChild lo capture -->
+    <p #heroParagraph class="hero-paragraph mt-4 text-lg md:text-xl text-gray-700 dark:text-gray-300 max-w-3xl mx-auto">
+      Estamos aquí para escucharte. Ya sea que tengas preguntas, sugerencias o simplemente quieras saludar, tu mensaje es importante para nosotros.
+    </p>
+    <!-- Mensaje de invitación destacado para visitar el parque industrial. Animado por GSAP. -->
+    <p class="hero-paragraph mt-8 text-xl md:text-2xl font-semibold text-blue-600 dark:text-blue-400">
+      ¡Te invitamos a visitar nuestro parque industrial!
+    </p>
+    <!-- Sugerencia para consultar el clima antes de la visita, con énfasis en el texto clave. Animado por GSAP. -->
+    <p class="hero-paragraph mt-2 text-md md:text-lg text-gray-700 dark:text-gray-400">
+      Antes de tu visita, no olvides <span class="font-bold text-blue-700 dark:text-blue-300">consultar el clima</span> para planificar tu día perfecto.
     </p>
   </div>
 
-  <!-- Zona principal: información + chatbot -->
-  <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 items-start">
+  <!-- espaciado -->
+  <section class="py-10 md:py-16 flex items-center justify-center relative overflow-hidden ">
+    <div class="relative w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+      <div class="animated-gradient-line absolute inset-0 rounded-full"></div>
+    </div>
+  </section>
 
-    <!-- Información de contacto o formulario -->
-    <div class="bg-gray-100 dark:bg-gray-800 p-6 rounded-2xl shadow-xl">
-      <h2 class="text-2xl font-semibold text-gray-800 dark:text-white mb-4">Envíanos un mensaje</h2>
-      
-      <form class="grid gap-4">
-        <input type="text" placeholder="Nombre completo" class="p-3 rounded-lg border dark:bg-gray-700 dark:text-white" required />
-        <input type="email" placeholder="Correo electrónico" class="p-3 rounded-lg border dark:bg-gray-700 dark:text-white" required />
-        <textarea placeholder="Escribe tu mensaje aquí..." rows="5" class="p-3 rounded-lg border dark:bg-gray-700 dark:text-white" required></textarea>
-        <button type="submit" class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-all">
-          Enviar mensaje
+
+
+  <!-- Sección 2: Contenido Principal - Formulario de Contacto e Información de Contacto -->
+  <!-- Utiliza un diseño de cuadrícula para mostrar el formulario y la información de contacto lado a lado en pantallas grandes. -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 items-start mb-16">
+
+    <!-- Sub-sección: Formulario de Contacto (existente) -->
+    <!-- Fondo transparente para el formulario. -->
+    <div class="p-6 rounded-2xl shadow-xl bg-transparent" data-aos="slide-right" data-aos-duration="1000">
+      <h2 class="text-2xl font-semibold text-gray-900 dark:text-gray-50 mb-6">Envíanos un mensaje</h2>
+
+      <!-- Formulario de contacto con validación y manejo de carga. -->
+      <form [formGroup]="contactForm" (ngSubmit)="onSubmit()" class="grid gap-6">
+        <!-- Campo de Nombre Completo -->
+        <div>
+          <label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nombre Completo</label>
+          <input id="name" type="text" formControlName="name" placeholder="Tu nombre"
+                 class="p-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800/50 dark:text-gray-100 w-full
+                        focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-all duration-200
+                        [input-glow] animate-input-glow"
+                 [ngClass]="{
+                   'border-red-500 dark:border-red-400': f['name'].invalid && (f['name'].dirty || f['name'].touched),
+                   'focus:ring-red-500 dark:focus:ring-red-400': f['name'].invalid && (f['name'].dirty || f['name'].touched)
+                 }" />
+          <!-- Mensajes de validación para el campo de nombre. -->
+          <div *ngIf="f['name'].invalid && (f['name'].dirty || f['name'].touched)" class="text-red-500 text-sm mt-1">
+            <div *ngIf="f['name'].errors?.['required']">El nombre es requerido.</div>
+            <div *ngIf="f['name'].errors?.['minlength']">El nombre debe tener al menos 3 caracteres.</div>
+          </div>
+        </div>
+
+        <!-- Campo de Correo Electrónico -->
+        <div>
+          <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Correo Electrónico</label>
+          <input id="email" type="email" formControlName="email" placeholder="tu@ejemplo.com"
+                 class="p-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800/50 dark:text-gray-100 w-full
+                        focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-all duration-200
+                        [input-glow] animate-input-glow"
+                 [ngClass]="{
+                   'border-red-500 dark:border-red-400': f['email'].invalid && (f['email'].dirty || f['email'].touched),
+                   'focus:ring-red-500 dark:focus:ring-red-400': f['email'].invalid && (f['email'].dirty || f['email'].touched)
+                 }" />
+          <!-- Mensajes de validación para el campo de email. -->
+          <div *ngIf="f['email'].invalid && (f['email'].dirty || f['email'].touched)" class="text-red-500 text-sm mt-1">
+            <div *ngIf="f['email'].errors?.['required']">El correo electrónico es requerido.</div>
+            <div *ngIf="f['email'].errors?.['email']">Por favor, introduce un correo electrónico válido.</div>
+          </div>
+        </div>
+
+        <!-- Campo de Mensaje -->
+        <div>
+          <label for="message" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tu Mensaje</label>
+          <textarea id="message" formControlName="message" placeholder="Escribe tu mensaje aquí..." rows="6"
+                    class="p-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800/50 dark:text-gray-100 w-full
+                           focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-all duration-200
+                           [input-glow] animate-input-glow"
+                    [ngClass]="{
+                      'border-red-500 dark:border-red-400': f['message'].invalid && (f['message'].dirty || f['message'].touched),
+                      'focus:ring-red-500 dark:focus:ring-red-400': f['message'].invalid && (f['message'].dirty || f['message'].touched)
+                    }"></textarea>
+          <!-- Mensajes de validación para el campo de mensaje. -->
+          <div *ngIf="f['message'].invalid && (f['message'].dirty || f['message'].touched)" class="text-red-500 text-sm mt-1">
+            <div *ngIf="f['message'].errors?.['required']">El mensaje es requerido.</div>
+            <div *ngIf="f['message'].errors?.['minlength']">El mensaje debe tener al menos 10 caracteres.</div>
+          </div>
+        </div>
+
+        <!-- Botón de Enviar con estados de carga y hover. -->
+        <button type="submit"
+                [disabled]="contactForm.invalid || isLoading"
+                class="w-full py-3 bg-blue-600 dark:bg-blue-500 text-white font-semibold rounded-lg transition-all duration-300
+                       hover:bg-blue-700 dark:hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400
+                       relative overflow-hidden group"
+                [ngClass]="{'opacity-70 cursor-not-allowed': contactForm.invalid || isLoading, 'animate-button-glow': isLoading}">
+          <span *ngIf="!isLoading">Enviar mensaje</span>
+          <span *ngIf="isLoading" class="flex items-center justify-center">
+            <!-- Icono de carga SVG animado. -->
+            <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            Enviando...
+          </span>
+          <!-- Efecto de brillo en el botón al pasar el ratón. -->
+          <span class="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
         </button>
+
+        <!-- Mensaje de respuesta del formulario (éxito/error). -->
+        <div *ngIf="responseMessage" class="mt-4 p-3 rounded-lg text-center"
+             [ngClass]="{
+               'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-200': isSuccess,
+               'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-200': !isSuccess
+             }">
+          {{ responseMessage }}
+        </div>
       </form>
     </div>
 
-    <!-- Chatbot integrado -->
-    <div class="relative bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-xl overflow-hidden">
-      <h2 class="text-2xl font-semibold text-gray-800 dark:text-white mb-4">Asistente Virtual</h2>
-      <app-chatbot></app-chatbot>
+    <!-- Sub-sección: Información de Contacto (NUEVA) -->
+    <!-- Fondo transparente para la información de contacto. -->
+    <div class="p-6 rounded-2xl shadow-xl bg-transparent" data-aos="slide-left" data-aos-delay="200" data-aos-duration="1000">
+      <h2 class="text-2xl font-semibold text-gray-900 dark:text-gray-50 mb-6">Nuestra Información</h2>
+      <div class="space-y-6">
+        <!-- Elemento de Dirección con icono de mapa y efecto de rebote en hover. -->
+        <div class="flex items-center space-x-4 hover:scale-105 transition-transform duration-300 cursor-pointer group">
+          <i class="fas fa-map-marker-alt text-blue-600 dark:text-blue-400 text-3xl group-hover:animate-bounce"></i>
+          <div>
+            <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">Dirección</h3>
+            <p class="text-gray-700 dark:text-gray-300">Funza, Ceuta, Funza, Cundinamarca</p>
+          </div>
+        </div>
+        <!-- Elemento de Teléfono con icono de teléfono y efecto de "wiggle" en hover. -->
+        <div class="flex items-center space-x-4 hover:scale-105 transition-transform duration-300 cursor-pointer group">
+          <i class="fas fa-phone-alt text-blue-600 dark:text-blue-400 text-3xl group-hover:animate-wiggle"></i>
+          <div>
+            <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">Teléfono</h3>
+            <p class="text-gray-700 dark:text-gray-300">823 453 262 </p>
+          </div>
+        </div>
+        <!-- Elemento de Email con icono de sobre y efecto de pulso en hover. -->
+        <div class="flex items-center space-x-4 hover:scale-105 transition-transform duration-300 cursor-pointer group">
+          <i class="fas fa-envelope text-blue-600 dark:text-blue-400 text-3xl group-hover:animate-pulse"></i>
+          <div>
+            <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">Email</h3>
+            <p class="text-gray-700 dark:text-gray-300">{{ 'notificaciones.websanjose@gmail.com' }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- espaciado -->
+<section class="py-10 md:py-16 flex items-center justify-center relative overflow-hidden ">
+  <div class="relative w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+    <div class="animated-gradient-line absolute inset-0 rounded-full"></div>
+  </div>
+</section>
+
+  <!-- Sección 3: Predicción del Clima -->
+  <!-- Fondo transparente para el clima. -->
+  <div class="weather-section p-8 rounded-3xl shadow-2xl bg-white/50 dark:bg-gray-900/50 backdrop-blur-lg border border-gray-200 dark:border-gray-700 mb-16
+              hover:shadow-3xl hover:border-blue-400 dark:hover:border-blue-600 transition-all duration-500 ease-in-out transform hover:-translate-y-1 hover:scale-[1.005]"
+       data-aos="fade-up" data-aos-delay="400" data-aos-duration="1000">
+
+    <h2 class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-700 dark:from-blue-400 dark:to-indigo-500 mb-6 text-center
+               transition-all duration-300 transform hover:scale-105 hover:tracking-wide">
+      Clima en Nuestro Parque Industrial
+    </h2>
+
+  <p class="text-lg text-gray-700 dark:text-gray-300 mb-6 text-center italic">
+    ¡Prepara tu visita perfecta! Consulta en tiempo real las <span class="font-bold text-blue-600 dark:text-blue-400">condiciones climáticas</span> de nuestro parque industrial, y para planificar tus viajes o conocer el clima en cualquier otro destino, simplemente introduce el <span class="font-bold text-blue-600 dark:text-blue-400">nombre completo de la ciudad</span> que te interese.
+  </p>
+
+    <div class="p-4 bg-gray-50/70 dark:bg-gray-800/70 rounded-xl shadow-inner border border-gray-100 dark:border-gray-700">
+      <app-weather-prediction></app-weather-prediction>
     </div>
 
+  </div>
+
+  <!-- Sección 4: Enlaces a Redes Sociales (NUEVA) -->
+  <!-- Fondo transparente para redes sociales. -->
+  <div class="social-media-section p-6 rounded-2xl shadow-xl text-center bg-transparent mb-16" data-aos="fade-up" data-aos-delay="600" data-aos-duration="1000">
+    <h2 class="text-2xl font-semibold text-gray-900 dark:text-gray-50 mb-6">Síguenos en Redes Sociales</h2>
+    <div class="flex justify-center space-x-8">
+      <!-- Enlace a Facebook con cambio de color y rotación en hover. -->
+      <a href="#" class="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-300 transform hover:scale-125 hover:rotate-6 group">
+        <i class="fab fa-facebook-f text-4xl group-hover:text-[#3b5998]"></i>
+      </a>
+      <!-- Enlace a Twitter con cambio de color y rotación inversa en hover. -->
+      <a href="#" class="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-300 transform hover:scale-125 hover:-rotate-6 group">
+        <i class="fab fa-twitter text-4xl group-hover:text-[#00acee]"></i>
+      </a>
+      <!-- Enlace a Instagram con cambio de color y escala en hover. -->
+      <a href="#" class="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-300 transform hover:scale-125 hover:scale-110 group">
+        <i class="fab fa-instagram text-4xl group-hover:text-[#E1306C]"></i>
+      </a>
+      <!-- Enlace a LinkedIn con cambio de color y traslación vertical en hover. -->
+      <a href="#" class="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-300 transform hover:scale-125 hover:translate-y-1 group">
+        <i class="fab fa-linkedin-in text-4xl group-hover:text-[#0077B5]"></i>
+      </a>
+    </div>
+  </div>
+
+  <!-- espaciado -->
+<section class="py-10 md:py-16 flex items-center justify-center relative overflow-hidden ">
+  <div class="relative w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+    <div class="animated-gradient-line absolute inset-0 rounded-full"></div>
+  </div>
+</section>
+
+  <!-- Sección 5: Ubicación en el Mapa (NUEVA) -->
+  <!-- Fondo transparente para el mapa. -->
+  <div class="map-section p-6 rounded-2xl shadow-xl bg-transparent mb-16" data-aos="zoom-in" data-aos-delay="800" data-aos-duration="1000">
+    <h2 class="text-2xl font-semibold text-gray-900 dark:text-gray-50 mb-6">Encuéntranos Aquí</h2>
+    <!-- Contenedor para el mapa, que será inicializado por Leaflet en el TypeScript. -->
+    <!-- Agregada referencia local #mapContainer -->
+    <div #mapContainer id="map" class="w-full h-96 rounded-lg shadow-md"></div>
+  </div>
+
+</section>
+
+<!-- El componente del chatbot se mantiene fuera de la sección principal para asegurar su posición flotante fija. -->
+<div class="fixed bottom-6 right-6 z-50">
+  <app-chatbot></app-chatbot>
+</div>
+
+
+  <!-- espaciado -->
+<section class="py-10 md:py-16 flex items-center justify-center relative overflow-hidden ">
+  <div class="relative w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+    <div class="animated-gradient-line absolute inset-0 rounded-full"></div>
   </div>
 </section>

@@ -4,16 +4,13 @@ module.exports = {
   content: [
     './src/**/*.{html,ts}', // Escanea todos los archivos HTML y TS en src
     './src/app/web/components/web-header/web-header.component.html', // Asegúrate de incluir el header
-       // Esto asegura que Tailwind compile todas las variantes de color que usas.
     './src/app/web/components/location-map/location-map.component.ts',
     './src/app/web/components/location-map/location-map.component.html',
     './src/app/web/components/chatbot/chatbot.component.ts',
     './src/app/web/components/chatbot/chatbot.component.html',
-
-    
     "./node_modules/flowbite/**/*.js" // Incluye los archivos JS de Flowbite para sus clases de utilidad
   ],
-    safelist: [ // Opcional, pero más robusto para clases dinámicas
+  safelist: [ // Opcional, pero más robusto para clases dinámicas
     {
       pattern: /bg-(blue|green|yellow|red|teal|purple|gray)-(100|200|500|700|800|900)/,
       variants: ['hover', 'dark'],
@@ -21,128 +18,73 @@ module.exports = {
     {
       pattern: /border-(blue|green|yellow|red|teal|purple|gray)-500/,
     },
-        {
+    {
       pattern: /text-(xl|lg)/,
     }
   ],
   theme: {
     extend: {
-       colors: {
-        // Colores personalizados para el tema claro
-        light: {
-          'text-primary': '#1A202C', // Texto principal oscuro
-          'text-secondary': '#4A5568', // Texto secundario un poco más claro
-          'bg-primary': '#FFFFFF', // Fondo principal blanco
-          'bg-secondary': '#F7FAFC', // Fondo secundario muy claro
-          'accent': '#3182CE', // Azul para acentos
-          'border': '#E2E8F0', // Borde claro
-        },
-        // Colores personalizados para el tema oscuro
-        dark: {
-          'text-primary': '#EDF2F7', // Texto principal claro
-          'text-secondary': '#A0AEC0', // Texto secundario un poco más oscuro
-          'bg-primary': '#1A202C', // Fondo principal oscuro
-          'bg-secondary': '#2D3748', // Fondo secundario más oscuro
-          'accent': '#63B3ED', // Azul claro para acentos
-          'border': '#4A5568', // Borde oscuro
-        },
-        // Colores para tus primarios y secundarios si no quieres usar los personalizados directamente
-        // Asegúrate de que estos coexistan o se reemplacen con tus 'light'/'dark' definidos
-        primary: { // Podrías mapear estos a tus colores 'accent' o mantenerlos como una paleta aparte
-          50: '#eef2ff',
-          100: '#e0e7ff',
-          200: '#c7d2fe',
-          300: '#a5b4fc',
-          400: '#818cf8',
-          500: '#6366f1',
-          600: '#4f46e5', // Ejemplo, ajusta según tu branding
-          700: '#4338ca',
-          800: '#3730a3',
-          900: '#312e81',
-          950: '#1e1b4b',
-        },
-        secondary: { // Ejemplo de colores secundarios
-          50: '#f0fdf4',
-          100: '#dcfce7',
-          200: '#bbf7d0',
-          300: '#86efac',
-          400: '#4ade80',
-          500: '#22c55e', // Ejemplo, ajusta según tu branding
-          600: '#16a34a',
-          700: '#15803d',
-          800: '#166534',
-          900: '#14532d',
-          950: '#0f3d22',
-        },
+      // **IMPORTANTE**: Elimina o comenta tus definiciones de 'light' y 'dark' personalizadas aquí
+      // para evitar conflictos y usar los colores base de Tailwind que ya son responsivos al modo oscuro.
+      // Si necesitas colores muy específicos, defínelos con nombres únicos que no colisionen.
+      colors: {
+        // Ejemplo de cómo podrías definir un color de acento si realmente lo necesitas,
+        // pero usando un nombre que no choque con las clases base de Tailwind.
+        // 'custom-accent-light': '#3182CE',
+        // 'custom-accent-dark': '#63B3ED',
       },
       // Definición de keyframes personalizados para animaciones
       keyframes: {
-        fadeInUp: {
-          'from': { opacity: '0', transform: 'translateY(20px)' },
-          'to': { opacity: '1', transform: 'translateY(0)' },
+        'fade-in-up': {
+          '0%': { opacity: '0', transform: 'translateY(20px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
         },
-        fadeIn: {
-          'from': { opacity: '0' },
-          'to': { opacity: '1' },
+        'fade-in': {
+          '0%': { opacity: '0', transform: 'translateY(-10px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
         },
-        shake: {
-          '0%, 100%': { transform: 'translateX(0)' },
-          '10%, 30%, 50%, 70%, 90%': { transform: 'translateX(-8px)' },
-          '20%, 40%, 60%, 80%': { transform: 'translateX(8px)' },
-        },
-        scaleIn: {
-          'from': { transform: 'scale(0)', opacity: '0' },
-          'to': { transform: 'scale(1)', opacity: '1' },
-        },
-        bounce: {
-          '0%, 20%, 50%, 80%, 100%': { transform: 'translateY(0)' },
-          '40%': { transform: 'translateY(-15px)' },
-          '60%': { transform: 'translateY(-7px)' },
-        },
-        pulse: {
-          '0%, 100%': { transform: 'scale(1)', opacity: '1' },
-          '50%': { transform: 'scale(0.98)', opacity: '0.8' },
-        },
-        shimmer: {
-          '0%': { 'background-position': '-200% 0' },
-          '100%': { 'background-position': '200% 0' },
-        },
-        'confetti-fall': {
-          '0%': { transform: 'translateY(-100vh) rotate(0deg)', opacity: '1' },
-          '100%': { transform: 'translateY(100vh) rotate(720deg)', opacity: '0' },
-        },
-        fadeOutOverlay: {
-          '0%': { opacity: '0.3' },
-          '100%': { opacity: '0' },
-        },
-        // Nueva animación para la entrada del header
-        slideInFromTop: {
-          '0%': { transform: 'translateY(-100%)', opacity: '0' },
-          '100%': { transform: 'translateY(0)', opacity: '1' },
-        },
-        // Animación de brillo para el botón de tema
-        'button-glow': {
-          '0%, 100%': { boxShadow: '0 0 5px rgba(0, 128, 255, 0.4)' },
-          '50%': { boxShadow: '0 0 20px rgba(0, 128, 255, 0.8)' },
-        },
-        // Nuevas animaciones para el componente About
-        'text-reveal': {
-          '0%': { transform: 'translateY(100%)', opacity: '0' },
-          '100%': { transform: 'translateY(0)', opacity: '1' },
+        'fade-in-down': {
+          '0%': { opacity: '0', transform: 'translateY(-20px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
         },
         'slide-in-left': {
-          '0%': { transform: 'translateX(-100%)', opacity: '0' },
-          '100%': { transform: 'translateX(0)', opacity: '1' },
+          '0%': { opacity: '0', transform: 'translateX(-50px)' },
+          '100%': { opacity: '1', transform: 'translateX(0)' },
         },
         'pulse-slow': {
           '0%, 100%': { opacity: '0.5' },
           '50%': { opacity: '1' },
         },
+        'bounce-icon': {
+            '0%, 100%': { transform: 'translateY(0) rotate(0deg)' },
+            '50%': { transform: 'translateY(-10px) rotate(5deg)' },
+        },
+        // 'pulse-text' ya no es necesario si GSAP maneja el brillo del título
+        // 'pulse-text': {
+        //     '0%, 100%': { filter: 'drop-shadow(0 0 0px rgba(var(--accent-rgb), 0))' },
+        //     '50%': { filter: 'drop-shadow(0 0 8px rgba(var(--accent-rgb), 0.7))' },
+        // },
+        'input-glow': { // Para el input de búsqueda
+            '0%': { boxShadow: '0 0 0px 0px rgba(var(--accent-rgb), 0)' },
+            '100%': { boxShadow: '0 0 0px 4px rgba(var(--accent-rgb), 0.3)' },
+        },
+        // Nuevas animaciones para el componente About (mantenidas de tu config)
+        'text-reveal': { '0%': { transform: 'translateY(100%)', opacity: '0' }, '100%': { transform: 'translateY(0)', opacity: '1' }, },
+        'slide-in-from-top': { '0%': { transform: 'translateY(-100%)', opacity: '0' }, '100%': { transform: 'translateY(0)', opacity: '1' }, },
+        'button-glow': { '0%, 100%': { boxShadow: '0 0 5px rgba(0, 128, 255, 0.4)' }, '50%': { boxShadow: '0 0 20px rgba(0, 128, 255, 0.8)' }, },
       },
       // Mapea los keyframes a utilidades de animación
       animation: {
-        'fade-in-up': 'fadeInUp 0.5s ease-out forwards',
-        'fade-in': 'fadeIn 0.5s ease-out forwards',
+        'fade-in-up': 'fade-in-up 0.5s ease-out forwards',
+        'fade-in': 'fade-in 0.3s ease-out forwards',
+        'fade-in-down': 'fade-in-down 0.3s ease-out forwards',
+        'slide-in-left': 'slide-in-left 0.6s ease-out forwards',
+        'pulse-slow': 'pulse-slow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        'bounce-icon': 'bounce-icon 3s ease-in-out infinite',
+        // 'pulse-text' ya no es necesario
+        // 'pulse-text': 'pulse-text 2s ease-in-out infinite',
+        'input-glow': 'input-glow 0.3s ease-out forwards',
+        // Animaciones existentes (mantenidas de tu config)
         'shake': 'shake 0.6s ease-in-out',
         'scale-in': 'scaleIn 0.3s ease-out forwards',
         'bounce': 'bounce 1s ease-in-out',
@@ -150,17 +92,19 @@ module.exports = {
         'shimmer': 'shimmer 2s infinite linear',
         'confetti-fall': 'confetti-fall var(--duration) ease-out forwards',
         'theme-transition-overlay': 'fadeOutOverlay 0.6s forwards',
-        'slide-in-from-top': 'slideInFromTop 0.7s ease-out forwards', // Aplica la nueva animación
-        'button-glow': 'button-glow 1.5s infinite alternate', // Animación de brillo
-                // Nuevas animaciones para el componente About
+        'slide-in-from-top': 'slideInFromTop 0.7s ease-out forwards',
+        'button-glow': 'button-glow 1.5s infinite alternate',
         'text-reveal': 'text-reveal 1s ease-out forwards',
-        'slide-in-left': 'slide-in-left 0.8s ease-out forwards',
-        'pulse-slow': 'pulse-slow 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
       },
+      backgroundImage: {
+        // Mantén tus patrones de fondo si los usas en otros lugares
+        'pattern-light': "url('data:image/svg+xml,%3Csvg width%3D%2260%22 height%3D%2260%22 viewBox%3D%220 0 60 60%22 xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cg fill%3D%22none%22 fill-rule%3D%22evenodd%22%3E%3Cg fill%3D%22%23e2e8f0%22 fill-opacity%3D%220.7%22%3E%3Cpath d%3D%22M36 34c0 2.21-1.79 4-4 4s-4-1.79-4-4 1.79-4 4-4 4 1.79 4 4zm2 0c0 3.314-2.686 6-6 6s-6-2.686-6-6 2.686-6 6-6 6 2.686 6 6zm4 0c0 4.418-3.582 8-8 8s-8-3.582-8-8 3.582-8 8-8 8 3.582 8 8zm2 0c0 5.523-4.477 10-10 10s-10-4.477-10-10 4.477-10 10-10 10 4.477 10 10zm-6 20c0 2.21-1.79 4-4 4s-4-1.79-4-4 1.79-4 4-4 4 1.79 4 4zm2 0c0 3.314-2.686 6-6 6s-6-2.686-6-6 2.686-6 6-6 6 2.686 6 6zm4 0c0 4.418-3.582 8-8 8s-8-3.582-8-8 3.582-8 8-8 8 3.582 8 8zm2 0c0 5.523-4.477 10-10 10s-10-4.477-10-10 4.477-10 10-10 10 4.477 10 10zM12 6c0 2.21-1.79 4-4 4S4 8.21 4 6s1.79-4 4-4 4 1.79 4 4zm2 0c0 3.314-2.686 6-6 6S2 9.314 2 6s2.686-6 6-6 6 2.686 6 6zm4 0c0 4.418-3.582 8-8 8s-8-3.582-8-8 3.582-8 8-8 8 3.582 8 8zm2 0c0 5.523-4.477 10-10 10S2 1.523 2 6s4.477-10 10-10 10 4.477 10 10zM12 26c0 2.21-1.79 4-4 4s-4-1.79-4-4 1.79-4 4-4 4 1.79 4 4zm2 0c0 3.314-2.686 6-6 6s-6-2.686-6-6 2.686-6 6-6 6 2.686 6 6zm4 0c0 4.418-3.582 8-8 8s-8-3.582-8-8 3.582-8 8-8 8 3.582 8 8zm2 0c0 5.523-4.477 10-10 10s-10-4.477-10-10 4.477-10 10-10 10 4.477 10 10zM12 46c0 2.21-1.79 4-4 4s-4-1.79-4-4 1.79-4 4-4 4 1.79 4 4zm2 0c0 3.314-2.686 6-6 6s-6-2.686-6-6 2.686-6 6-6 6 2.686 6 6zm4 0c0 4.418-3.582 8-8 8s-8-3.582-8-8 3.582-8 8-8 8 3.582 8 8zm2 0c0 5.523-4.477 10-10 10s-10-4.477-10-10 4.477-10 10-10 10 4.477 10 10zM52 16c0 2.21-1.79 4-4 4s-4-1.79-4-4 1.79-4 4-4 4 1.79 4 4zm2 0c0 3.314-2.686 6-6 6s-6-2.686-6-6 2.686-6 6-6 6 2.686 6 6zm4 0c0 4.418-3.582 8-8 8s-8-3.582-8-8 3.582-8 8-8 8 3.582 8 8zm2 0c0 5.523-4.477 10-10 10s-10-4.477-10-10 4.477-10 10-10 10 4.477 10 10zM52 36c0 2.21-1.79 4-4 4s-4-1.79-4-4 1.79-4 4-4 4 1.79 4 4zm2 0c0 3.314-2.686 6-6 6s-6-2.686-6-6 2.686-6 6-6 6 2.686 6 6zm4 0c0 4.418-3.582 8-8 8s-8-3.582-8-8 3.582-8 8-8 8 3.582 8 8zm2 0c0 5.523-4.477 10-10 10s-10-4.477-10-10 4.477-10 10-10 10 4.477 10 10zM52 56c0 2.21-1.79 4-4 4s-4-1.79-4-4 1.79-4 4-4 4 1.79 4 4zm2 0c0 3.314-2.686 6-6 6s-6-2.686-6-6 2.686-6 6-6 6 2.686 6 6zm4 0c0 4.418-3.582 8-8 8s-8-3.582-8-8 3.582-8 8-8 8 3.582 8 8zm2 0c0 5.523-4.477 10-10 10s-10-4.477-10-10 4.477-10 10-10 10 4.477 10 10zM32 0c0 2.21-1.79 4-4 4s-4-1.79-4-4 1.79-4 4-4 4 1.79 4 4zm2 0c0 3.314-2.686 6-6 6s-6-2.686-6-6 2.686-6 6-6 6 2.686 6 6zm4 0c0 4.418-3.582 8-8 8s-8-3.582-8-8 3.582-8 8-8 8 3.582 8 8zm2 0c0 5.523-4.477 10-10 10S26 1.523 26 6s4.477-10 10-10 10 4.477 10 10zM32 20c0 2.21-1.79 4-4 4s-4-1.79-4-4 1.79-4 4-4 4 1.79 4 4zm2 0c0 3.314-2.686 6-6 6s-6-2.686-6-6 2.686-6 6-6 6 2.686 6 6zm4 0c0 4.418-3.582 8-8 8s-8-3.582-8-8 3.582-8 8-8 8 3.582 8 8zm2 0c0 5.523-4.477 10-10 10s-10-4.477-10-10 4.477-10 10-10 10 4.477 10 10zM32 40c0 2.21-1.79 4-4 4s-4-1.79-4-4 1.79-4 4-4 4 1.79 4 4zm2 0c0 3.314-2.686 6-6 6s-6-2.686-6-6 2.686-6 6-6 6 2.686 6 6zm4 0c0 4.418-3.582 8-8 8s-8-3.582-8-8 3.582-8 8-8 8 3.582 8 8zm2 0c0 5.523-4.477 10-10 10s-10-4.477-10-10 4.477-10 10-10 10 4.477 10 10zM0 16c0 2.21-1.79 4-4 4s-4-1.79-4-4 1.79-4 4-4 4 1.79 4 4zm2 0c0 3.314-2.686 6-6 6s-6-2.686-6-6 2.686-6 6-6 6 2.686 6 6zm4 0c0 4.418-3.582 8-8 8s-8-3.582-8-8 3.582-8 8-8 8 3.582 8 8zm2 0c0 5.523-4.477 10-10 10S-4 1.523-4 6s4.477-10 10-10 10 4.477 10 10zM0 36c0 2.21-1.79 4-4 4s-4-1.79-4-4 1.79-4 4-4 4 1.79 4 4zm2 0c0 3.314-2.686 6-6 6s-6-2.686-6-6 2.686-6 6-6 6 2.686 6 6zm4 0c0 4.418-3.582 8-8 8s-8-3.582-8-8 3.582-8 8-8 8 3.582 8 8zm2 0c0 5.523-4.477 10-10 10s-10-4.477-10-10 4.477-10 10-10 10 4.477 10 10zM0 56c0 2.21-1.79 4-4 4s-4-1.79-4-4 1.79-4 4-4 4 1.79 4 4zm2 0c0 3.314-2.686 6-6 6s-6-2.686-6-6 2.686-6 6-6 6 2.686 6 6zm4 0c0 4.418-3.582 8-8 8s-8-3.582-8-8 3.582-8 8-8 8 3.582 8 8zm2 0c0 5.523-4.477 10-10 10s-10-4.477-10-10 4.477-10 10-10 10 4.477 10 10zM20 6c0 2.21-1.79 4-4 4s-4-1.79-4-4 1.79-4 4-4 4 1.79 4 4zm2 0c0 3.314-2.686 6-6 6s-6-2.686-6-6 2.686-6 6-6 6 2.686 6 6zm4 0c0 4.418-3.582 8-8 8s-8-3.582-8-8 3.582-8 8-8 8 3.582 8 8zm2 0c0 5.523-4.477 10-10 10s-10-4.477-10-10 4.477-10 10-10 10 4.477 10 10zM20 26c0 2.21-1.79 4-4 4s-4-1.79-4-4 1.79-4 4-4 4 1.79 4 4zm2 0c0 3.314-2.686 6-6 6s-6-2.686-6-6 2.686-6 6-6 6 2.686 6 6zm4 0c0 4.418-3.582 8-8 8s-8-3.582-8-8 3.582-8 8-8 8 3.582 8 8zm2 0c0 5.523-4.477 10-10 10s-10-4.477-10-10 4.477-10 10-10 10 4.477 10 10zM20 46c0 2.21-1.79 4-4 4s-4-1.79-4-4 1.79-4 4-4 4 1.79 4 4zm2 0c0 3.314-2.686 6-6 6s-6-2.686-6-6 2.686-6 6-6 6 2.686 6 6zm4 0c0 4.418-3.582 8-8 8s-8-3.582-8-8 3.582-8 8-8 8 3.582 8 8zm2 0c0 5.523-4.477 10-10 10s-10-4.477-10-10 4.477-10 10-10 10 4.477 10 10z%22/%3E%3C%2Fg%3E%3C%2Fsvg%3E')",
+        'pattern-dark': "url('data:image/svg+xml,%3Csvg width%3D%2260%22 height%3D%2260%22 viewBox%3D%220 0 60 60%22 xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cg fill%3D%22none%22 fill-rule%3D%22evenodd%22%3E%3Cg fill%3D%22%232d3748%22 fill-opacity%3D%220.7%22%3E%3Cpath d%3D%22M36 34c0 2.21-1.79 4-4 4s-4-1.79-4-4 1.79-4 4-4 4 1.79 4 4zm2 0c0 3.314-2.686 6-6 6s-6-2.686-6-6 2.686-6 6-6 6 2.686 6 6zm4 0c0 4.418-3.582 8-8 8s-8-3.582-8-8 3.582-8 8-8 8 3.582 8 8zm2 0c0 5.523-4.477 10-10 10s-10-4.477-10-10 4.477-10 10-10 10 4.477 10 10zm-6 20c0 2.21-1.79 4-4 4s-4-1.79-4-4 1.79-4 4-4 4 1.79 4 4zm2 0c0 3.314-2.686 6-6 6s-6-2.686-6-6 2.686-6 6-6 6 2.686 6 6zm4 0c0 4.418-3.582 8-8 8s-8-3.582-8-8 3.582-8 8-8 8 3.582 8 8zm2 0c0 5.523-4.477 10-10 10s-10-4.477-10-10 4.477-10 10-10 10 4.477 10 10zM12 6c0 2.21-1.79 4-4 4S4 8.21 4 6s1.79-4 4-4 4 1.79 4 4zm2 0c0 3.314-2.686 6-6 6S2 9.314 2 6s2.686-6 6-6 6 2.686 6 6zm4 0c0 4.418-3.582 8-8 8s-8-3.582-8-8 3.582-8 8-8 8 3.582 8 8zm2 0c0 5.523-4.477 10-10 10S2 1.523 2 6s4.477-10 10-10 10 4.477 10 10zM12 26c0 2.21-1.79 4-4 4s-4-1.79-4-4 1.79-4 4-4 4 1.79 4 4zm2 0c0 3.314-2.686 6-6 6s-6-2.686-6-6 2.686-6 6-6 6 2.686 6 6zm4 0c0 4.418-3.582 8-8 8s-8-3.582-8-8 3.582-8 8-8 8 3.582 8 8zm2 0c0 5.523-4.477 10-10 10s-10-4.477-10-10 4.477-10 10-10 10 4.477 10 10zM12 46c0 2.21-1.79 4-4 4s-4-1.79-4-4 1.79-4 4-4 4 1.79 4 4zm2 0c0 3.314-2.686 6-6 6s-6-2.686-6-6 2.686-6 6-6 6 2.686 6 6zm4 0c0 4.418-3.582 8-8 8s-8-3.582-8-8 3.582-8 8-8 8 3.582 8 8zm2 0c0 5.523-4.477 10-10 10s-10-4.477-10-10 4.477-10 10-10 10 4.477 10 10zM52 16c0 2.21-1.79 4-4 4s-4-1.79-4-4 1.79-4 4-4 4 1.79 4 4zm2 0c0 3.314-2.686 6-6 6s-6-2.686-6-6 2.686-6 6-6 6 2.686 6 6zm4 0c0 4.418-3.582 8-8 8s-8-3.582-8-8 3.582-8 8-8 8 3.582 8 8zm2 0c0 5.523-4.477 10-10 10s-10-4.477-10-10 4.477-10 10-10 10 4.477 10 10zM52 36c0 2.21-1.79 4-4 4s-4-1.79-4-4 1.79-4 4-4 4 1.79 4 4zm2 0c0 3.314-2.686 6-6 6s-6-2.686-6-6 2.686-6 6-6 6 2.686 6 6zm4 0c0 4.418-3.582 8-8 8s-8-3.582-8-8 3.582-8 8-8 8 3.582 8 8zm2 0c0 5.523-4.477 10-10 10s-10-4.477-10-10 4.477-10 10-10 10 4.477 10 10zM52 56c0 2.21-1.79 4-4 4s-4-1.79-4-4 1.79-4 4-4 4 1.79 4 4zm2 0c0 3.314-2.686 6-6 6s-6-2.686-6-6 2.686-6 6-6 6 2.686 6 6zm4 0c0 4.418-3.582 8-8 8s-8-3.582-8-8 3.582-8 8-8 8 3.582 8 8zm2 0c0 5.523-4.477 10-10 10s-10-4.477-10-10 4.477-10 10-10 10 4.477 10 10zM32 0c0 2.21-1.79 4-4 4s-4-1.79-4-4 1.79-4 4-4 4 1.79 4 4zm2 0c0 3.314-2.686 6-6 6s-6-2.686-6-6 2.686-6 6-6 6 2.686 6 6zm4 0c0 4.418-3.582 8-8 8s-8-3.582-8-8 3.582-8 8-8 8 3.582 8 8zm2 0c0 5.523-4.477 10-10 10S26 1.523 26 6s4.477-10 10-10 10 4.477 10 10zM32 20c0 2.21-1.79 4-4 4s-4-1.79-4-4 1.79-4 4-4 4 1.79 4 4zm2 0c0 3.314-2.686 6-6 6s-6-2.686-6-6 2.686-6 6-6 6 2.686 6 6zm4 0c0 4.418-3.582 8-8 8s-8-3.582-8-8 3.582-8 8-8 8 3.582 8 8zm2 0c0 5.523-4.477 10-10 10s-10-4.477-10-10 4.477-10 10-10 10 4.477 10 10zM32 40c0 2.21-1.79 4-4 4s-4-1.79-4-4 1.79-4 4-4 4 1.79 4 4zm2 0c0 3.314-2.686 6-6 6s-6-2.686-6-6 2.686-6 6-6 6 2.686 6 6zm4 0c0 4.418-3.582 8-8 8s-8-3.582-8-8 3.582-8 8-8 8 3.582 8 8zm2 0c0 5.523-4.477 10-10 10s-10-4.477-10-10 4.477-10 10-10 10 4.477 10 10zM0 16c0 2.21-1.79 4-4 4s-4-1.79-4-4 1.79-4 4-4 4 1.79 4 4zm2 0c0 3.314-2.686 6-6 6s-6-2.686-6-6 2.686-6 6-6 6 2.686 6 6zm4 0c0 4.418-3.582 8-8 8s-8-3.582-8-8 3.582-8 8-8 8 3.582 8 8zm2 0c0 5.523-4.477 10-10 10S-4 1.523-4 6s4.477-10 10-10 10 4.477 10 10zM0 36c0 2.21-1.79 4-4 4s-4-1.79-4-4 1.79-4 4-4 4 1.79 4 4zm2 0c0 3.314-2.686 6-6 6s-6-2.686-6-6 2.686-6 6-6 6 2.686 6 6zm4 0c0 4.418-3.582 8-8 8s-8-3.582-8-8 3.582-8 8-8 8 3.582 8 8zm2 0c0 5.523-4.477 10-10 10s-10-4.477-10-10 4.477-10 10-10 10 4.477 10 10zM0 56c0 2.21-1.79 4-4 4s-4-1.79-4-4 1.79-4 4-4 4 1.79 4 4zm2 0c0 3.314-2.686 6-6 6s-6-2.686-6-6 2.686-6 6-6 6 2.686 6 6zm4 0c0 4.418-3.582 8-8 8s-8-3.582-8-8 3.582-8 8-8 8 3.582 8 8zm2 0c0 5.523-4.477 10-10 10s-10-4.477-10-10 4.477-10 10-10 10 4.477 10 10zM20 6c0 2.21-1.79 4-4 4s-4-1.79-4-4 1.79-4 4-4 4 1.79 4 4zm2 0c0 3.314-2.686 6-6 6s-6-2.686-6-6 2.686-6 6-6 6 2.686 6 6zm4 0c0 4.418-3.582 8-8 8s-8-3.582-8-8 3.582-8 8-8 8 3.582 8 8zm2 0c0 5.523-4.477 10-10 10s-10-4.477-10-10 4.477-10 10-10 10 4.477 10 10zM20 26c0 2.21-1.79 4-4 4s-4-1.79-4-4 1.79-4 4-4 4 1.79 4 4zm2 0c0 3.314-2.686 6-6 6s-6-2.686-6-6 2.686-6 6-6 6 2.686 6 6zm4 0c0 4.418-3.582 8-8 8s-8-3.582-8-8 3.582-8 8-8 8 3.582 8 8zm2 0c0 5.523-4.477 10-10 10s-10-4.477-10-10 4.477-10 10-10 10 4.477 10 10zM20 46c0 2.21-1.79 4-4 4s-4-1.79-4-4 1.79-4 4-4 4 1.79 4 4zm2 0c0 3.314-2.686 6-6 6s-6-2.686-6-6 2.686-6 6-6 6 2.686 6 6zm4 0c0 4.418-3.582 8-8 8s-8-3.582-8-8 3.582-8 8-8 8 3.582 8 8zm2 0c0 5.523-4.477 10-10 10s-10-4.477-10-10 4.477-10 10-10 10 4.477 10 10z%22/%3E%3C%2Fg%3E%3C%2Fsvg%3E')",
+      }
     },
   },
   plugins: [
     require('@tailwindcss/line-clamp'),
-    require('flowbite/plugin') // Habilita el plugin de Flowbite
+    require('flowbite/plugin')
   ],
 };

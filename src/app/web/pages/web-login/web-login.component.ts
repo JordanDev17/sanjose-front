@@ -372,8 +372,11 @@ export class WebLoginComponent implements OnInit, OnDestroy {
 
   resetLogin(): void {
     // Animación de reset
-    const formContainer = document.querySelector('.form-container');
-    formContainer?.classList.add('animate-pulse');
+    const formContainer = document.querySelector('.form-container'); // Asegúrate de que .form-container exista en tu HTML
+    if (formContainer) { // Agrega esta verificación para evitar errores si no encuentra el elemento
+      formContainer.classList.add('animate-pulse');
+    }
+
 
     setTimeout(() => {
       this.loginForm.reset();
@@ -390,13 +393,27 @@ export class WebLoginComponent implements OnInit, OnDestroy {
       this.loginForm.markAsUntouched();
       this.loginForm.markAsPristine();
 
-      formContainer?.classList.remove('animate-pulse');
+      if (formContainer) { // Agrega esta verificación
+        formContainer.classList.remove('animate-pulse');
+      }
 
+
+      // Redirige al inicio después de que todo el reset y la animación se completen
+  
+      this.router.navigate(['/']); 
+
+      // El setTimeout para el focus ya no sería necesario si rediriges a una nueva página de login
+      // Si la página no se recarga (es decir, el mismo componente de login se mantiene en la misma ruta),
+      // entonces podrías mantener el focus, pero si es una redirección a una nueva instancia del login,
+      // el foco se establecerá al cargar el nuevo componente.
+
+      /* // Esto se vuelve redundante si hay una redirección real
       setTimeout(() => {
         const usernameInput = document.getElementById('nombre_usuario');
         usernameInput?.focus();
       }, 100);
-    }, 300);
+      */
+    }, 300); // Duración de la animación de pulso
   }
 
   // Animaciones específicas

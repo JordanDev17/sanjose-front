@@ -2,7 +2,7 @@
 <!-- Modal de detalle de la bodega -->
 <div *ngIf="warehouse" class="detail-modal-overlay fixed inset-0 z-[10000] flex items-center justify-center p-4 bg-black bg-opacity-70 dark:bg-opacity-85 transition-opacity duration-300">
   <div
-    class="detail-modal-card relative w-full max-w-2xl rounded-lg shadow-2xl p-6 sm:p-8 max-h-[90vh] overflow-y-auto transform transition-all duration-300"
+    class="detail-modal-card relative w-full max-w-2xl rounded-lg shadow-2xl mt-12 p-6 sm:p-8 max-h-[80vh] overflow-y-auto transform transition-all duration-300"
     [ngClass]="(darkMode$ | async) ? 'bg-slate-800 text-slate-100' : 'bg-white text-slate-800'"
   >
     <!-- Botón de cierre del modal -->

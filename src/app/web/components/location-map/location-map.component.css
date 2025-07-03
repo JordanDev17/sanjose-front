@@ -1,94 +1,77 @@
 /* src/app/web/components/location-map/location-map.component.css */
 
-/* No hay cambios necesarios para el contenedor del mapa */
+/* Estilos para el contenedor del mapa */
 #map-container {
-  /* La altura ya está definida en el HTML como h-[500px] */
+  z-index: 1; /* Necesario para que Leaflet funcione correctamente */
 }
 
-/* 1. Wrapper principal para el icono Leaflet divIcon */
-/* Este div es creado y posicionado por Leaflet */
-.custom-poi-icon-wrapper {
-  background-color: transparent;
-  border: none;
+/* ------------------- ESTILOS DE MARCADORES PERSONALIZADOS ------------------- */
+
+/* Clase base para el contenedor del marcador de POI (el div generado por L.divIcon) */
+.custom-marker {
+  position: relative; /* Esencial para posicionar el pseudo-elemento */
+  width: 30px;        /* Ancho del círculo base */
+  height: 30px;       /* Altura del círculo base */
   display: flex;
-  /* Centrar horizontalmente el contenido dentro del wrapper */
+  align-items: center;
   justify-content: center;
-  /* Alinear el contenido (el círculo del icono) en la parte superior del wrapper */
-  align-items: flex-start;
-  position: relative;
-  /* IMPORTANTE: Asegurar que Font Awesome se renderice */
-  /* Re-declarar font-family si hay conflictos globales */
-  font-family: "Font Awesome 5 Free", "Font Awesome 5 Pro"; /* O solo "Font Awesome 5 Free" */
-  font-weight: 900; /* Asegura que se usen los iconos sólidos (fas) */
+  border-radius: 50%; /* Hace que sea un círculo */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25); /* Sombra más pronunciada para dar profundidad */
+  transform-origin: center 100%; /* El origen de la transformación para las animaciones (parte inferior del marcador) */
+  /* NO poner transiciones CSS aquí si GSAP las va a controlar */
 }
 
-/* 2. Estilo para el círculo que contiene el icono de Font Awesome */
-.custom-poi-icon {
-  width: 30px;
-  height: 30px;
+/* El círculo interior que contiene el icono. Le daremos el color de fondo. */
+.custom-marker-circle {
+  width: 100%;
+  height: 100%;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white; /* Color del ícono de Font Awesome (dentro del círculo) */
-  font-size: 1.2rem; /* Tamaño del ícono de Font Awesome */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Sombra para que destaque */
-  transition: transform 0.2s ease-out; /* Para la animación de bounce */
-  /* No se necesita transform inicial aquí; Leaflet.divIcon y la animación lo manejan */
+  /* El color de fondo se aplicará mediante clases de Tailwind desde JS */
 }
 
-/* 3. Animación de "bounce" para los iconos del mapa al hacer clic */
-.bounce-animation {
-  animation: bounce-icon 1s ease-in-out;
-}
-
-@keyframes bounce-icon {
-  0%, 100% { transform: translateY(0) scale(1); }
-  50% { transform: translateY(-15px) scale(1.1); } /* Salta hacia arriba y se agranda ligeramente */
-}
-
-/* 4. Estilo para la "punta" del marcador personalizado */
-.custom-marker-tip {
+/* Pseudo-elemento para crear la punta del marcador (el triángulo) */
+.custom-marker::after {
+  content: '';
   position: absolute;
-  top: 30px; /* Se posiciona justo debajo del círculo de 30px */
+  bottom: -10px; /* Ajusta esto para que la punta "salga" del círculo */
   left: 50%;
-  transform: translateX(-50%); /* Centra la punta horizontalmente bajo el círculo */
+  transform: translateX(-50%); /* Centra la punta horizontalmente */
   width: 0;
   height: 0;
-  border-left: 6px solid transparent; /* Ancho de la punta */
-  border-right: 6px solid transparent; /* Ancho de la punta */
-  border-top: 12px solid; /* Alto de la punta. El color se establece dinámicamente en el HTML inyectado. */
-  z-index: -1; /* Para que esté detrás del icono */
+  border-left: 8px solid transparent;  /* Ancho de la base del triángulo */
+  border-right: 8px solid transparent; /* Ancho de la base del triángulo */
+  border-top: 10px solid;             /* Altura del triángulo y el color */
+  pointer-events: none;               /* Asegura que el clic pase al marcador subyacente */
 }
 
-/* Opcional: Estilos para barras de scroll si usas overflow-y-auto */
-#poi-list-container::-webkit-scrollbar {
-  width: 8px;
-}
+/* Colores para los marcadores de POI (fondo del círculo y color de la punta) */
+/* Estos colores deben coincidir con los definidos en getMarkerColorCss() o con los de Tailwind */
 
-#poi-list-container::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 10px;
-}
+.custom-marker-blue .custom-marker-circle { background-color: #3B82F6; } /* Tailwind blue-500 */
+.custom-marker-blue::after { border-top-color: #3B82F6; }
 
-#poi-list-container::-webkit-scrollbar-thumb {
-  background: #888;
-  border-radius: 10px;
-}
+.custom-marker-green .custom-marker-circle { background-color: #22C55E; } /* Tailwind green-500 */
+.custom-marker-green::after { border-top-color: #22C55E; }
 
-#poi-list-container::-webkit-scrollbar-thumb:hover {
-  background: #555;
-}
+.custom-marker-yellow .custom-marker-circle { background-color: #F59E0B; } /* Tailwind yellow-500 */
+.custom-marker-yellow::after { border-top-color: #F59E0B; }
 
-/* Dark mode scrollbar styles */
-.dark #poi-list-container::-webkit-scrollbar-track {
-  background: #333;
-}
+.custom-marker-red .custom-marker-circle { background-color: #EF4444; }   /* Tailwind red-500 */
+.custom-marker-red::after { border-top-color: #EF4444; }
 
-.dark #poi-list-container::-webkit-scrollbar-thumb {
-  background: #666;
-}
+.custom-marker-teal .custom-marker-circle { background-color: #14B8A6; }  /* Tailwind teal-500 */
+.custom-marker-teal::after { border-top-color: #14B8A6; }
 
-.dark #poi-list-container::-webkit-scrollbar-thumb:hover {
-  background: #aaa;
-}
+.custom-marker-purple .custom-marker-circle { background-color: #A855F7; } /* Tailwind purple-500 */
+.custom-marker-purple::after { border-top-color: #A855F7; }
+
+
+
+/* ------------------- OTROS AJUSTES ------------------- */
+
+/* Asegúrate de que Leaflet no tenga estilos conflictivos */
+/* Por ejemplo, si tenías reglas como .leaflet-marker-icon img { max-width: none; }
+   asegúrate de que no interfieran con tus nuevos divIcons */
