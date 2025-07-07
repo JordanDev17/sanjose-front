@@ -2,26 +2,25 @@
 
 .c-warehouse-banner {
   /* Sombra por defecto: definida aquí para que GSAP pueda animar hacia ella */
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); /* Sombra base estándar */
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 
   position: relative;
   z-index: 1;
   overflow: hidden; /* ¡CRUCIAL! Recorta cualquier desbordamiento de sombra o gradiente */
 
-  /* NUEVO: Definir un tamaño fijo para la tarjeta */
-  height: 300px; /* Ajusta esta altura según el diseño que desees. */
-  /* Si estás en un grid de Tailwind, el ancho ya podría estar controlado (ej. md:w-1/2, lg:w-1/3) */
-  /* Si necesitas controlar el ancho directamente aquí, puedes añadir: */
-  /* width: 300px; */
-  /* max-width: 100%; /* Asegura que no desborde en pantallas pequeñas */
+  /* ¡ELIMINA O COMENTA ESTA LÍNEA! */
+  /* height: 300px; */ /* Esta altura fija es el principal problema de responsividad */
 
-  /* Transiciones CSS para propiedades no animadas por GSAP (como color de fondo).
-     ¡IMPORTANTE! Quitamos 'box-shadow' de las transiciones CSS para evitar conflictos con GSAP.
-  */
+  /* El ancho puede ser controlado por las clases de grid de Tailwind en el componente padre
+     (ej. grid-cols-1 md:grid-cols-2 lg:grid-cols-3)
+     Si necesitas un max-width para la tarjeta individual: */
+  max-width: 100%; /* Asegura que no desborde en pantallas pequeñas */
+
+  /* Transiciones CSS para propiedades no animadas por GSAP */
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* Efecto de glow que sigue al mouse */
+/* Efecto de glow que sigue al mouse (se mantiene igual, ya es responsivo por ser un gradiente) */
 .c-banner-glow {
   position: absolute;
   top: 0;
@@ -30,21 +29,19 @@
   bottom: 0;
   border-radius: inherit;
   pointer-events: none;
-  /* El background por defecto es transparente; GSAP animará su opacity */
   background: radial-gradient(
     600px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
-    rgba(100, 100, 200, 0.15), /* Color del glow */
-    transparent 80% /* Desvanece a transparente */
+    rgba(100, 100, 200, 0.15),
+    transparent 80%
   );
-  background-size: 120% 120%; /* Para que el gradiente sea lo suficientemente grande */
-  background-position: center; /* Centrar el gradiente si no hay mouse-x/y */
+  background-size: 120% 120%;
+  background-position: center;
 
-  opacity: 0; /* Oculto por defecto. GSAP maneja la animación de la opacidad. */
-  /* NO poner transiciones CSS de opacity aquí, para que GSAP tenga control total */
-  transform: translateZ(0); /* Sugerencia para aceleración por hardware */
+  opacity: 0;
+  transform: translateZ(0);
 }
 
-/* Modo oscuro: ajusta las sombras para que contrasten bien */
+/* Modo oscuro: ajusta las sombras para que contrasten bien (se mantiene igual) */
 .dark .c-warehouse-banner {
   box-shadow: 0 4px 6px -1px rgba(255, 255, 255, 0.05), 0 2px 4px -1px rgba(255, 255, 255, 0.02);
 }
@@ -52,12 +49,7 @@
 .dark .c-warehouse-banner .c-banner-glow {
   background: radial-gradient(
     600px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
-    rgba(0, 200, 200, 0.1), /* Un teal más sutil para el modo oscuro */
+    rgba(0, 200, 200, 0.1),
     transparent 80%
   );
 }
-
-/* NOTA: Otros estilos como .c-banner-title, .c-banner-sector, etc.,
-   se mantienen igual o se definen directamente con Tailwind en el HTML.
-   El .c-banner-link con su SVG también se mantiene.
-*/
