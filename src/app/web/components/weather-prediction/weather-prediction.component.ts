@@ -1,15 +1,14 @@
-// src/app/components/weather-prediction/weather-prediction.component.ts
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef, NgZone, AfterViewInit, QueryList, ViewChildren } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { WeatherService } from '../../services/weather.service';
 import { CitySuggestion, WeatherData, DailyForecastItem } from '../../models/weather.model';
-import { debounceTime, distinctUntilChanged, switchMap, catchError, takeUntil, finalize } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, switchMap, catchError, takeUntil, finalize, filter, tap } from 'rxjs/operators';
 import { Subject, of, BehaviorSubject } from 'rxjs';
 import { gsap } from 'gsap';
 
 @Component({
   selector: 'app-weather-prediction',
-  standalone: false, 
+  standalone: false,
   templateUrl: './weather-prediction.component.html',
   styleUrls: ['./weather-prediction.component.css']
 })
@@ -30,115 +29,153 @@ export class WeatherPredictionComponent implements OnInit, OnDestroy, AfterViewI
   error: string | null = null;
   localTime: string = '';
 
-  // Usamos BehaviorSubject para `weatherData` para que el `async` pipe pueda suscribirse
-  // y para que podamos controlar cuándo emitimos nuevos valores.
   private weatherDataSubject = new BehaviorSubject<WeatherData | null>(null);
-  weatherData$ = this.weatherDataSubject.asObservable(); // Observable público para el template
+  weatherData$ = this.weatherDataSubject.asObservable();
 
-  hasCurrentWeather: boolean = false; // Flag para *ngIf
-  hasForecast: boolean = false; // Flag para *ngIf
+  // No necesitamos 'hasCurrentWeather' y 'hasForecast' como flags separados
+  // ya que el *ngIf puede depender directamente de weatherData$
+  // Sin embargo, si los mantienes para un control más granular, está bien.
+  // Los dejaré para no romper tu lógica si los usas en otros lugares.
+  hasCurrentWeather: boolean = false;
+  hasForecast: boolean = false;
 
-  private destroy$ = new Subject<void>(); // Subject para gestionar la desuscripción
-  private dailyForecasts: DailyForecastItem[] = []; // Cache for aggregated daily forecasts
+  private destroy$ = new Subject<void>();
+  private dailyForecasts: DailyForecastItem[] = [];
+
+  // Nuevo flag para controlar si se está cargando por una búsqueda.
+  // Esto puede ayudar a diferenciar la carga inicial de una búsqueda para animaciones.
+  private isSearching: boolean = false;
 
   constructor(private weatherService: WeatherService, private ngZone: NgZone) {}
 
   ngOnInit(): void {
-    // Suscripción al `searchControl` para las sugerencias
     this.searchControl.valueChanges.pipe(
-      debounceTime(300), // Espera 300ms después de la última pulsación
-      distinctUntilChanged(), // Solo emite si el valor actual es diferente al anterior
-      switchMap(query => {
+      debounceTime(300),
+      distinctUntilChanged(),
+      tap(query => { // Usamos tap para poner isSearching a true ANTES de switchMap
         if (query) {
+          this.isSearching = true; // Indica que se inició una búsqueda
           this.showSuggestions = true;
           this.loading = true;
           this.error = null;
+        } else {
+          this.isSearching = false; // Se limpia el query, ya no está buscando
+          this.showSuggestions = false;
+        }
+      }),
+      switchMap(query => {
+        if (query) {
           return this.weatherService.searchCities(query).pipe(
             catchError(err => {
               this.error = 'Error al buscar ciudades.';
               this.loading = false;
-              return of([]); // Devuelve un observable vacío en caso de error
+              this.isSearching = false; // Termina la búsqueda en caso de error
+              return of([]);
             }),
-            finalize(() => this.loading = false) // Asegura que `loading` se ponga a false
+            finalize(() => {
+                this.loading = false;
+                // this.isSearching se maneja en tap para evitar reset prematuro.
+                // Podríamos resetear aquí también si la búsqueda falla o termina.
+            })
           );
         } else {
-          this.showSuggestions = false;
           return of([]);
         }
       }),
-      takeUntil(this.destroy$) // Desuscribe al destruir el componente
+      takeUntil(this.destroy$)
     ).subscribe(suggestions => {
       this.citySuggestions = suggestions;
+      // Reset isSearching aquí si la búsqueda de sugerencias ha terminado (no la principal)
+      // O si la búsqueda de sugerencias es exitosa y no hay más query.
     });
 
-    // Iniciar la carga del clima por defecto (Bogotá)
-    this.loadWeatherForCoordinates(4.739972393154803, -74.17856127701168, 'Funza, Colombia'); // Bogotá por defecto
-  }
+    // Carga inicial al iniciar el componente
+    // Aquí no se debería considerar como una "búsqueda" que resetea el estado visual agresivamente.
+    this.loadWeatherForCoordinates(4.739972393154803, -74.17856127701168, 'Funza, Colombia', false); // Pasa `false` para no considerar como búsqueda
 
-  ngAfterViewInit(): void {
-    // Las animaciones de GSAP se pueden inicializar aquí si los elementos ya están presentes.
-    // Para elementos condicionales, se deben llamar después de que el *ngIf los haya renderizado.
-    this.animateContainerEntrance();
-    this.animateTitleShadow();
-
-    // Suscribirse a cambios en weatherData$ para activar animaciones
+    // Suscribirse a cambios en weatherData$ para activar animaciones cuando los datos están listos
     this.weatherData$.pipe(
+      filter(data => data !== null), // Solo ejecuta animaciones cuando hay datos
       takeUntil(this.destroy$)
     ).subscribe(data => {
-      if (data) {
-        // Ejecutar animaciones dentro de ngZone para asegurar que GSAP se ejecuta fuera del ciclo de detección de cambios
-        this.ngZone.runOutsideAngular(() => {
-          // Usamos setTimeout(0) para asegurarnos de que Angular haya renderizado los *ngIf
-          // antes de intentar animar los elementos del DOM.
-          setTimeout(() => {
-            if (this.currentWeatherRef?.nativeElement) {
-              this.animateCurrentWeather(this.currentWeatherRef.nativeElement);
-            }
-            if (this.weatherIconRef?.nativeElement) {
-              this.animateWeatherIcon(this.weatherIconRef.nativeElement);
-            }
-            if (this.forecastContainer?.nativeElement && this.forecastCardRefs.length > 0) {
-              this.animateForecastCards(this.forecastCardRefs.toArray());
-            }
-          }, 0);
+      this.ngZone.runOutsideAngular(() => {
+        // Asegurarse de que el DOM se haya actualizado.
+        // `requestAnimationFrame` es a menudo mejor que `setTimeout(0)` para asegurar que el navegador ha pintado.
+        requestAnimationFrame(() => {
+          if (this.currentWeatherRef?.nativeElement) {
+            this.animateCurrentWeather(this.currentWeatherRef.nativeElement);
+          }
+          if (this.weatherIconRef?.nativeElement) {
+            this.animateWeatherIcon(this.weatherIconRef.nativeElement);
+          }
+          // Para las tarjetas de pronóstico, usamos QueryList.changes para reaccionar cuando se renderizan
+          // Esto es más robusto para elementos dentro de *ngFor
+          this.forecastCardRefs.changes.pipe(
+              takeUntil(this.destroy$), // Asegura que esta suscripción interna se limpia
+              takeUntil(this.weatherData$) // También se limpia si weatherData$ emite un nuevo valor (nueva búsqueda)
+          ).subscribe((queryList: QueryList<ElementRef>) => {
+              if (queryList.length > 0) {
+                  this.animateForecastCards(queryList.toArray());
+              }
+          });
+
+          // Animación de aparición para el contenedor principal de pronóstico si no se ha animado antes
+          if (this.forecastContainer?.nativeElement) {
+            gsap.fromTo(this.forecastContainer.nativeElement,
+              { opacity: 0, y: 20 },
+              { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' }
+            );
+          }
         });
-      }
+      });
+
+      // Resetear el flag de búsqueda una vez que los datos y las animaciones principales se han activado
+      // Esto es importante para el siguiente ciclo de búsqueda.
+      this.isSearching = false;
     });
 
     // Manejo de la desaparición del error
     this.weatherData$.pipe(
+      filter(data => data !== null && this.errorRef?.nativeElement), // Solo cuando hay datos y un error visible
       takeUntil(this.destroy$)
     ).subscribe(data => {
-      if (data && this.errorRef?.nativeElement) {
-        this.ngZone.runOutsideAngular(() => {
-          gsap.to(this.errorRef.nativeElement, {
-            opacity: 0,
-            height: 0,
-            duration: 0.5,
-            onComplete: () => {
-              this.ngZone.run(() => { // Vuelve a la zona de Angular para actualizar `error`
-                this.error = null;
-              });
-            }
-          });
+      this.ngZone.runOutsideAngular(() => {
+        gsap.to(this.errorRef.nativeElement, {
+          opacity: 0,
+          height: 0,
+          duration: 0.5,
+          onComplete: () => {
+            this.ngZone.run(() => {
+              this.error = null;
+            });
+          }
         });
-      }
+      });
     });
   }
 
+  ngAfterViewInit(): void {
+    this.animateContainerEntrance();
+    this.animateTitleShadow();
+  }
+
   ngOnDestroy(): void {
-    // Desuscribir todos los observables para prevenir fugas de memoria
     this.destroy$.next();
     this.destroy$.complete();
 
-    // Limpiar todas las animaciones de GSAP asociadas a los elementos del DOM
+    // Asegúrate de matar todas las tweens de GSAP
     this.ngZone.runOutsideAngular(() => {
+      gsap.killTweensOf('*'); // Mata todas las tweens activas. Cuidado con esto, podría afectar otras animaciones.
+      // Una alternativa más segura es matar solo las de los elementos específicos:
       gsap.killTweensOf(this.containerRef?.nativeElement);
       gsap.killTweensOf(this.titleRef?.nativeElement);
       gsap.killTweensOf(this.suggestionsRef?.nativeElement);
       gsap.killTweensOf(this.errorRef?.nativeElement);
       gsap.killTweensOf(this.currentWeatherRef?.nativeElement);
       gsap.killTweensOf(this.weatherIconRef?.nativeElement);
+      if (this.forecastContainer) { // Kill tweens on the parent forecast container
+        gsap.killTweensOf(this.forecastContainer.nativeElement);
+      }
       if (this.forecastCardRefs) {
         this.forecastCardRefs.forEach(cardRef => {
           gsap.killTweensOf(cardRef.nativeElement);
@@ -149,7 +186,6 @@ export class WeatherPredictionComponent implements OnInit, OnDestroy, AfterViewI
 
   // --- Lógica de Búsqueda y Sugerencias ---
   onSearchFocus(): void {
-    // Muestra sugerencias solo si hay una consulta y resultados
     if (this.searchControl.value && this.citySuggestions.length > 0) {
       this.showSuggestions = true;
     }
@@ -163,24 +199,48 @@ export class WeatherPredictionComponent implements OnInit, OnDestroy, AfterViewI
   }
 
   selectCitySuggestion(suggestion: CitySuggestion): void {
-    this.searchControl.setValue(suggestion.name, { emitEvent: false }); // No emitir evento para evitar re-trigger de la búsqueda
+    this.searchControl.setValue(suggestion.name, { emitEvent: false });
     this.hideSuggestionsWithAnimation();
-    this.loadWeatherForCoordinates(suggestion.lat, suggestion.lon, `${suggestion.name}${suggestion.state ? ', ' + suggestion.state : ''}, ${suggestion.country}`);
+    // Pasa `true` para indicar que esta carga es resultado de una búsqueda.
+    this.loadWeatherForCoordinates(suggestion.lat, suggestion.lon, `${suggestion.name}${suggestion.state ? ', ' + suggestion.state : ''}, ${suggestion.country}`, true);
   }
 
   // --- Carga de Datos del Clima ---
-  loadWeatherForCoordinates(lat: number, lon: number, locationName: string): void {
+  loadWeatherForCoordinates(lat: number, lon: number, locationName: string, isSearch: boolean = false): void {
     this.loading = true;
     this.error = null;
-    this.weatherDataSubject.next(null); // Limpiar datos previos
-    this.hasCurrentWeather = false;
-    this.hasForecast = false;
+
+    // *** CAMBIO CLAVE AQUÍ: Evitar limpiar los datos si es una búsqueda,
+    // y en su lugar, atenuar los datos existentes. ***
+    // Esto previene el "parpadeo" de eliminación/re-creación del DOM.
+    if (isSearch && this.weatherDataSubject.getValue()) {
+      // Si ya hay datos y es una búsqueda, atenúa el contenedor existente
+      this.ngZone.runOutsideAngular(() => {
+        gsap.to(this.containerRef.nativeElement, { opacity: 0.5, duration: 0.3 });
+      });
+    } else {
+        // Para la carga inicial o si no hay datos previos, limpia completamente
+        this.weatherDataSubject.next(null);
+        this.hasCurrentWeather = false;
+        this.hasForecast = false;
+    }
 
     this.weatherService.getWeatherAndForecast(lat, lon).pipe(
       takeUntil(this.destroy$),
-      finalize(() => this.loading = false),
+      finalize(() => {
+        this.loading = false;
+        // Restaurar opacidad si se había atenuado
+        if (isSearch && this.containerRef?.nativeElement) {
+          this.ngZone.runOutsideAngular(() => {
+            gsap.to(this.containerRef.nativeElement, { opacity: 1, duration: 0.3 });
+          });
+        }
+      }),
       catchError(err => {
         this.error = err.message || 'No se pudo obtener el clima para la ubicación seleccionada.';
+        this.weatherDataSubject.next(null); // Asegura que los datos se limpian en error
+        this.hasCurrentWeather = false;
+        this.hasForecast = false;
         return of(null);
       })
     ).subscribe(data => {
@@ -188,16 +248,15 @@ export class WeatherPredictionComponent implements OnInit, OnDestroy, AfterViewI
         const fullWeatherData: WeatherData = {
           currentWeather: data.current,
           fiveDayForecast: data.forecast,
-          locationName: data.locationName, // Usar el nombre de ubicación resuelto
+          locationName: data.locationName,
           lat: lat,
           lon: lon
         };
         this.weatherDataSubject.next(fullWeatherData);
         this.hasCurrentWeather = true;
         this.hasForecast = true;
-        this.updateLocalTime(data.current.timezone); // Actualizar hora local
+        this.updateLocalTime(data.current.timezone);
 
-        // Pre-calcular el pronóstico diario para evitar llamadas repetidas en el template
         this.dailyForecasts = this.aggregateDailyForecasts(data.forecast.list);
       } else {
         this.weatherDataSubject.next(null);
@@ -209,7 +268,7 @@ export class WeatherPredictionComponent implements OnInit, OnDestroy, AfterViewI
 
   // --- Funciones Auxiliares ---
   getWeatherIconUrl(iconCode: string | undefined): string {
-    return iconCode ? `https://openweathermap.org/img/wn/${iconCode}@2x.png` : 'assets/default-weather.png'; // Proporcionar un icono por defecto
+    return iconCode ? `https://openweathermap.org/img/wn/${iconCode}@2x.png` : 'assets/default-weather.png';
   }
 
   getCurrentLocationName(): string {
@@ -219,46 +278,41 @@ export class WeatherPredictionComponent implements OnInit, OnDestroy, AfterViewI
 
   private updateLocalTime(timezoneOffsetSeconds: number): void {
     const now = new Date();
-    // Obtener la hora UTC
     const utcTime = now.getTime() + (now.getTimezoneOffset() * 60 * 1000);
-    // Calcular la hora local ajustada por el offset de la zona horaria de la ciudad
     const localCityTime = new Date(utcTime + (timezoneOffsetSeconds * 1000));
     this.localTime = localCityTime.toLocaleTimeString('es-CO', {
       hour: '2-digit',
       minute: '2-digit',
-      hourCycle: 'h12' // 'h23' para 24h
+      hourCycle: 'h12'
     });
   }
 
-  // Optimización: Agregación de pronósticos diarios para evitar lógica compleja en el template
   private aggregateDailyForecasts(forecastList: any[]): DailyForecastItem[] {
     const dailyDataMap: { [key: string]: DailyForecastItem } = {};
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
 
     forecastList.forEach(item => {
       const date = new Date(item.dt * 1000);
-      const dateKey = date.toISOString().split('T')[0]; // YYYY-MM-DD
+      const dateKey = date.toISOString().split('T')[0];
 
       if (!dailyDataMap[dateKey]) {
         dailyDataMap[dateKey] = {
           dt: item.dt,
-          main: { ...item.main }, // Copy main data
-          weather: [{ ...item.weather[0] }], // Copy first weather item
+          main: { ...item.main },
+          weather: [{ ...item.weather[0] }],
           wind: { ...item.wind },
-          temp: { min: item.main.temp, max: item.main.temp } // Initialize min/max
+          temp: { min: item.main.temp_min, max: item.main.temp_max } // Asegúrate de usar temp_min/max inicial
         };
       } else {
-        // Update min/max temps for the day
         dailyDataMap[dateKey].temp.min = Math.min(dailyDataMap[dateKey].temp.min, item.main.temp_min);
         dailyDataMap[dateKey].temp.max = Math.max(dailyDataMap[dateKey].temp.max, item.main.temp_max);
-        // Update main temperature with an average or the closest to midday.
-        // For simplicity, we can just take the last one or average,
-        // but for a true 5-day forecast, you'd pick a specific time of day (e.g., midday reading).
-        // For now, let's just keep the initial `main.temp` from the first entry of the day for simplicity.
-        // Or, to be more accurate, find the entry closest to noon for `main.temp`
-        const existingEntryDate = new Date(dailyDataMap[dateKey].dt * 1000);
-        const currentItemDate = new Date(item.dt * 1000);
-        // A simple heuristic: if this item is closer to noon, update the main temp and weather
-        if (Math.abs(currentItemDate.getHours() - 12) < Math.abs(existingEntryDate.getHours() - 12)) {
+
+        // Actualizar el "main" weather para el día si el item actual está más cerca del mediodía
+        const existingEntryHourDiff = Math.abs(new Date(dailyDataMap[dateKey].dt * 1000).getHours() - 12);
+        const currentItemHourDiff = Math.abs(date.getHours() - 12);
+
+        if (currentItemHourDiff < existingEntryHourDiff) {
             dailyDataMap[dateKey].main.temp = item.main.temp;
             dailyDataMap[dateKey].weather = [{ ...item.weather[0] }];
             dailyDataMap[dateKey].wind = { ...item.wind };
@@ -266,52 +320,33 @@ export class WeatherPredictionComponent implements OnInit, OnDestroy, AfterViewI
       }
     });
 
-    // Convert map to array and sort by date
     const sortedForecasts = Object.values(dailyDataMap).sort((a, b) => a.dt - b.dt);
 
-    // Limit to the next 5 days (excluding today's full forecast if it's already past a certain time)
-    // A better approach would be to ensure it starts from the *next* full day.
-    const today = new Date();
-    today.setHours(0, 0, 0, 0); // Normalize today's date
-
-    // Filter to get unique days, starting from tomorrow
     const uniqueDays: DailyForecastItem[] = [];
     const seenDays = new Set<string>();
 
     for (const item of sortedForecasts) {
-        const itemDate = new Date(item.dt * 1000);
-        itemDate.setHours(0, 0, 0, 0);
+      const itemDate = new Date(item.dt * 1000);
+      itemDate.setHours(0, 0, 0, 0);
 
-        // Only include if it's a future day or if it's today and we don't have enough future days yet
-        const dayString = itemDate.toISOString().split('T')[0];
-        if (!seenDays.has(dayString) && itemDate.getTime() >= today.getTime()) {
-            uniqueDays.push(item);
-            seenDays.add(dayString);
-        }
-        if (uniqueDays.length >= 5) { // Get 5 distinct days
-            break;
-        }
+      // Solo incluir si es un día futuro O es hoy Y aún no tenemos 5 días (para asegurar que siempre haya 5).
+      const dayString = itemDate.toISOString().split('T')[0];
+      if (!seenDays.has(dayString) && (itemDate.getTime() > today.getTime() || (itemDate.getTime() === today.getTime() && uniqueDays.length < 5))) {
+        uniqueDays.push(item);
+        seenDays.add(dayString);
+      }
+      if (uniqueDays.length >= 5) {
+        break;
+      }
     }
-
     return uniqueDays;
   }
 
-  // Método público para que el HTML acceda a los pronósticos diarios agregados
   getDailyForecasts(forecastList: any[] | undefined): DailyForecastItem[] {
-      // Si forecastList es undefined (ej. aún no hay datos), retorna el array vacío cacheado
-      // O si weatherDataSubject.getValue() es null, también retorna el cacheado.
-      // Esto evita llamar a aggregateDailyForecasts repetidamente si los datos no han cambiado.
-      const data = this.weatherDataSubject.getValue();
-      if (!data || !data.fiveDayForecast?.list || forecastList === undefined) {
-          return []; // O this.dailyForecasts si prefieres mostrar el último cacheado
-      }
-      // Solo recalcular si los datos de pronóstico son diferentes (comparación superficial,
-      // un hash más complejo sería ideal para datos grandes)
-      // Para este caso, como this.dailyForecasts se actualiza en loadWeatherForCoordinates,
-      // simplemente lo devolvemos aquí.
+      // Devuelve los pronósticos diarios pre-calculados.
+      // Ya se calculan una vez en loadWeatherForCoordinates.
       return this.dailyForecasts;
   }
-
 
   formatForecastDate(timestamp: number): string {
     const date = new Date(timestamp * 1000);
@@ -336,7 +371,7 @@ export class WeatherPredictionComponent implements OnInit, OnDestroy, AfterViewI
     if (this.titleRef?.nativeElement) {
       this.ngZone.runOutsideAngular(() => {
         gsap.to(this.titleRef.nativeElement, {
-          filter: 'drop-shadow(0px 0px 8px rgba(var(--wp-accent-rgb), 0.7))',
+          filter: 'drop-shadow(0px 0px 8px rgba(var(--wp-accent-rgb), 0.7))', // Asegúrate que --wp-accent-rgb está definido
           repeat: -1,
           yoyo: true,
           duration: 2,
@@ -346,6 +381,7 @@ export class WeatherPredictionComponent implements OnInit, OnDestroy, AfterViewI
     }
   }
 
+  // Estas animaciones se activarán cuando los datos del clima estén disponibles
   private animateCurrentWeather(element: HTMLElement): void {
     this.ngZone.runOutsideAngular(() => {
       gsap.fromTo(element,
@@ -370,7 +406,7 @@ export class WeatherPredictionComponent implements OnInit, OnDestroy, AfterViewI
       gsap.from(elements.map(e => e.nativeElement), {
         opacity: 0,
         y: 20,
-        stagger: 0.1, // Retraso entre la animación de cada tarjeta
+        stagger: 0.1,
         duration: 0.5,
         ease: 'power2.out'
       });
@@ -386,15 +422,14 @@ export class WeatherPredictionComponent implements OnInit, OnDestroy, AfterViewI
           duration: 0.3,
           ease: 'power2.in',
           onComplete: () => {
-            this.ngZone.run(() => { // Vuelve a la zona de Angular para actualizar showSuggestions
+            this.ngZone.run(() => {
               this.showSuggestions = false;
-              this.citySuggestions = []; // Limpia las sugerencias después de ocultar
+              this.citySuggestions = [];
             });
           }
         });
       });
     } else {
-      // Si la referencia no existe (ej. ya estaba oculto o no renderizado), simplemente oculta
       this.showSuggestions = false;
       this.citySuggestions = [];
     }

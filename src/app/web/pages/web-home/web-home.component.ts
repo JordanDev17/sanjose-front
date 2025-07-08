@@ -59,7 +59,7 @@ export class WebHomeComponent implements OnInit, AfterViewInit, OnDestroy {
       bgColorDark: "dark:bg-gray-800",
       hoverBgColorLight: "bg-blue-100", // Fondo al pasar el mouse (claro)
       hoverBgColorDark: "dark:bg-blue-900", // Fondo al pasar el mouse (oscuro) - puedes ajustar la tonalidad de gris o usar dark:bg-blue-900
-      title: "Infraestructura de Vanguar",
+      title: "Infraestructura de Vanguardia",
       description: "Lotes urbanizados, energía confiable, telecomunicaciones de alta velocidad y amplias vías de acceso para tu operación.",
       features: [
         "Suministro energético robusto y escalable",
@@ -196,7 +196,7 @@ export class WebHomeComponent implements OnInit, AfterViewInit, OnDestroy {
   constructor(private newsService: NewsService, private renderer: Renderer2) { }
 
   ngOnInit(): void {
-    this.loadNews();
+    this.loadNews(false);
   }
 
   ngAfterViewInit(): void {
@@ -306,6 +306,10 @@ if (this.tourSection && ScrollTrigger) {
     this.destroy$.complete();
   }
 
+  
+
+
+
  /**
    * Anima la entrada del texto de la sección del tour y del contenedor del tour.
    * Se ejecuta una vez cuando la sección entra en el viewport.
@@ -380,50 +384,45 @@ if (this.tourSection && ScrollTrigger) {
 
 
 
-   /**
+    /**
    * Carga las noticias usando el servicio de noticias.
-   * El servicio ya maneja la paginación del lado del cliente.
+   * @param shouldScroll Indica si se debe hacer scroll a la sección después de cargar las noticias.
    */
-  loadNews(): void {
+  loadNews(shouldScroll: boolean): void {
     this.loading = true;
     this.errorMessage = null;
-    this.newsList = []; // Limpiar la lista antes de cargar nuevas noticias para que no se muestren las antiguas mientras carga.
+    this.newsList = []; // Limpiar la lista antes de cargar nuevas noticias
 
-    // Llama al servicio, que ya está configurado para la paginación
     this.newsService.getNews(this.currentPage, this.itemsPerPage)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response) => {
-          this.newsList = response.data; // Las noticias de la página actual
-          this.totalNewsCount = response.totalItems; // Total de todas las noticias
-          this.totalPages = response.totalPages; // Total de páginas calculado por el servicio
+          this.newsList = response.data;
+          this.totalNewsCount = response.totalItems;
+          this.totalPages = response.totalPages;
           this.loading = false;
+          this.initialLoadForNewsTitle = false; // Desactiva la bandera para la animación del título.
 
-          // Una vez que las noticias se han cargado (sea la carga inicial o una paginación),
-          // desactiva la bandera para la animación del título.
-          this.initialLoadForNewsTitle = false;
-
-          // --- SOLUCIÓN PARA EL SCROLL DESCONTROLADO ---
-          // Desplazarse al inicio de la sección de noticias después de que el DOM se haya actualizado.
-          // El setTimeout(..., 0) permite que Angular termine de renderizar la nueva lista.
-          setTimeout(() => {
-            if (this.newsSection && this.newsSection.nativeElement) {
-              // Si 'tourSection' es tu contenedor principal de noticias, úsalo.
-              // block: 'start' alinea el borde superior del elemento con la parte superior de la ventana.
-              this.newsSection.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            } else {
-              // Fallback si la referencia del elemento no está disponible (ej. el elemento aún no se ha renderizado)
-              window.scrollTo({ top: 0, behavior: 'smooth' });
-              console.warn('newsSection no está disponible para hacer scroll. Scroll al inicio de la ventana.');
-            }
-          }, 0); // Retraso de 0ms para asegurar que el DOM está actualizado
+          // *** CAMBIO CLAVE AQUÍ ***
+          // Solo hacemos scroll si 'shouldScroll' es verdadero
+          if (shouldScroll) {
+            setTimeout(() => {
+              if (this.newsSection && this.newsSection.nativeElement) {
+                this.newsSection.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              } else {
+                // Fallback si la referencia del elemento no está disponible
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                console.warn('newsSection no está disponible para hacer scroll. Scroll al inicio de la ventana.');
+              }
+            }, 0); // Retraso de 0ms para asegurar que el DOM está actualizado
+          }
         },
         error: (err) => {
           console.error('Error al cargar noticias:', err);
           this.errorMessage = 'No se pudieron cargar las noticias. Por favor, inténtalo de nuevo más tarde.';
           this.loading = false;
-          this.newsList = []; // Limpia la lista en caso de error
-          this.initialLoadForNewsTitle = false; // Desactiva la animación también en caso de error
+          this.newsList = [];
+          this.initialLoadForNewsTitle = false;
         }
       });
   }
@@ -433,7 +432,7 @@ if (this.tourSection && ScrollTrigger) {
   goToPage(page: number): void {
     if (page >= 1 && page <= this.totalPages && page !== this.currentPage) {
       this.currentPage = page;
-      this.loadNews(); // Recargar noticias para la nueva página
+      this.loadNews(true); // *** CAMBIO: Pasar 'true' para que haga scroll ***
     }
   }
 
@@ -454,12 +453,11 @@ if (this.tourSection && ScrollTrigger) {
    */
   get pageNumbers(): number[] {
     const pages: number[] = [];
-    const maxPagesToShow = 5; // Cantidad de botones de página a mostrar (ej. 1 2 3 4 5)
+    const maxPagesToShow = 5;
 
     let startPage = Math.max(1, this.currentPage - Math.floor(maxPagesToShow / 2));
     let endPage = Math.min(this.totalPages, startPage + maxPagesToShow - 1);
 
-    // Ajustar para que siempre se muestre `maxPagesToShow` si hay suficientes páginas
     if (endPage - startPage + 1 < maxPagesToShow && this.totalPages >= maxPagesToShow) {
       startPage = Math.max(1, endPage - maxPagesToShow + 1);
     }
@@ -474,7 +472,6 @@ if (this.tourSection && ScrollTrigger) {
   onCardClick(news: News): void {
     this.selectedNews = news;
     this.isModalOpen = true;
-    // Lógica para abrir tu modal (si es un modal que se renderiza condicionalmente)
   }
 
   onCloseModal(): void {
@@ -484,7 +481,7 @@ if (this.tourSection && ScrollTrigger) {
 
   // --- Método trackById para optimizar *ngFor ---
   trackById(index: number, news: News): number {
-    return news.id; // Asume que cada noticia tiene una propiedad 'id' única
+    return news.id;
   }
 
 
